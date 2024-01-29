@@ -1,9 +1,9 @@
 import './App.css';
-import VisualPage from "./components/VisualPage";
-import PrimerPage from "./components/PrimerPage";
+import VisualPage from "./pages/VisualPage";
+import PrimerPage from "./pages/PrimerPage";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import HomePage from "./components/HomePage";
+import HomePage from "./pages/HomePage";
 import React from 'react';
 
 

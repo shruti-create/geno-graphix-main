@@ -8,7 +8,6 @@ import SequenceSubmissionForm from '../forms/SequenceSubmissionForm';
 import DefaultSequenceForm from '../forms/DefaultSequenceForm';
 import VisualizationPage from "../forms/VisualizationForm";
 
-
 function VisualPage() {
     const [tabNum, setTabNum] = useState(0);
     const [submitted, setSubmitted] = useState(0);
@@ -75,7 +74,7 @@ function VisualPage() {
                     }}
                 >
                     <Tab label="Input Sequence" />
-                    <Tab label="Select Default Sequence" />
+                    <Tab label="Demo Sequence" />
                 </Tabs>
               <div style={{padding:10}}>
                 <ChooseForm/>

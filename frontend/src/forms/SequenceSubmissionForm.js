@@ -17,14 +17,8 @@ const SequenceSubmissionForm = ({ onValueChange }) => {
 
     const validateInput = () => {
       const cleanedInput = inputText.replace(/\s/g, '');
-      const rnaChar = /^[aAcCgGuU]+$/;
-      const dnaChar = /^[aAcCgGtT]+$/;
-      const proChar = /^[aArRnNdDcCeEqQgGiIlLkKmMfFpPsStTwWyYvV]+$/;
       
-      var validChar = dnaChar;
-      //TODO: use sequence type to set validChar to correct value using if statement
-      if (selectedType === 'rna'){ validChar = rnaChar;}
-      else if (selectedType === 'pro'){ validChar = proChar;}
+      var validChar = /^[aAcCgGtTuU]+$/;
 
       if (!validChar.test(cleanedInput)) {
         setErrorMessage('Invalid characters in the sequence.');
@@ -64,37 +58,6 @@ const SequenceSubmissionForm = ({ onValueChange }) => {
 
   return (
     <div>
-      <h2 style={{ fontSize: '1rem', color: '#665682', marginBottom: '10px' }}>Select Sequence Type</h2>
-      <button
-        onClick={() => handleTypeChange('dna')}
-        style={{
-            marginRight: '10px',
-            backgroundColor: selectedType === 'dna' ? '#665682' : 'transparent',
-            color: selectedType === 'dna' ? 'white' : '#665682',
-            border: '1px solid #665682',
-            borderRadius: '5px',
-            padding: '5px 10px',
-            cursor: 'pointer',
-            marginBottom: '10px'
-        }}
-    >
-        DNA
-    </button>
-    <button
-        onClick={() => handleTypeChange('rna')}
-        style={{
-            backgroundColor: selectedType === 'rna' ? '#665682' : 'transparent',
-            color: selectedType === 'rna' ? 'white' : '#665682',
-            border: '1px solid #665682',
-            borderRadius: '5px',
-            padding: '5px 10px',
-            cursor: 'pointer',
-            marginBottom: '10px'
-        }}
-    >
-        RNA
-    </button>
-    
     <h2 style={{ fontSize: '1rem', color: '#665682', marginBottom: '10px' }}>Input Sequence</h2>
     <form onSubmit={handleSubmit}>
       <textarea
@@ -123,7 +86,7 @@ const SequenceSubmissionForm = ({ onValueChange }) => {
             marginBottom: '10px',
           }}
         >
-          Submit
+          Generate
         </button>
       </div>
       {!isValid && (
