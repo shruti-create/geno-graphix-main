@@ -33,9 +33,9 @@ const NavBar = () => {
             display: 'flex', 
             justifyContent: 'flex-end', 
         }}>
-            <Link to="/home" style={linkStyle} className="nav-link">Home Page</Link>
-            <Link to="/visual-page" style={linkStyle} className="nav-link">Visual Page</Link>
-            <Link to="/primer-page" style={linkStyle} className="nav-link">Primer Page</Link>
+            <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Home Page</Link>
+            <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Visual Page</Link>
+            <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Primer Page</Link>
         </div>
       </nav>
     );
