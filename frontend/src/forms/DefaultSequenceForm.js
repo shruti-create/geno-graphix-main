@@ -12,7 +12,6 @@ const DefaultSequenceForm = ({ onValueChange }) => {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-
     };
 
     const defaultGenes = ['TYROBP', 'FCER1G'];

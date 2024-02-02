@@ -34,7 +34,7 @@ function VisualPage() {
           } else if (submitted === 2){
             return (
               <div>
-                <VisualizationPage/>
+                <VisualizationPage style = {{position: "fixed"}}/>
                 <button 
                 style={{
                   marginRight: '10px',
