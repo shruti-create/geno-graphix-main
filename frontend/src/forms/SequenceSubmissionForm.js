@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
 
-const SequenceSubmissionForm = ({ onValueChange }) => {
+const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
   const [inputText, setInputText] = useState('');
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false); 
-
 
   const [selectedType, setSelectedType] = useState('dna');
 
@@ -48,6 +47,7 @@ const SequenceSubmissionForm = ({ onValueChange }) => {
       setErrorMessage(''); 
       setIsSubmitted(true);
       onValueChange(true);
+      handleSequence(inputText);
     } else {
       console.log('Invalid input! Please enter a valid sequence.');
       setValid(false);

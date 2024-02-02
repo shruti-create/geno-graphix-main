@@ -12,6 +12,11 @@ function VisualPage() {
     const [tabNum, setTabNum] = useState(0);
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
+    const [inputtedSequence, setInputtedSequence]  = useState('');
+    const handleInputtedSequence = (sequence) => {
+      setInputtedSequence(sequence);
+    };
+
 
     const handleButtonClick = () => {
       setBack(!back); 
@@ -22,19 +27,20 @@ function VisualPage() {
       setSubmitted(newSubmittedValue);
     };
 
+
     function ChooseForm(){
       switch(tabNum) {
         case 0:
           if(submitted === 0 || (back && submitted === 0)){
           return (
             <div>
-              <SequenceSubmissionForm onValueChange={handleValueChange} />
+              <SequenceSubmissionForm onValueChange={handleValueChange} handleSequence = {handleInputtedSequence} />
             </div>
           );
           } else if (submitted === 2){
             return (
               <div>
-                <VisualizationPage style = {{position: "fixed"}}/>
+                <VisualizationPage style = {{position: "fixed"}} input = {inputtedSequence}/>
                 <button 
                 style={{
                   marginRight: '10px',
