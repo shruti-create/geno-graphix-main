@@ -1,0 +1,30 @@
+.sequence-container {
+  background-color: #f0f0f0;
+  padding: 10px;
+  overflow-wrap: break-word;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  max-height: 300px;
+  max-width: 50%;
+  overflow-y: auto;
+}
+
+.sequence {
+  white-space: pre-wrap;
+  line-height: 2rem;
+  letter-spacing: .05em;
+}
+
+.sequence-container::-webkit-scrollbar {
+  width: 7px;
+}
+
+.sequence-container::-webkit-scrollbar-thumb {
+  background-color: #634c89a4; /* thumb color */
+  border-radius: 5px; /* Make the thumb rounded */
+}
+
+.sequence-container::-webkit-scrollbar-track {
+  background-color: #e7d9f65d; /* track color */
+  border-radius: 5px;
+}
