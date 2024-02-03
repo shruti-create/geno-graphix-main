@@ -1,6 +1,8 @@
 import React, {useCallback} from "react";
 import "./FullSequence.css"; // Import the CSS file for styling
 
+// Make the full sequence box resizable
+
 const FullSequence = ({ sequence, onSequenceSelect }) => {
   const logSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -15,7 +17,6 @@ const FullSequence = ({ sequence, onSequenceSelect }) => {
 
   return (
     <div>
-      <h2>Genomic Sequence</h2>
       <div className="sequence-container" onMouseUp={logSelection}>
         <pre className="sequence">{sequence}</pre>
       </div>
