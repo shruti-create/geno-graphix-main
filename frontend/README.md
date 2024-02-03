@@ -71,5 +71,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ### issues
 
-use this " export NODE_OPTIONS=--openssl-legacy-provider "
+use this "export NODE_OPTIONS=--openssl-legacy-provider"
 
