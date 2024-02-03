@@ -47,7 +47,7 @@ const DefaultSequenceForm = ({ onValueChange }) => {
                         padding: '5px 10px',
                         cursor: 'pointer',
                         marginBottom: '10px'
-                    }}>Submit</button>
+                    }}>Generate</button>
                 </div>
             </form>
         </div>
