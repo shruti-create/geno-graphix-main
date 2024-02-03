@@ -12,11 +12,11 @@ function VisualizationPage({input}){
 
     return (
         <div>
-            <p style={{ fontSize: '1.2rem', color: 'black', margin: '20px'}}>
+            <p style={{ fontSize: '1.2rem', color: 'black', margin: '4vh'}}>
                 <div style ={{position: "relative"}}>
                     <FullSequence sequence={input} onSequenceSelect={handleSequenceSelect}/>
                 </div>
-                <div style ={{position: "fixed", top: '575px', left: '1000px'}}>
+                <div style ={{position: "fixed", top: '60vh', left: '100vh'}}>
                     <MagnifiedBox sequence={selectedSequence}/>
                 </div>
             </p>

@@ -40,7 +40,7 @@ function VisualPage() {
           } else if (submitted === 2){
             return (
               <div>
-                <VisualizationPage style = {{position: "fixed"}} input = {inputtedSequence}/>
+                <VisualizationPage style = {{position: "fixed",  width: "80vw", height: "80vh"}} input = {inputtedSequence}/>
                 <button 
                 style={{
                   marginRight: '10px',

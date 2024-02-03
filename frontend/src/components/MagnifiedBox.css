@@ -1,40 +1,33 @@
 .box {
     background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 8px;
-    height: 190px;
-    max-height: 190px;
-    max-width: 700px;
-    width: 700px;
+    padding: 1vh;
+    border-radius: 2vh;
+    height: 20vh;
+    max-height: 20vh;
+    max-width: 70vh;
+    width: 70vh;
     overflow-y: auto;
-    font-size: 80px;
+    font-size: 20vh;
     border-color: #f0f0f01d;
-    border-width: 1px;
-    border: 2px solid #000; 
+    border-width: 0.05vh;
+    border: 0.05vh solid #000; 
     justify-content: left; 
     align-items: center; 
     text-align: left; 
     display: flex; 
-
+    position: relative;
   }
-
-  .disp {
-    white-space: pre-wrap;
-    letter-spacing: 0.05em;
-    font-size: 40px;
-  }
-  
   
   .box::-webkit-scrollbar {
-    width: 5px;
+    width: 1vh;
   }
   
   .box::-webkit-scrollbar-thumb {
     background-color: #634c89a4; /* thumb color */
-    border-radius: 5px; /* Make the thumb rounded */
+    border-radius: 2vh; /* Make the thumb rounded */
   }
   
   .box::-webkit-scrollbar-track {
     background-color: #e7d9f65d; /* track color */
-    border-radius: 5px;
+    border-radius: 2vh;
   }

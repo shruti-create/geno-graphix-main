@@ -1,10 +1,10 @@
 .sequence-container {
   background-color: #f0f0f0;
-  padding: 10px;
+  padding: 1vh;
   overflow-wrap: break-word;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  max-height: 570px;
+  border-radius: 2vh;
+  margin-bottom: 1vh;
+  max-height: 55vh;
   max-width: 50%;
   overflow-y: auto;
 }
@@ -16,15 +16,15 @@
 }
 
 .sequence-container::-webkit-scrollbar {
-  width: 7px;
+  width: 1vh;
 }
 
 .sequence-container::-webkit-scrollbar-thumb {
   background-color: #634c89a4; /* thumb color */
-  border-radius: 5px; /* Make the thumb rounded */
+  border-radius: 2vh; /* Make the thumb rounded */
 }
 
 .sequence-container::-webkit-scrollbar-track {
   background-color: #e7d9f65d; /* track color */
-  border-radius: 5px;
+  border-radius: 2vh;
 }
