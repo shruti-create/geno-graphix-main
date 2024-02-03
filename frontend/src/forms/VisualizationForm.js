@@ -17,7 +17,7 @@ function VisualizationPage({ input }) {
                 <div style ={{position: "relative"}}>
                     <FullSequence sequence={input} onSequenceSelect={handleSequenceSelect}/>
                 </div>
-                <div style ={{position: "fixed", top: '60vh', left: '100vh'}}>
+                <div style ={{position: "fixed", top: '50vh', left: '100vh'}}>
                     <MagnifiedBox sequence={selectedSequence}/>
                 </div>
             </p>

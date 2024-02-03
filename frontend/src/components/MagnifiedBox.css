@@ -7,7 +7,7 @@
     max-width: 70vh;
     width: 70vh;
     overflow-y: auto;
-    font-size: 20vh;
+    font-size: 5vh;
     border-color: #f0f0f01d;
     border-width: 0.05vh;
     border: 0.05vh solid #000; 
@@ -15,7 +15,6 @@
     align-items: center; 
     text-align: left; 
     display: flex; 
-    position: relative;
   }
   
   .box::-webkit-scrollbar {
