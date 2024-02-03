@@ -1,40 +1,33 @@
 .box {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 8px;
-    height: 190px;
-    max-height: 190px;
-    max-width: 700px;
-    width: 700px;
-    overflow-y: auto;
-    font-size: 80px;
-    border-color: #f0f0f01d;
-    border-width: 1px;
-    border: 2px solid #000; 
-    justify-content: left; 
-    align-items: center; 
-    text-align: left; 
-    display: flex; 
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  min-height: 1.5em;
+  overflow-y: auto;
+  font-size: 50px;
+  border-color: #f0f0f01d;
+  border-width: 1px;
+  border: 2px solid #00000028;
+  justify-content: left;
+  align-items: flex-end;
+  text-align: left;
+}
 
-  }
+pre{
+  margin: .3em;
+}
 
-  .disp {
-    white-space: pre-wrap;
-    letter-spacing: 0.05em;
-    font-size: 40px;
-  }
-  
-  
-  .box::-webkit-scrollbar {
-    width: 5px;
-  }
-  
-  .box::-webkit-scrollbar-thumb {
-    background-color: #634c89a4; /* thumb color */
-    border-radius: 5px; /* Make the thumb rounded */
-  }
-  
-  .box::-webkit-scrollbar-track {
-    background-color: #e7d9f65d; /* track color */
-    border-radius: 5px;
-  }
+
+
+.box::-webkit-scrollbar {
+  width: 5px;
+}
+
+.box::-webkit-scrollbar-thumb {
+  background-color: #634c89a4; /* thumb color */
+  border-radius: 5px; /* Make the thumb rounded */
+}
+
+.box::-webkit-scrollbar-track {
+  background-color: #e7d9f65d; /* track color */
+  border-radius: 5px;
+}

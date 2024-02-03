@@ -4,8 +4,8 @@
   overflow-wrap: break-word;
   border-radius: 8px;
   margin-bottom: 10px;
-  max-height: 570px;
-  max-width: 50%;
+  height: 30rem;
+  /* width: 50rem; */
   overflow-y: auto;
 }
 
