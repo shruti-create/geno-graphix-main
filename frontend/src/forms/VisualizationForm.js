@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FullSequence from "../components/FullSequence";
+import FullSequence from "../components/fullSequence";
 import MagnifiedBox from "../components/MagnifiedBox";
 import "./VisualizationForm.css";
 
