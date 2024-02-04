@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FullSequence from "../components/fullSequence";
+import FullSequence from "../components/FullSequence";
 import MagnifiedBox from "../components/MagnifiedBox";
 import "./VisualizationForm.css";
 
@@ -16,7 +16,7 @@ function VisualizationPage({ input }) {
   return (
     <div>
       <h2>Genomic Sequence</h2>
-      <p style={{ fontSize: "1.2rem", color: "black", margin: "20px" }}>
+      <div style={{ fontSize: "1.2rem", color: "black", margin: "20px" }}>
         <div class="container">
           <div class="component">
             <FullSequence
@@ -28,7 +28,7 @@ function VisualizationPage({ input }) {
             <MagnifiedBox sequence={selectedSequence}/>
           </div>
         </div>
-      </p>
+      </div>
     </div>
   );
 }

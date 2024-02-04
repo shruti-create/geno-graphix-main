@@ -1,0 +1,35 @@
+.form-title{
+    font-size: 1rem;
+    color: #665682;
+    margin-bottom: 10px;
+}
+
+.text-area {
+    width: 80%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1.2rem;
+    white-space: normal;
+}
+
+.button-container{
+    margin-top: 10px;
+}
+
+.generate-button {
+    background-color: #665682;
+    color: white;
+    border: 1px solid #665682;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.error-message{
+    color: #801921;
+    margin-top: 5px;
+    font-weight: bold;
+}

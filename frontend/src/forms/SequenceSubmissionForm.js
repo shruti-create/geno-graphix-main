@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+import "./SequenceSubmissionForm.css";
+
 
 const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
@@ -7,12 +9,13 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false); 
 
-  const [selectedType, setSelectedType] = useState('dna');
+  // Option to select the type of sequence removed 
+  // const [selectedType, setSelectedType] = useState('dna');
 
-    const handleTypeChange = (type) => {
-        setSelectedType(type);
-        console.log('Selected sequence type:', type);
-    };
+  // const handleTypeChange = (type) => {
+  //     setSelectedType(type);
+  //     console.log('Selected sequence type:', type);
+  // };
 
     const validateInput = () => {
       const cleanedInput = inputText.replace(/\s/g, '');
@@ -37,6 +40,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       return true;
     };
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const isValidInput = validateInput();
@@ -58,41 +62,19 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
   return (
     <div>
-    <h2 style={{ fontSize: '1rem', color: '#665682', marginBottom: '10px' }}>Input Sequence</h2>
+    <h2 className='form-title'>Input Sequence</h2>
     <form onSubmit={handleSubmit}>
       <textarea
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
         placeholder="Enter your text"
-        style={{
-          width: '80%',
-          height: '100px',
-          padding: '10px',
-          borderRadius: '10px',
-          border: '1px solid #ccc',
-          fontSize: '1.2rem',
-          whiteSpace: 'normal',
-        }}
+        className='text-area'
       />
-      <div style={{ marginTop: '10px' }}>
-        <button
-          style={{
-            backgroundColor: '#665682',
-            color: 'white',
-            border: '1px solid #665682',
-            borderRadius: '5px',
-            padding: '5px 10px',
-            cursor: 'pointer',
-            marginBottom: '10px',
-          }}
-        >
-          Generate
-        </button>
+      <div className='button-container'>
+        <button className='generate-button'>Generate</button>
       </div>
       {!isValid && (
-        <div style={{ color: '#801921', marginTop: '5px' }}>
-          <b>{errorMessage}</b>
-        </div>
+        <div className='error-message'> {errorMessage} </div>
       )}
     </form>
     </div>
