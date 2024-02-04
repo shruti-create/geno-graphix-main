@@ -1,5 +1,5 @@
 .form-title{
-    font-size: 1rem;
+    font-size: rem;
     color: #665682;
     margin-bottom: 10px;
 }
@@ -10,12 +10,26 @@
     padding: 10px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    font-size: 1.2rem;
+    font-size: 1rem;
     white-space: normal;
 }
 
+.file-input-container {
+    margin-bottom: 10px;
+}
+
+.file-upload {
+    display: inline-block;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    color: #665682;
+    cursor: pointer;
+  }
+
+  
 .button-container{
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .generate-button {
