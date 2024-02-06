@@ -29,3 +29,11 @@
   background-color: #e7d9f65d; /* track color */
   border-radius: 2vw;
 }
+
+.sequence::-moz-selection {
+  background: #8c76b178;
+}
+
+.sequence::selection {
+  background: #8c76b178;
+}
