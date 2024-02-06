@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import "./SequenceSubmissionForm.css";
 
-
 const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
   const [inputText, setInputText] = useState('');
@@ -36,7 +35,6 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         setErrorMessage('Please upload a valid FASTA file.');
         return false;
       }
-      
       return true;
     }
 
@@ -103,7 +101,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         <div className='file-input-container'>
           <input
               type='file'
-              accept='.fatsa, .fas, .fa' // Optional: Specify accepted file types
+              accept='.fasta, .fas, .fa' // Optional: Specify accepted file types
               onChange={handleFileChange}
               className='file-upload'
           />

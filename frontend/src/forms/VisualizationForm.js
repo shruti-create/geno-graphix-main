@@ -6,6 +6,7 @@ import "./VisualizationForm.css";
 function VisualizationPage({ input }) {
   const [selectedSequence, setSelectedSequence] = useState("");
   const [selected, setSelected] = useState(false);
+  
   const handleSequenceSelect = (sequence) => {
     setSelectedSequence(sequence);
     setSelected(true);

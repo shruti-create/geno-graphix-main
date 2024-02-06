@@ -24,6 +24,8 @@
 }
 
 .sequence-container::-webkit-scrollbar-track {
+  margin-top: 2vw;
+  margin-bottom: 2vw;
   background-color: #e7d9f65d; /* track color */
   border-radius: 2vw;
 }
