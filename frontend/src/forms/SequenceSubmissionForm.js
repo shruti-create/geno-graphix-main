@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import "./SequenceSubmissionForm.css";
 
 const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
@@ -8,6 +8,8 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const[fileContent, setFileContent] = useState('');
+
 
 
   const handleTextChange = (e) => {
@@ -18,7 +20,21 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
     const file = e.target.files[0];
     setSelectedFile(file);
     console.log('Selected file:', file);
+    readFileContent(file);
     setInputText(''); // Reset the inputText when a file is selected
+  };
+
+  const readFileContent = (file) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const fileContent = e.target.result;
+      const lines = fileContent.split('\n');
+      const sequence = lines.slice(1).join('');
+      setInputText(sequence);
+    };
+
+    reader.readAsText(file);
   };
 
   const validateInput = () => {
@@ -27,6 +43,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       return false;
     }
 
+  
     if (selectedFile) {
       const validFiles = ['.fasta', '.fa', '.fas'];
       const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'));
@@ -35,6 +52,8 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         setErrorMessage('Please upload a valid FASTA file.');
         return false;
       }
+
+      setErrorMessage('Valid file received');
       return true;
     }
 
@@ -51,10 +70,10 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       return false;
     }
 
-    if (cleanedInput.length % 2 !== 0) {
-      setErrorMessage('Sequence length must be even.');
-      return false;
-    }
+    // if (cleanedInput.length % 2 !== 0) {
+    //   setErrorMessage('Sequence length must be even.');
+    //   return false;
+    // }
 
     return true;
   };
@@ -62,26 +81,19 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isValidInput = validateInput();
-
+    const textToValidate = inputText.trim();
+    const isValidInput = validateInput(textToValidate);
     if (isValidInput) {
-      if (selectedFile) {
-        // Handle file logic here
-        console.log('Submitted file:', selectedFile);
-        // Optionally, reset the selected file state
-        setSelectedFile(null);
-      } else {
         console.log('Submitted text:', inputText);
         setValid(true);
         setErrorMessage(''); 
-        setIsSubmitted(true);
         onValueChange(true);
         handleSequence(inputText);
+        setSelectedFile(null);
       }
-    } else {
+     else {
       console.log('Invalid input! Please enter a valid sequence.');
       setValid(false);
-      setIsSubmitted(true);
     }
     
   };
@@ -101,7 +113,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         <div className='file-input-container'>
           <input
               type='file'
-              accept='.fasta, .fas, .fa' // Optional: Specify accepted file types
+              accept='.fasta, .fas, .fa'
               onChange={handleFileChange}
               className='file-upload'
           />
@@ -114,6 +126,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         {!isValid && (
           <div className='error-message'> {errorMessage} </div>
         )}
+
       </form>
     </div>
   );

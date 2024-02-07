@@ -1,3 +1,7 @@
+/*
+Visualizes form displays the full sequence and controls what happens after 
+clicking on the generate button. 
+*/
 import React, { useState } from "react";
 import FullSequence from "../components/fullSequence";
 import MagnifiedBox from "../components/MagnifiedBox";

@@ -13,11 +13,11 @@ function VisualPage() {
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
     const [inputtedSequence, setInputtedSequence]  = useState('');
+    
     const handleInputtedSequence = (sequence) => {
       setInputtedSequence(sequence);
     };
-
-
+    
     const handleButtonClick = () => {
       setBack(!back); 
       setSubmitted(0);
