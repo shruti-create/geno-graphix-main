@@ -6,14 +6,20 @@ import "./FullSequence.css"; // Import the CSS file for styling
 const FullSequence = ({ sequence, onSequenceSelect }) => {
   const logSelection = useCallback(() => {
     const selection = window.getSelection();
-    const selectedText = selection.toString();
     const isWithinSequence = selection.anchorNode.parentNode.classList.contains('sequence');
-    
-    if (selectedText && isWithinSequence) {
-      console.log('Selected sequence:', selectedText);
-      onSequenceSelect(selectedText);
-    }
-  }, []);
+    if (!isWithinSequence) return;
+    const selectedText = selection.toString();
+    if (!selectedText) return;
+    const anchorOffset = selection.anchorOffset;
+    const focusOffset = selection.focusOffset;
+    // getting start and end indexes of sequence for our Annotations
+    const startIndex = Math.min(anchorOffset, focusOffset);
+    const endIndex = Math.max(anchorOffset, focusOffset) - 1; 
+
+    console.log('Selected sequence:', selectedText, 'Start index:', startIndex, 'End index:', endIndex);
+    // sending it all back to parent file
+    onSequenceSelect(selectedText, startIndex, endIndex);
+  }, [onSequenceSelect]);
 
   return (
     <div>
