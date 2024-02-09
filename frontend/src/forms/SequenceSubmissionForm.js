@@ -45,7 +45,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
   
     if (selectedFile) {
-      const validFiles = ['.fasta', '.fa', '.fas'];
+      const validFiles = ['.fasta', '.fa', '.fas', '.fna'];
       const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'));
 
       if (!validFiles.includes(fileExtension.toLowerCase())) {
@@ -113,7 +113,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         <div className='file-input-container'>
           <input
               type='file'
-              accept='.fasta, .fas, .fa'
+              accept='.fasta, .fas, .fa, .fna'
               onChange={handleFileChange}
               className='file-upload'
           />
