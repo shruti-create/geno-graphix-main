@@ -2,18 +2,49 @@
 Visualizes form displays the full sequence and controls what happens after 
 clicking on the generate button. 
 */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FullSequence from "../components/fullSequence";
 import MagnifiedBox from "../components/MagnifiedBox";
 import "./VisualizationForm.css";
+import AnnotationBox from "../components/Annotations";
 
 function VisualizationPage({ input }) {
   const [selectedSequence, setSelectedSequence] = useState("");
   const [selected, setSelected] = useState(false);
+  const [annotation, setAnnotation] = useState('');
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
+  const [fileContent, setFileContent] = useState(input); 
+
   
-  const handleSequenceSelect = (sequence) => {
+  useEffect(() => {
+    if (annotation && startIndex >= 0 && endIndex >= 0) {
+      const annotationText = `${startIndex},${endIndex},${annotation}`;
+      setFileContent((prevContent) => `${prevContent}\n${annotationText}`);
+    }
+  }, [annotation, startIndex, endIndex]);
+
+  const handleSequenceSelect = (sequence, start, end) => {
+    setStartIndex(start);
+    setEndIndex(end);
     setSelectedSequence(sequence);
-    setSelected(true);
+  };
+
+  const handleAnnotation = (selectedAnnotation) => {
+    setAnnotation(selectedAnnotation);
+    console.log(selectedAnnotation);
+  };
+
+  const downloadFileContent = () => {
+    const blob = new Blob([fileContent], { type: 'text/plain' });
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = "GenomicSequenceAnnotations.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
   };
   const inputSequence =
     "ACTTGCCTGGACGCTGCGCCACATCCCACCGGCCCTTACACTGTGGTGTCCAGCAGCATCCGGCTTCATGGGGGGACTTGAACCCTGCAGCAGGCTCCTGCTCCTGCCTCTCCTGCTGGCTGTAAGTGGTGAGTTAGGGGCTTCCGTGGCTGCCTCCCGGGTCCCTGGGCTCAGCTTGGGGCAGGGCAGGGAGTGGGGTGGAACGAGAGACCAAAAGTGGGTGTTGGGATGGGAGCAGGTCCCCAACCTCCCAAAGCCTGTGGGTTTCTCCCAGAGCCCAAGCCCCCAAGTTTTGTCGTCCGCTACAAGCAGGGGAGAAGAGACATCTAAGTGTGTTGCCACAGGACAAAAGCCCCCAAGTTTTGTCGTCCGCTACAAGCAGGGGAGAAGAGACATCTAAGTGTGTTGCCACAGGACAAGTTGTGCAGAAGTAACGCACATAGTCCGGTGGCCCAGACGCCAGCCCCCTGAGTCCCGCCAGACACGCTCTCCCCCTTGCTAACCTCTTGGCTGTCAGGATCCACCTTCCCTGGCTTCTAAACTTGCCTCCCCCACCCCCGTCATAACTCTGTGCCTCAGTTTACCTTCTTTTTCCTCCTCAGGTCTCCGTCCTGTCCAGGCCCAGGCCCAGAGCGGTAGGCCTAGACCCAGCAGTCCCTCTCTCTACCTCCCAGAGACCTCCCTGTCTCCGTCTCTCCCACACCCTTTCCAAACCTCCCTGCCGCTGACCCCCCTCCCCACAGTTCCCAGCACACACTGACCTCCCCTGACCCCTGTGCTGCAGATTGCAGTTGCTCTACGGTGAGCCCGGGCGTGCTGGCAGGGATCGTGATGGGAGACCTGGTGCTGACAGTGCTCATTGCCCTGGCCGTGTACTTCCTGGGCCGGCTGGTCCCTCGGGGGCGAGGGGCTGCGGAGGGTGAGTGGGGCTAGCAGGGGACATCCTGAGGACTTGCCTAGATGGGGGTGGGGGGCTGGGTAAACTCCCAGATCTCAAACATCCAAAGGGATGGTAATGGAGGTGCTGATTTGGAATGACAAAACACCCTA";
@@ -30,7 +61,9 @@ function VisualizationPage({ input }) {
             />
           </div>
           <div class="component">
+            <AnnotationBox onAnnotationSelect={handleAnnotation} />
             <MagnifiedBox sequence={selectedSequence}/>
+            <button style = {{marginTop: '3%', width: '15%', height: '5%'}} onClick={downloadFileContent}>Save to File</button>
           </div>
         </div>
       </div>

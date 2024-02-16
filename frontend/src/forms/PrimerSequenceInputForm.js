@@ -1,13 +1,16 @@
 import React, {useCallback, useState} from 'react';
-import "./SequenceSubmissionForm.css";
+import "./PrimerSequenceInputForm.css";
 
-const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
+const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
+
   const [inputText, setInputText] = useState('');
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  // const[fileContent, setFileContent] = useState('');
+  const[fileContent, setFileContent] = useState('');
+
+
 
   const handleTextChange = (e) => {
     setInputText(e.target.value);
@@ -18,7 +21,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
     setSelectedFile(file);
     console.log('Selected file:', file);
     readFileContent(file);
-    setInputText(''); // Reset the inputText when a file is selected
+    setInputText(''); 
   };
 
   const readFileContent = (file) => {
@@ -39,6 +42,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       setErrorMessage('Please enter text or upload a file.');
       return false;
     }
+
   
     if (selectedFile) {
       const validFiles = ['.fasta', '.fa', '.fas', '.fna'];
@@ -65,14 +69,9 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       setErrorMessage('Sequence length must be greater than 3.');
       return false;
     }
-
-    // if (cleanedInput.length % 2 !== 0) {
-    //   setErrorMessage('Sequence length must be even.');
-    //   return false;
-    // }
-
     return true;
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -90,6 +89,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       console.log('Invalid input! Please enter a valid sequence.');
       setValid(false);
     }
+    
   };
 
   return (
@@ -114,7 +114,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         </div>
         
         <div className='button-container'>
-          <button className='generate-button'>Generate</button>
+          <button className='generate-button'>Generate Primers</button>
         </div>
        
         {!isValid && (
@@ -126,4 +126,4 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
   );
 };
 
-export default SequenceSubmissionForm;
+export default PrimerSequenceForm;
