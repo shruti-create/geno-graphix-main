@@ -2,15 +2,12 @@ import React, {useCallback, useState} from 'react';
 import "./SequenceSubmissionForm.css";
 
 const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
-
   const [inputText, setInputText] = useState('');
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const[fileContent, setFileContent] = useState('');
-
-
+  // const[fileContent, setFileContent] = useState('');
 
   const handleTextChange = (e) => {
     setInputText(e.target.value);
@@ -42,7 +39,6 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       setErrorMessage('Please enter text or upload a file.');
       return false;
     }
-
   
     if (selectedFile) {
       const validFiles = ['.fasta', '.fa', '.fas'];
@@ -78,7 +74,6 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
     return true;
   };
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const textToValidate = inputText.trim();
@@ -95,7 +90,6 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
       console.log('Invalid input! Please enter a valid sequence.');
       setValid(false);
     }
-    
   };
 
   return (
