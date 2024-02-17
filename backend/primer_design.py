@@ -6,8 +6,12 @@ reverse_primers = []
 
 def manipulate_sequence(sequence):
     # getting sequences of the correct length first for the forward and reverse primers
+    forward_sequence_list.clear()
+    reverse_sequence_list.clear()
     get_sequences(sequence['input'])
     # getting the complementary sequence to be the basis of the primers
+    forward_primers.clear()
+    reverse_primers.clear()
     complementarySequences(forward_sequence_list, forward_primers)
     complementarySequences(reverse_sequence_list, reverse_primers)
     # checking the gc content and ruling out more options for primers

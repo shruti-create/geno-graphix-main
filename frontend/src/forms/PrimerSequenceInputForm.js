@@ -65,8 +65,8 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
       return false;
     }
 
-    if (cleanedInput.length <= 3) {
-      setErrorMessage('Sequence length must be greater than 3.');
+    if (cleanedInput.length <= 25) {
+      setErrorMessage('Sequence length must be greater than 25.');
       return false;
     }
     return true;
