@@ -21,13 +21,14 @@ function PrimerShowPage(inputtedSequence) {
     React.useEffect(() => {
         if (inputtedSequence) fetchManipulatedSequence();
     }, [inputtedSequence]);
+    console.log("Forward "+ forwardPrimers)
 
     return (
         <div>
             <p style={{ fontSize: '1.2rem', color: 'black', margin: '20px', overflowWrap: 'break-word', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-                Forward Primers: {forwardPrimers}
+                Forward Primers: {forwardPrimers.join(', ')}
                 <br/>
-                Reverse Primers: {reversePrimers}
+                Reverse Primers: {reversePrimers.join(', ')}
             </p>
         </div>
     );

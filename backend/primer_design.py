@@ -56,11 +56,12 @@ def gcContentCheck(primer_list, type):
     closest_to_range_percent = 1
     best_primer = None
     for item in primer_list: 
+        gc_count = 0
         for char in item:
             if char == 'G' or char == 'C':
                 gc_count = gc_count +1
         # finds the primers in the range for GC content
-        if gc_count/len(item) >= 0.4 and gc_count/len(item) <= 0.6:
+        if gc_count/len(item) >= 0.3 and gc_count/len(item) <= 0.7:
             temp_list.append(item)
         gc_content_percent_list.append(gc_count/len(item))
     # if none were found, finds one primer thats closest to the range to try at the user's risk
@@ -120,7 +121,7 @@ def temperatureCheck(list):
         Tm = 4*(g_count + c_count) + 2*(a_count + t_count)
         Tm_list.append(Tm)
         # take the ones with the good melting temp
-        if Tm>50 and Tm <60: 
+        if Tm>50 and Tm <64: 
             temp_list.append(item)
     # if none were in the range
     if len(temp_list) == 0:
@@ -128,8 +129,6 @@ def temperatureCheck(list):
             if abs(Tm_list[i]-55) < best_dist: 
                 best_dist = abs(Tm_list[i]-55)
                 best_index = i
-        print(list)
-        print(best_index)
         temp_list.append(list[best_index])
     
     # send back the primers that are good
