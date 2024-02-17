@@ -1,25 +1,29 @@
 forward_sequence_list= []
 reverse_sequence_list =[]
-forward_primers = []
-reverse_primers = []
-
 
 def manipulate_sequence(sequence):
+    forward_primers = []
+    reverse_primers = []
     # getting sequences of the correct length first for the forward and reverse primers
     forward_sequence_list.clear()
     reverse_sequence_list.clear()
     get_sequences(sequence['input'])
     # getting the complementary sequence to be the basis of the primers
-    forward_primers.clear()
-    reverse_primers.clear()
     complementarySequences(forward_sequence_list, forward_primers)
     complementarySequences(reverse_sequence_list, reverse_primers)
     # checking the gc content and ruling out more options for primers
     gcContentCheck(forward_primers, "forward")
     gcContentCheck(reverse_primers, "reverse")
     # checking the melting temperature and ruling out more options for primers
-    temperatureCheck(forward_primers)
-    temperatureCheck(reverse_primers)
+    # if nothing matched the gcContentCheck:
+    if len(forward_primers) == 0: 
+        forward_primers = ["No good primers found."]
+    else: 
+        temperatureCheck(forward_primers)
+    if len(reverse_primers) == 0: 
+        reverse_primers = ["No good primers found."]
+    else: 
+        temperatureCheck(reverse_primers)    
     all_primers = [forward_primers, reverse_primers]
     return all_primers
 
@@ -124,6 +128,8 @@ def temperatureCheck(list):
             if abs(Tm_list[i]-55) < best_dist: 
                 best_dist = abs(Tm_list[i]-55)
                 best_index = i
+        print(list)
+        print(best_index)
         temp_list.append(list[best_index])
     
     # send back the primers that are good
