@@ -7,6 +7,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [annotations, setAnnotations] = useState([]);
   // const[fileContent, setFileContent] = useState('');
 
   const handleTextChange = (e) => {
@@ -27,25 +28,42 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
     reader.onload = (e) => {
       const fileContent = e.target.result;
       const lines = fileContent.split('\n');
-      const sequence = lines.slice(1).join('');
+
+      // extract annotations if present
+      const extractedAnnotations = extractAnnotations(lines);
+      setAnnotations(extractedAnnotations);
+      console.log('Extracted Annotations:', extractedAnnotations);
+
+      // extract the seqeunce without annotations
+      const sequenceLines = lines.filter(line => !line.includes('Highlight') && !line.includes('Underline'));
+      const sequence = sequenceLines.join('');
+
       setInputText(sequence);
     };
 
     reader.readAsText(file);
   };
 
+  const extractAnnotations = (lines) => {
+    const annotations = lines.filter(line => line.includes('Highlight') || line.includes('Underline'));
+    const extractedAnnotations = annotations.map(line => {
+      const [start, end, type] = line.split(',').map(Number);
+      return { start, end, type };
+    });
+    return extractedAnnotations;
+  }
+
   const validateInput = () => {
     if (!inputText.trim() && !selectedFile) {
       setErrorMessage('Please enter text or upload a file.');
-      return false;
-    }
+      return false;   }
   
     if (selectedFile) {
-      const validFiles = ['.fasta', '.fa', '.fas', '.fna'];
+      const validFiles = ['.fasta', '.fa', '.fas', '.fna', '.txt'];
       const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'));
 
       if (!validFiles.includes(fileExtension.toLowerCase())) {
-        setErrorMessage('Please upload a valid FASTA file.');
+        setErrorMessage('Please upload a valid file.');
         return false;
       }
 
@@ -80,9 +98,11 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
     const isValidInput = validateInput(textToValidate);
     if (isValidInput) {
         console.log('Submitted text:', inputText);
+        console.log('Saved annotations:', annotations);
         setValid(true);
         setErrorMessage(''); 
         onValueChange(true);
+        // handleSequence({ sequence: inputText, annotations });
         handleSequence(inputText);
         setSelectedFile(null);
       }
@@ -107,7 +127,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         <div className='file-input-container'>
           <input
               type='file'
-              accept='.fasta, .fas, .fa, .fna'
+              accept='.fasta, .fas, .fa, .fna, .txt'
               onChange={handleFileChange}
               className='file-upload'
           />
