@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import "./PrimerSequenceInputForm.css";
 
+// PrimerSequenceForm component for inputting DNA sequence and generating primers.
 const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
 
   const [inputText, setInputText] = useState('');
@@ -10,12 +11,12 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const[fileContent, setFileContent] = useState('');
 
-
-
+  // Handles text input change
   const handleTextChange = (e) => {
     setInputText(e.target.value);
   };
-
+ 
+  // Handles file input change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
@@ -24,6 +25,7 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
     setInputText(''); 
   };
 
+  // Reads file content
   const readFileContent = (file) => {
     const reader = new FileReader();
 
@@ -37,6 +39,7 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
     reader.readAsText(file);
   };
 
+  // Validates input 
   const validateInput = () => {
     if (!inputText.trim() && !selectedFile) {
       setErrorMessage('Please enter text or upload a file.');
@@ -73,6 +76,7 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
   };
 
 
+  // Handles form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     const textToValidate = inputText.trim();
@@ -92,6 +96,7 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
     
   };
 
+  // JSX for rendering the component
   return (
     <div>
     <h2> Primer Design Tool</h2>

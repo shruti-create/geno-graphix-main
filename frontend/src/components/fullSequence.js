@@ -1,8 +1,9 @@
 import React, {useCallback} from "react";
-import "./FullSequence.css"; // Import the CSS file for styling
+import "./FullSequence.css"; // Import CSS file for styling
 
-// Make the full sequence box resizable
-
+// FullSequence component displays the entire DNA sequence in a resizable box.
+// It allows users to select a portion of the sequence, logs the selection, 
+// and sends the selected text along with start and end indices back to the parent component.
 const FullSequence = ({ sequence, onSequenceSelect }) => {
   const logSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -10,17 +11,22 @@ const FullSequence = ({ sequence, onSequenceSelect }) => {
     if (!isWithinSequence) return;
     const selectedText = selection.toString();
     if (!selectedText) return;
+    
+    // Calculate start and end indices for the selected sequence
     const anchorOffset = selection.anchorOffset;
     const focusOffset = selection.focusOffset;
-    // getting start and end indexes of sequence for our Annotations
+    
+    // Getting start and end indexes of sequence for our Annotations
     const startIndex = Math.min(anchorOffset, focusOffset);
     const endIndex = Math.max(anchorOffset, focusOffset) - 1; 
 
     console.log('Selected sequence:', selectedText, 'Start index:', startIndex, 'End index:', endIndex);
-    // sending it all back to parent file
+    
+    // Sending it all back to parent file
     onSequenceSelect(selectedText, startIndex, endIndex);
   }, [onSequenceSelect]);
 
+   // JSX for rendering the component
   return (
     <div>
       <div className="sequence-container" onMouseUp={logSelection}>

@@ -1,7 +1,7 @@
 import React from "react";
 
+// AnnotationBox component handles annotation type selection.
 const AnnotationBox = ( {onAnnotationSelect}) => {
-  
     return (
       <div>
           <p>Pick an annotation type to do on the sequence:</p>
