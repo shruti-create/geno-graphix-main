@@ -18,7 +18,7 @@ def design_sequence():
     if not sequence:
         return jsonify({'error': 'No sequence provided!'}), 400
     manipulated_sequence = manipulate_sequence(sequence)
-    response = jsonify({'manipulatedSequence': manipulated_sequence})
+    response = jsonify({'allPrimers': manipulated_sequence})
     return response
 
 if __name__ == '__main__':

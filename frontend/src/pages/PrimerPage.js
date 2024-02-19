@@ -41,7 +41,8 @@ function PrimerPage() {
                 borderRadius: '5px',
                 padding: '5px 10px',
                 cursor: 'pointer',
-                marginBottom: '10px'
+                marginBottom: '10px',
+                marginTop: '1%'
                 }}
                 onClick={handleButtonClick}>
                 Back
