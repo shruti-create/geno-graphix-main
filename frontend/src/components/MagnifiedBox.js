@@ -1,8 +1,9 @@
 import React from "react";
-import "./MagnifiedBox.css";
+import "./MagnifiedBox.css"; // Import CSS file for styling
 
+// MagnifiedBox component displays a magnified view of a portion of sequence
+// Users can highlight a part of the sequence and it will be magnified here.
 const MagnifiedBox = ({ sequence }) => {
-
   return (
     <div>
     <p style={{marginRight: '2vw'}}> Magnify a portion of your sequence and associated labels in this box! 

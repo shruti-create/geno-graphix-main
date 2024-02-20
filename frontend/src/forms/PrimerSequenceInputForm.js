@@ -1,82 +1,58 @@
 import React, {useCallback, useState} from 'react';
-import "./SequenceSubmissionForm.css";
+import "./PrimerSequenceInputForm.css";
 
-// SequenceSubmissionForm component for submitting DNA sequences
-const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
+// PrimerSequenceForm component for inputting DNA sequence and generating primers.
+const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
+
   const [inputText, setInputText] = useState('');
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [annotations, setAnnotations] = useState([]);
-  // const[fileContent, setFileContent] = useState('');
+  const[fileContent, setFileContent] = useState('');
 
-  // Handles manual text input change
+  // Handles text input change
   const handleTextChange = (e) => {
     setInputText(e.target.value);
   };
-
+ 
   // Handles file input change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
     console.log('Selected file:', file);
     readFileContent(file);
-    setInputText(''); // Reset the inputText when a file is selected
+    setInputText(''); 
   };
 
-  // Reads the file content
+  // Reads file content
   const readFileContent = (file) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
       const fileContent = e.target.result;
       const lines = fileContent.split('\n');
-
-      // Extract annotations if present
-      const extractedAnnotations = extractAnnotations(lines);
-      setAnnotations(extractedAnnotations);
-      console.log('Extracted Annotations:', extractedAnnotations);
-
-      // Extract the seqeunce without annotations
-      const sequenceLines = lines.filter(line => !line.includes('Highlight') && !line.includes('Underline'));
-      const sequence = sequenceLines.join('');
-
+      const sequence = lines.slice(1).join('');
       setInputText(sequence);
     };
 
     reader.readAsText(file);
   };
 
-  // Extract annotations from file content 
-  const extractAnnotations = (lines) => {
-
-    // Extracts lines that include the terms 'Highlight' and 'Underline'
-    const annotations = lines.filter(line => line.includes('Highlight') || line.includes('Underline'));
-    
-    // Creates a map with start, end and type of each annotation
-    const extractedAnnotations = annotations.map(line => {
-      const [start, end, type] = line.split(',').map(Number);
-      return { start, end, type };
-    });
-
-    return extractedAnnotations;
-  }
-
-  // Validates the input or file 
+  // Validates input 
   const validateInput = () => {
     if (!inputText.trim() && !selectedFile) {
       setErrorMessage('Please enter text or upload a file.');
-      return false;   }
-    
-    // If user uploaded a file
+      return false;
+    }
+
+  
     if (selectedFile) {
-      const validFiles = ['.fasta', '.fa', '.fas', '.fna', '.txt']; // Valid file types
+      const validFiles = ['.fasta', '.fa', '.fas', '.fna'];
       const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'));
 
-      // Check the file's validity
       if (!validFiles.includes(fileExtension.toLowerCase())) {
-        setErrorMessage('Please upload a valid file.');
+        setErrorMessage('Please upload a valid FASTA file.');
         return false;
       }
 
@@ -87,54 +63,44 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
     const cleanedInput = inputText.replace(/\s/g, '');
     var validChar = /^[aAcCgGtTuU]+$/;
 
-    // Check if characters in sequence are valid
     if (!validChar.test(cleanedInput)) {
       setErrorMessage('Invalid characters in the sequence.');
       return false;
     }
 
-    // Check if sequence length is valid
-    if (cleanedInput.length <= 3) {
-      setErrorMessage('Sequence length must be greater than 3.');
+    if (cleanedInput.length <= 25) {
+      setErrorMessage('Sequence length must be greater than 25.');
       return false;
     }
-
     return true;
   };
 
+
   // Handles form submission
   const handleSubmit = (e) => {
-    // Prevents default form submission behavior 
     e.preventDefault();
-
-    // Removes leading and trailing whitespaces
     const textToValidate = inputText.trim();
-
-    // Validates input
     const isValidInput = validateInput(textToValidate);
     if (isValidInput) {
         console.log('Submitted text:', inputText);
-        console.log('Saved annotations:', annotations);
-        // Sets input validation to true
         setValid(true);
-        // Clears any previous error message
         setErrorMessage(''); 
-        // Notifies the parent component about the successful submission
         onValueChange(true);
-        // handleSequence({ sequence: inputText, annotations });
         handleSequence(inputText);
         setSelectedFile(null);
       }
      else {
       console.log('Invalid input! Please enter a valid sequence.');
-      // Sets the input validation status to false
       setValid(false);
     }
+    
   };
 
   // JSX for rendering the component
   return (
     <div>
+    <h2> Primer Design Tool</h2>
+    <p1> Input your sequence or upload a file that contains your sequence. </p1>
       <h2 className='form-title'>Input Sequence</h2>
       <form onSubmit={handleSubmit}>
         <textarea
@@ -148,14 +114,21 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
         <div className='file-input-container'>
           <input
               type='file'
-              accept='.fasta, .fas, .fa, .fna, .txt'
+              accept='.fasta, .fas, .fa, .fna'
               onChange={handleFileChange}
               className='file-upload'
           />
         </div>
         
+        <div className='dropdown-container' style= {{paddingTop:'1%', paddingBottom: '1%', width: '200px', height: '30px'}}>
+            <select className='primer-dropdown' style={{width: '100%', height: '100%'}}>
+                <option value="LAMP">LAMP Primers</option>
+                <option value="PCR">PCR Primers</option>
+            </select>
+        </div>
+        
         <div className='button-container'>
-          <button className='generate-button'>Generate</button>
+          <button className='generate-button'>Generate Primers</button>
         </div>
        
         {!isValid && (
@@ -167,4 +140,4 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
   );
 };
 
-export default SequenceSubmissionForm;
+export default PrimerSequenceForm;

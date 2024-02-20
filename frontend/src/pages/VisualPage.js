@@ -1,4 +1,3 @@
-
 import React, { useState} from "react";
 import Paper from "@material-ui/core/Paper";
 import Tab from "@material-ui/core/Tab";
@@ -8,26 +7,31 @@ import SequenceSubmissionForm from '../forms/SequenceSubmissionForm';
 import DefaultSequenceForm from '../forms/DefaultSequenceForm';
 import VisualizationPage from "../forms/VisualizationForm";
 
+// VisualPage component for handling sequence input, demo sequence, and visualization
 function VisualPage() {
     const [tabNum, setTabNum] = useState(0);
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
     const [inputtedSequence, setInputtedSequence]  = useState('');
     
+    // Handles updating the inputted sequence
     const handleInputtedSequence = (sequence) => {
       setInputtedSequence(sequence);
     };
-    
+  
+    // Handles button click to go back to the input form
     const handleButtonClick = () => {
       setBack(!back); 
       setSubmitted(0);
     };
+    
+    // Handles value change to update submission status
     const handleValueChange = (newValue) => {
       const newSubmittedValue = newValue ? 2 : 0; 
       setSubmitted(newSubmittedValue);
     };
 
-
+    // Function to render the appropriate form based on the active tab
     function ChooseForm(){
       switch(tabNum) {
         case 0:

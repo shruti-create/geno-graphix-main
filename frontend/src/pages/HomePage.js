@@ -1,5 +1,6 @@
 import React from "react";
 
+// HomePage component to display introductory information and usage instructions
 function HomePage() {
     return (
         <div>
