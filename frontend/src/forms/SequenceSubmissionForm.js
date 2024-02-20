@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import "./SequenceSubmissionForm.css";
 
-// SequenceSubmissionForm component for submitting DNA sequences
+ // SequenceSubmissionForm component for submitting DNA sequences
 const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
   const [inputText, setInputText] = useState('');
   const [isValid, setValid] = useState(true);
@@ -40,8 +40,7 @@ const SequenceSubmissionForm = ({ onValueChange, handleSequence }) => {
 
       // Extract the seqeunce without annotations
       const sequenceLines = lines.filter(line => !line.includes('Highlight') && !line.includes('Underline'));
-      const sequence = sequenceLines.join('');
-
+      const sequence = sequenceLines.slice(1).join('');
       setInputText(sequence);
     };
 
