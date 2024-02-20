@@ -8,10 +8,11 @@
   overflow-y: auto;
 }
 
+
 .sequence {
   white-space: pre-wrap;
   line-height: 4rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
 
 .sequence-container::-webkit-scrollbar {
@@ -37,3 +38,4 @@
 .sequence::selection {
   background: #8c76b178;
 }
+

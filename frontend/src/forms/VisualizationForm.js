@@ -15,6 +15,7 @@ function VisualizationPage({ input }) {
   const [startIndex, setStartIndex] = useState(0);
   const [endIndex, setEndIndex] = useState(0);
   const [fileContent, setFileContent] = useState(input); 
+  const [displayAnnotation,setDisplay] = useState([]);
 
   
   useEffect(() => {
@@ -22,6 +23,7 @@ function VisualizationPage({ input }) {
       const annotationText = `${startIndex},${endIndex},${annotation}`;
       setFileContent((prevContent) => `${prevContent}\n${annotationText}`);
     }
+    
   }, [annotation, startIndex, endIndex]);
 
   const handleSequenceSelect = (sequence, start, end) => {
@@ -32,6 +34,8 @@ function VisualizationPage({ input }) {
 
   const handleAnnotation = (selectedAnnotation) => {
     setAnnotation(selectedAnnotation);
+    setDisplay((prevAnn) => [...prevAnn, { start: startIndex, end: endIndex, type: selectedAnnotation }]);
+    console.log("Display Annotation: ",displayAnnotation);
     console.log(selectedAnnotation);
   };
 
@@ -45,22 +49,23 @@ function VisualizationPage({ input }) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(href);
+    console.log("File Content: ",fileContent);
+    console.log("Display Annotation: ",displayAnnotation);
   };
-  const inputSequence =
-    "ACTTGCCTGGACGCTGCGCCACATCCCACCGGCCCTTACACTGTGGTGTCCAGCAGCATCCGGCTTCATGGGGGGACTTGAACCCTGCAGCAGGCTCCTGCTCCTGCCTCTCCTGCTGGCTGTAAGTGGTGAGTTAGGGGCTTCCGTGGCTGCCTCCCGGGTCCCTGGGCTCAGCTTGGGGCAGGGCAGGGAGTGGGGTGGAACGAGAGACCAAAAGTGGGTGTTGGGATGGGAGCAGGTCCCCAACCTCCCAAAGCCTGTGGGTTTCTCCCAGAGCCCAAGCCCCCAAGTTTTGTCGTCCGCTACAAGCAGGGGAGAAGAGACATCTAAGTGTGTTGCCACAGGACAAAAGCCCCCAAGTTTTGTCGTCCGCTACAAGCAGGGGAGAAGAGACATCTAAGTGTGTTGCCACAGGACAAGTTGTGCAGAAGTAACGCACATAGTCCGGTGGCCCAGACGCCAGCCCCCTGAGTCCCGCCAGACACGCTCTCCCCCTTGCTAACCTCTTGGCTGTCAGGATCCACCTTCCCTGGCTTCTAAACTTGCCTCCCCCACCCCCGTCATAACTCTGTGCCTCAGTTTACCTTCTTTTTCCTCCTCAGGTCTCCGTCCTGTCCAGGCCCAGGCCCAGAGCGGTAGGCCTAGACCCAGCAGTCCCTCTCTCTACCTCCCAGAGACCTCCCTGTCTCCGTCTCTCCCACACCCTTTCCAAACCTCCCTGCCGCTGACCCCCCTCCCCACAGTTCCCAGCACACACTGACCTCCCCTGACCCCTGTGCTGCAGATTGCAGTTGCTCTACGGTGAGCCCGGGCGTGCTGGCAGGGATCGTGATGGGAGACCTGGTGCTGACAGTGCTCATTGCCCTGGCCGTGTACTTCCTGGGCCGGCTGGTCCCTCGGGGGCGAGGGGCTGCGGAGGGTGAGTGGGGCTAGCAGGGGACATCCTGAGGACTTGCCTAGATGGGGGTGGGGGGCTGGGTAAACTCCCAGATCTCAAACATCCAAAGGGATGGTAATGGAGGTGCTGATTTGGAATGACAAAACACCCTA";
 
   return (
     <div>
       <h2>Genomic Sequence</h2>
       <div style={{ fontSize: "1.2rem", color: "black", margin: "20px" }}>
-        <div class="container">
-          <div class="component">
+        <div className="container">
+          <div className="component">
             <FullSequence
               sequence={input}
               onSequenceSelect={handleSequenceSelect}
+              annotations={displayAnnotation}
             />
           </div>
-          <div class="component">
+          <div className="component">
             <AnnotationBox onAnnotationSelect={handleAnnotation} />
             <MagnifiedBox sequence={selectedSequence}/>
             <button style = {{marginTop: '3%', width: '15%', height: '5%'}} onClick={downloadFileContent}>Save to File</button>
