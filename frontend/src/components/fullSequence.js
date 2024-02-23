@@ -44,11 +44,11 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
       // Add the unannotated part of the sequence
       result.push(sequence.slice(lastIndex, start));
       // Add the annotated part with appropriate styling
-      if (type === "Highlight") {
+      if (type[0] === "#") {
         result.push(
           <span
             key={index}
-            style={{ backgroundColor: "#f8eb88" }}
+            style={{ backgroundColor: type }}
             className='sequence'
           >
             {annotatedPart}
