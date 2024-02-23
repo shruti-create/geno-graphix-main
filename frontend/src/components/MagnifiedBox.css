@@ -1,21 +1,18 @@
 .box {
-    background-color: #f0f0f0;
-    padding: 1vw;
-    border-radius: 2vw;
-    min-height: 1.5em;
-    min-width: 3em;
-    max-width: 100%;
-    width: 70vw;
-    overflow-y: auto;
-    font-size: 5vh;
-    border-color: #f0f0f01d;
-    border-width: 0.05vw;
-    border: 0.05vw solid #00000055; 
-    justify-content: left; 
-    align-items: center; 
-    text-align: left; 
-    display: flex; 
-  }
+  background-color: #f0f0f0;
+  padding: 1vw;
+  border-radius: 0.5vw;
+  min-height: 1.5em;
+  width: 43vw; 
+  height: 15vh; 
+  overflow-y: auto;
+  font-size: 5vh;
+  border: 0.05vw solid #00000055;
+  justify-content: left; 
+  align-items: center; 
+  text-align: left; 
+  display: flex; 
+}
   
   .box::-webkit-scrollbar {
     width: 0.5vh;

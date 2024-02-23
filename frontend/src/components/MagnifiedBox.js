@@ -6,7 +6,7 @@ import "./MagnifiedBox.css"; // Import CSS file for styling
 const MagnifiedBox = ({ sequence }) => {
   return (
     <div>
-    <p style={{marginRight: '2vw'}}> Magnify a portion of your sequence and associated labels in this box! 
+    <p style={{right: "2vw"}}> Magnify a portion of your sequence and associated labels in this box! 
         Highlight the part of the sequence that you want to magnify from the box on the left. </p>
       <div className="box">
       <pre>{sequence}</pre>
