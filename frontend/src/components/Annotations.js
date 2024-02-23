@@ -13,7 +13,7 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
               <FontAwesomeIcon icon={faToolbox} />
           </div>
           <div>
-              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
+              <input style = {{}} type="color" value={color} onChange={(e) => setColor(e.target.value)} />
               <button onClick={() => onAnnotationSelect(color)}>Highlight</button>
               <button onClick={() => onAnnotationSelect('Underline')}>Underline</button>
           </div>
