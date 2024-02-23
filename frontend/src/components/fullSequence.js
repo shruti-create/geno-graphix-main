@@ -27,14 +27,20 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     // console.log("Formatted annotation: ", formatted);
   }, [annotations]);
 
+
+  // TODO: Fix case when overlapping with existing annotation
+  // TODO: Fix case when annotation button is clicked multiple times on the same selection
+
   const renderSequenceWithAnnotations = () => {
     let result = [];
     let lastIndex = 0;
-
-
-    formattedAnnotations.forEach(({ start, end, type }, index) => {
+  
+    // Sort the annotations by start index in ascending order
+    const sortedAnnotations = formattedAnnotations.sort((a, b) => a.start - b.start);
+  
+    sortedAnnotations.forEach(({ start, end, type }, index) => {
       const annotatedPart = sequence.slice(start, end);
-
+  
       // Add the unannotated part of the sequence
       result.push(sequence.slice(lastIndex, start));
       // Add the annotated part with appropriate styling
@@ -43,52 +49,56 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
           <span
             key={index}
             style={{ backgroundColor: "#f8eb88" }}
+            className='sequence'
           >
             {annotatedPart}
           </span>
         );
       } else if (type === "Underline") {
-
         result.push(
           <span
             key={index}
             style={{ borderBottom: "2px solid #634c89f0" }}
+            className='sequence'
           >
             {annotatedPart}
           </span>
         );
       }
-
+  
       lastIndex = end;
     });
-
+  
     // Add the remaining unannotated part of the sequence
     result.push(sequence.slice(lastIndex));
     console.log("Annotations: ", formattedAnnotations);
     return result;
   };
+  
 
-  const logSelection = useCallback(() => {
-    const selection = window.getSelection();
-    const isWithinSequence = selection.anchorNode.parentElement.closest('.sequence-container');
-    if (!isWithinSequence) return;
-    const selectedText = selection.toString();
-    if (!selectedText) return;
-    
-    // Calculate start and end indices for the selected sequence
-    const anchorOffset = selection.anchorOffset;
-    const focusOffset = selection.focusOffset;
-    
-    // Getting start and end indexes of sequence for our Annotations
-    const startIndex = Math.min(anchorOffset, focusOffset);
+const logSelection = useCallback(() => {
+  const selection = window.getSelection();
+  const isWithinSequence = selection.anchorNode.parentElement.closest('.sequence-container');
+  if (!isWithinSequence) return;
+  const selectedText = selection.toString();
+  if (!selectedText) return;
 
-    const endIndex = Math.max(anchorOffset, focusOffset) - 1;
+  const sequenceContainer = document.querySelector('.sequence-container');
+  const sequenceText = sequenceContainer.textContent;
+  const startIndex = sequenceText.indexOf(selectedText);
 
-    console.log('Selected sequence:', selectedText, 'Start index:', startIndex, 'End index:', endIndex);
-    
-    // Sending it all back to parent file
-    onSequenceSelect(selectedText, startIndex, endIndex);
+  if (startIndex === -1) {
+    console.error('Failed to find start index');
+    return;
+  }
+
+  const endIndex = startIndex + selectedText.length - 1;
+
+  console.log('Selected sequence:', selectedText, 'Start index:', startIndex, 'End index:', endIndex);
+
+  onSequenceSelect(selectedText, startIndex, endIndex);
 }, [onSequenceSelect]);
+
 
    // JSX for rendering the component
   return (
