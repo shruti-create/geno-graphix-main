@@ -8,14 +8,62 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
     return (
     <div>
       <p>Pick an annotation type to do on the sequence:</p>
-      <div style={{ position: 'relative', border: "0.1vh solid black", padding: "2%", borderRadius: "1vh", height: "20vh" }}>
+      <div style={{ position: 'relative', border: "0.1vh solid #00000055", padding: "2%", borderRadius: "1vh", height: "20vh" }}>
           <div style={{ position: 'absolute', top: 0, right: 0, margin: '10px' }}>
               <FontAwesomeIcon icon={faToolbox} />
           </div>
-          <div>
-              <input style = {{}} type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-              <button onClick={() => onAnnotationSelect(color)}>Highlight</button>
-              <button onClick={() => onAnnotationSelect('Underline')}>Underline</button>
+          <div 
+            style={{ 
+            display: 'flex', 
+            alignItems: 'left', 
+            justifyContent: 'left', 
+            gap: '10px', 
+          }}
+          >
+            <input 
+                style={{ 
+                    borderRadius: '10%', 
+                    border: '1px solid #ccc', 
+                    width: '40px', 
+                    height: '40px',
+                    cursor: 'pointer', 
+                }} 
+                type="color" 
+                value={color} 
+                onChange={(e) => setColor(e.target.value)} 
+            />
+
+            <button 
+                style={{ 
+                    borderRadius: '3px', 
+                    border: '1px solid #ccc', 
+                    padding: '5px 20px', 
+                    marginLeft: '5px', 
+                    cursor: 'pointer', 
+                    backgroundColor: '#f0f0f0', 
+                    outline: 'none', 
+
+                }} 
+                onClick={() => onAnnotationSelect(color)}
+            >
+                Highlight
+            </button>
+
+            <button 
+                style={{ 
+                    borderRadius: '3px', 
+                    border: '1px solid #ccc', 
+                    padding: '5px 20px', 
+                    marginLeft: '5px', 
+                    cursor: 'pointer', 
+                    backgroundColor: '#f0f0f0', 
+                    outline: 'none',
+
+                }} 
+                onClick={() => onAnnotationSelect('Underline')}
+            >
+                Underline
+            </button>
           </div>
       </div>
     </div>
