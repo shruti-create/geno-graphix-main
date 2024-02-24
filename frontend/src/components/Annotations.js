@@ -64,6 +64,22 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
             >
                 Underline
             </button>
+
+            <button 
+                style={{ 
+                    borderRadius: '3px', 
+                    border: '1px solid #ccc', 
+                    padding: '5px 20px', 
+                    marginLeft: '5px', 
+                    cursor: 'pointer', 
+                    backgroundColor: '#f0f0f0', 
+                    outline: 'none',
+
+                }} 
+                onClick={() => onAnnotationSelect('Label')}
+            >
+                Label
+            </button>
           </div>
       </div>
     </div>
