@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import FullSequence from "../components/fullSequence";
 import MagnifiedBox from "../components/MagnifiedBox";
 import "./VisualizationForm.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import AnnotationBox from "../components/Annotations";
 
 // Component for visualizing genomic sequence and controls what happems afer clicking generate buttom
@@ -97,7 +99,9 @@ function VisualizationPage({ input }) {
           <div className="component">
             <AnnotationBox onAnnotationSelect={handleAnnotation} />
             <MagnifiedBox sequence={selectedSequence}/>
-            <button style = {{marginTop: '3%', width: '15%', height: '5%'}} onClick={downloadFileContent}>Save to File</button>
+            <button style = {{marginTop: '3%', width: '15%', height: '5%'}} onClick={downloadFileContent}>
+              <FontAwesomeIcon icon={faFloppyDisk} style={{ marginRight: '5px', fontSize: '1.2em'}} />
+            </button>
           </div>
         </div>
       </div>
