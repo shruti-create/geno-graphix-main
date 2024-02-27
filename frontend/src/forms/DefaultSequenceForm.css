@@ -1,0 +1,31 @@
+.form-title{
+    font-size: 1rem;
+    color: #665682;
+    margin-bottom: 10px;
+}
+
+.gene-button {
+    margin-right: 10px;
+    background-color: transparent;
+    color: #665682;
+    border: 1px solid #665682;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.gene-button.selected {
+    background-color: #665682;
+    color: white;
+}
+
+.generate-button {
+    background-color: #665682;
+    color: white;
+    border: 1px solid #665682;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}

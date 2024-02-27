@@ -1,54 +1,42 @@
-
 import React, { useState } from 'react';
+import './DefaultSequenceForm.css';
 
+// DefaultSequenceForm component allows users to select a default gene sequence.
+// Users can choose from a list of default genes and generate the corresponding sequence
 const DefaultSequenceForm = ({ onValueChange }) => {
     const [selectedGene, setSelectedGene] = useState('gene1');
-    const [openVisual, setOpenVisual] = useState(false);
   
+    // Handles changes in the selected gene
     const handleGeneChange = (gene) => {
       setSelectedGene(gene);
       console.log('Selected default gene:', gene);
     };
   
+    // Handles form submission
     const handleSubmit = (e) => {
       e.preventDefault();
-
     };
 
     const defaultGenes = ['TYROBP', 'FCER1G'];
-
+    
+    // JSX for rendering the component
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <h2 style={{ fontSize: '1rem', color: '#665682', marginBottom: '10px' }}>Select Default Sequence</h2>
+                <h2 className="form-title">Select Default Sequence</h2>
                     {defaultGenes.map((gene) => (
                         <button
                             key={gene}
                             onClick={() => handleGeneChange(gene.toLowerCase())}
-                            style={{
-                                marginRight: '10px',
-                                backgroundColor: selectedGene  === gene.toLowerCase() ? '#665682' : 'transparent',
-                                color: selectedGene === gene.toLowerCase() ? 'white' : '#665682',
-                                border: '1px solid #665682',
-                                borderRadius: '5px',
-                                padding: '5px 10px',
-                                cursor: 'pointer',
-                                marginBottom: '10px'
-                            }}
+                            className={`gene-button ${
+                                selectedGene === gene.toLowerCase() ? 'selected' : ''
+                            }`}
                     >
                         {gene}
                     </button>
                 ))} 
                 <div style={{ marginTop: '10px'}}>
-                    <button style={{
-                        backgroundColor: '#665682',
-                        color: 'white',
-                        border: '1px solid #665682',
-                        borderRadius: '5px',
-                        padding: '5px 10px',
-                        cursor: 'pointer',
-                        marginBottom: '10px'
-                    }}>Submit</button>
+                    <button className='generate-button'>Generate</button>
                 </div>
             </form>
         </div>
