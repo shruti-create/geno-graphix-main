@@ -8,7 +8,7 @@ cd frontend \
 npm i --legacy-peer-deps \
 cd .. \
 cd backend \
-pip install flask-cors \
+pip install flask_cors \
 cd .. \
 bash start.sh \
 cd backend \
