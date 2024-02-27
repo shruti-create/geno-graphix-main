@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faToolbox } from '@fortawesome/free-solid-svg-icons';
+import { faToolbox, faBold, faStrikethrough, faUnderline, faTag, faHighlighter} from '@fortawesome/free-solid-svg-icons';
 
 // AnnotationBox component handles annotation type selection.
 const AnnotationBox = ( {onAnnotationSelect}) => {
@@ -16,8 +16,7 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
             style={{ 
             display: 'flex', 
             alignItems: 'left', 
-            justifyContent: 'left', 
-            gap: '10px', 
+            justifyContent: 'left',             gap: '10px', 
           }}
           >
             <input 
@@ -46,7 +45,23 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
                 }} 
                 onClick={() => onAnnotationSelect(color)}
             >
-                Highlight
+                <FontAwesomeIcon icon={faHighlighter} style={{ marginRight: '5px', fontSize: '1.2em'}} />
+            </button>
+
+            <button 
+                style={{ 
+                    borderRadius: '3px', 
+                    border: '1px solid #ccc', 
+                    padding: '5px 20px', 
+                    marginLeft: '5px', 
+                    cursor: 'pointer', 
+                    backgroundColor: '#f0f0f0', 
+                    outline: 'none',
+
+                }} 
+                onClick={() => onAnnotationSelect('Bold')}
+            >
+                <FontAwesomeIcon icon={faBold} style={{ marginRight: '5px', fontSize: '1.2em'}} />
             </button>
 
             <button 
@@ -62,7 +77,23 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
                 }} 
                 onClick={() => onAnnotationSelect('Underline')}
             >
-                Underline
+                <FontAwesomeIcon icon={faUnderline} style={{ marginRight: '5px', fontSize: '1.2em' }} />
+            </button>
+            
+            <button 
+                style={{ 
+                    borderRadius: '3px', 
+                    border: '1px solid #ccc', 
+                    padding: '5px 20px', 
+                    marginLeft: '5px', 
+                    cursor: 'pointer', 
+                    backgroundColor: '#f0f0f0', 
+                    outline: 'none',
+
+                }} 
+                onClick={() => onAnnotationSelect('StrikeThrough')}
+            >
+                <FontAwesomeIcon icon={faStrikethrough} style={{ marginRight: '5px', fontSize: '1.2em' }} />
             </button>
 
             <button 
@@ -78,7 +109,7 @@ const AnnotationBox = ( {onAnnotationSelect}) => {
                 }} 
                 onClick={() => onAnnotationSelect('Label')}
             >
-                Label
+                <FontAwesomeIcon icon={faTag} style={{ marginRight: '5px', fontSize: '1.2em' }} />
             </button>
           </div>
       </div>

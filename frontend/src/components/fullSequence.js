@@ -64,7 +64,30 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
             {annotatedPart}
           </span>
         );
+      } else if (type === "Bold") {
+        // Handle Bold
+        result.push(
+            <span
+                key={index}
+                style={{ fontWeight: 'bold' }}
+                className='sequence'
+            >
+                {annotatedPart}
+            </span>
+        );
+      } else if (type === "StrikeThrough") {
+          // Handle Bold
+          result.push(
+              <span
+                  key={index}
+                  style={{ textDecoration: 'line-through' }}
+                  className='sequence'
+              >
+                  {annotatedPart}
+              </span>
+          );
       }
+
   
       lastIndex = end;
     });
