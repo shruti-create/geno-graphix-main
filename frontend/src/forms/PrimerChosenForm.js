@@ -41,8 +41,11 @@ function PrimerShowPage(inputtedSequence) {
     // JSX for rendering the component
     return (
         <div style={{ padding: '1%', overflowY: 'scroll', height: '65vh', borderRadius: '1vh', borderColor: 'purple', borderWidth: '0.02vh', borderStyle: 'solid',}}>
-            <div style= {{padding: "1%", borderRadius: '1vh', borderStyle:'solid', borderColor: 'black', height: '40vh', overflow: 'auto',whiteSpace: 'pre-wrap' }}>
-                {mainString}
+            <div style= {{borderRadius: '1vh', borderStyle:'solid', borderColor: 'black', height: '40vh', overflow: 'auto',whiteSpace: 'nowrap',  fontSize: '48px',
+            letterSpacing: '-2px',display: 'inline-block',fontFamily: "'Courier New', monospace", lineHeight: '1em', width:'70vw', minWidth: '100%',}}>
+                <div style ={{transform: 'scaleX(0.02) scaleY(3)', whiteSpace: 'nowrap'}}>
+                    {mainString}
+                </div>
             </div>
             <p style={{ fontSize: '1.2rem', color: 'black', margin: '0.5%', marginTop: '0',  overflowWrap: 'break-word', overflow: 'hidden', textOverflow: 'ellipsis'}}>
                 <h4>Forward Primers:</h4>
