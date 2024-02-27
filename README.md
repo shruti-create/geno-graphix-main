@@ -8,9 +8,9 @@ cd .. \
 cd backend \
 pip install flask-cors \
 cd .. \
-bash start.sh
+bash start.sh \
 cd backend \
-python app.py \
+python app.py
 
 ## Available Scripts
 
