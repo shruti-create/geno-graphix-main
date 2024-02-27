@@ -33,12 +33,27 @@ function VisualizationPage({ input }) {
 
   // Handles the selection of an annotation type
   const handleAnnotation = (selectedAnnotation) => {
-    setAnnotation(selectedAnnotation);
-    setDisplay((prevAnn) => [...prevAnn, { start: startIndex, end: endIndex, type: selectedAnnotation }]);
+
+    if (selectedAnnotation !== 'Label') {
+      setAnnotation(selectedAnnotation);
+      setDisplay((prevAnn) => [...prevAnn, { start: startIndex, end: endIndex, type: selectedAnnotation }]);  
+    }
+    else {
+      handleLabel();
+    }
+
     console.log("Display Annotation: ",displayAnnotation);
     console.log(selectedAnnotation);
   };
-
+ 
+  const handleLabel = () => {
+    const labelText = prompt('Please enter your label:', '');
+    if (labelText !== null && labelText !== '') {
+      console.log(labelText);
+      setAnnotation('Label:' + labelText);
+    }
+  };
+ 
   // Downloads the file content as a text file
   const downloadFileContent = () => {
     // Create a Blob with the file content and specify the MIME type as text/plain
