@@ -1,6 +1,9 @@
 forward_sequence_list= []
 reverse_sequence_list =[]
-
+gc_content_list_forward = []
+temperature_list_forward = []
+gc_content_list_reverse = []
+temperature_list_reverse = []
 def manipulate_sequence(sequence):
     forward_primers = []
     reverse_primers = []
@@ -12,19 +15,20 @@ def manipulate_sequence(sequence):
     complementarySequences(forward_sequence_list, forward_primers)
     complementarySequences(reverse_sequence_list, reverse_primers)
     # checking the gc content and ruling out more options for primers
-    gcContentCheck(forward_primers, "forward")
-    gcContentCheck(reverse_primers, "reverse")
+    gcContentCheck(forward_primers, "forward", gc_content_list_forward)
+    gcContentCheck(reverse_primers, "reverse", gc_content_list_reverse)
     # checking the melting temperature and ruling out more options for primers
     # if nothing matched the gcContentCheck:
     if len(forward_primers) == 0: 
         forward_primers = ["No good primers found."]
     else: 
-        temperatureCheck(forward_primers)
+        temperatureCheck(forward_primers, temperature_list_forward, gc_content_list_forward)
     if len(reverse_primers) == 0: 
         reverse_primers = ["No good primers found."]
     else: 
-        temperatureCheck(reverse_primers)    
-    all_primers = [forward_primers, reverse_primers]
+        temperatureCheck(reverse_primers, temperature_list_reverse, gc_content_list_reverse)  
+    print(forward_primers)
+    all_primers = [forward_primers, reverse_primers, gc_content_list_forward, gc_content_list_reverse, temperature_list_forward, temperature_list_reverse]
     return all_primers
 
 # this is to get the sequences of length 18-25 from the front and back
@@ -49,7 +53,7 @@ def complementarySequences(list, endlist):
         endlist.append(temp_sequence)
 
 # checking for GC content and sequences that are not eligible
-def gcContentCheck(primer_list, type):
+def gcContentCheck(primer_list, type, gc_content_list):
     temp_list = []
     gc_content_percent_list = []
     gc_count = 0
@@ -62,6 +66,7 @@ def gcContentCheck(primer_list, type):
                 gc_count = gc_count +1
         # finds the primers in the range for GC content
         if gc_count/len(item) >= 0.3 and gc_count/len(item) <= 0.7:
+            gc_content_list.append(gc_count/len(item))
             temp_list.append(item)
         gc_content_percent_list.append(gc_count/len(item))
     # if none were found, finds one primer thats closest to the range to try at the user's risk
@@ -70,11 +75,15 @@ def gcContentCheck(primer_list, type):
             if abs(gc_content_percent_list[i]-0.4) < closest_to_range_percent: 
                 closest_to_range_percent = abs(gc_content_percent_list[i]-0.4)
                 best_primer = i
+                gc_content_list.append(gc_content_percent_list[i])
             if abs(gc_content_percent_list[i]-0.6) < closest_to_range_percent:
                 closest_to_range_percent = abs(gc_content_percent_list[i]-0.6)
                 best_primer = i
+                gc_content_list.append(gc_content_percent_list[i])
         # adding the one found if it's the only one
         temp_list.append(primer_list[best_primer])
+
+    itemIndex = 0
     # checks for GC content at 3' side based on forward/reverse primer
     for item in temp_list: 
         # location of 3' side is different
@@ -91,19 +100,22 @@ def gcContentCheck(primer_list, type):
             if char == 'C': 
                 temp_c_count = temp_c_count +1
         if temp_g_count >=3 or temp_c_count >=3:
+            gc_content_list.pop(itemIndex)
             temp_list.remove(item)
+        itemIndex = itemIndex+1
     # send back the list of primers that we found with the food GC content
     primer_list.clear()
     primer_list[:] = temp_list
 
 # checks the melting temperature of the primer and if it's in range
-def temperatureCheck(list):
+def temperatureCheck(list, temperature_list, gc_content_list):
     temp_list = []
     Tm_list = []
     # variables to look for the primer with the melting temperature closest to the range
     # if there is none in the range..
     best_dist = 500
     best_index = 0
+    itemIndex = 0
     for item in list: 
         a_count = 0
         g_count = 0
@@ -123,14 +135,19 @@ def temperatureCheck(list):
         # take the ones with the good melting temp
         if Tm>50 and Tm <64: 
             temp_list.append(item)
+            temperature_list.append(Tm)
+        else: 
+            gc_content_list.pop(itemIndex)
+        itemIndex = itemIndex+1
     # if none were in the range
     if len(temp_list) == 0:
         for i in range(len(Tm_list)):
             if abs(Tm_list[i]-55) < best_dist: 
                 best_dist = abs(Tm_list[i]-55)
                 best_index = i
+                temperature_list.clear()
+                temperature_list.append(Tm_list[i])
         temp_list.append(list[best_index])
-    
     # send back the primers that are good
     list.clear()
     list[:] = temp_list
