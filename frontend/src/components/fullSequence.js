@@ -43,70 +43,83 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     sortedAnnotations.forEach(({ start, end, type }, index) => {
       const annotatedPart = sequence.slice(start, end);
       if ( start <= lastIndex){  // Current annotation is start in previous annotation
+        console.log("hi theres an overlap");
         result.pop();
         if (end < lastIndex){   // If the current annotation is in the middle the previous annotation
+          // For overlapping annotations
           result.push(
             <span
-              key={index`-overlap`}
+              key={`${index}-overlap-start`}
               style={{
                 backgroundColor: lastType[0] === "#" ? lastType : undefined,
-                borderBottom:
-                  lastType === "Underline" ? "2px solid #634c89f0" : undefined,
+                borderBottom: lastType === "Underline" ? "2px solid #634c89f0" : undefined,
                 fontWeight: lastType === "Bold" ? "bold" : undefined,
-                textDecoration:
-                  lastType === "StrikeThrough" ? "line-through" : undefined,
+                textDecoration: lastType === "StrikeThrough" ? "line-through" : undefined,
               }}
               className="sequence"
             >
-              {sequence.slice(sortedAnnotations[index-1].end, start)}
+              {sequence.slice(sortedAnnotations[index-1].start, start)}
             </span>
-          )
+          );
           result.push(
             <span
-              key={index`-overlap`}
+              key={`${index}-overlap-end`}
               style={{
-                backgroundColor: type[0] === "#" ? type : undefined,
-                borderBottom:
-                type === "Underline" ? "2px solid #634c89f0" : undefined,
-                fontWeight: type === "Bold" ? "bold" : undefined,
-                textDecoration:
-                type === "StrikeThrough" ? "line-through" : undefined,
+                backgroundColor: (lastType[0] === "#" || type[0] === "#") ? (lastType || type) : undefined,
+                borderBottom: (lastType||type) === "Underline" ? "2px solid #634c89f0" : undefined,
+                fontWeight: (lastType||type) === "Bold" ? "bold" : undefined,
+                textDecoration: (lastType||type) === "StrikeThrough" ? "line-through" : undefined,
               }}
               className="sequence"
             >
               {sequence.slice(start, end)}
             </span>
-          )
+          );
+
+          // For non-overlapping annotations
+          result.push(
+            <span
+              key={`${index}-non-overlap`}
+              style={{
+                backgroundColor: lastType[0] === "#" ? lastType : undefined,
+                borderBottom: lastType === "Underline" ? "2px solid #634c89f0" : undefined,
+                fontWeight: lastType === "Bold" ? "bold" : undefined,
+                textDecoration: lastType === "StrikeThrough" ? "line-through" : undefined,
+              }}
+              className="sequence"
+            >
+              {sequence.slice(end, sortedAnnotations[index-1].end)}
+            </span>
+          );
+
         }
         else{
           if(lastType === type){
             return;
           }
-          else{
-
-          }
         }
       }
 
       // Add the unannotated part of the sequence
+      else{
       result.push(sequence.slice(lastIndex, start));
+
       // Add the annotated part with appropriate styling
       result.push(
         <span
-          key={index}
+          key={`${start}-${end}`}
           style={{
             backgroundColor: type[0] === "#" ? type : undefined,
-            borderBottom:
-              type === "Underline" ? "2px solid #634c89f0" : undefined,
+            borderBottom: type === "Underline" ? "2px solid #634c89f0" : undefined,
             fontWeight: type === "Bold" ? "bold" : undefined,
-            textDecoration:
-              type === "StrikeThrough" ? "line-through" : undefined,
+            textDecoration: type === "StrikeThrough" ? "line-through" : undefined,
           }}
           className="sequence"
         >
           {annotatedPart}
         </span>
       );
+      }
 
       lastIndex = end;
       lastType = type;
