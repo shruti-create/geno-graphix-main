@@ -16,7 +16,7 @@ function PrimerShowPage(inputtedSequence) {
         try {
             console.log(inputtedSequence);
             // Make a POST request to the server to get primers
-            const response = await axios.post('http://localhost:5000/primer', {
+            const response = await axios.post('http://127.0.0.1:5000/primer', {
                 sequence: inputtedSequence
             });
             // Update state with forward and reverse primers
@@ -48,14 +48,25 @@ function PrimerShowPage(inputtedSequence) {
         setMainString(temp);
     }
     // JSX for rendering the component
+    // reverse primers mapping on map isn't working, just shows up on the left side under the forward primers..
     return (
         <div style={{ padding: '1%', overflowY: 'scroll', height: '65vh', borderRadius: '1vh', borderColor: 'purple', borderWidth: '0.02vh', borderStyle: 'solid',}}>
-            <div style= {{borderRadius: '1vh', borderStyle:'solid', borderColor: 'black', height: '40vh', overflow: 'auto',whiteSpace: 'nowrap',  fontSize: '90px',
+            <div style= {{borderRadius: '1vh', borderStyle:'solid', borderColor: 'black', height: '20vh', overflow: 'auto',whiteSpace: 'nowrap',  fontSize: '90px',
             letterSpacing: '-2px',fontFamily: "'Courier New', monospace", lineHeight: '1em', width:'70vw', minWidth: '100%',textAlign: 'left', justifyContent: "left", 
-            justifyItems:'left', fontWeight: 'bolder'}}>
-                <div style ={{transform: 'scaleX(0.005) scaleY(0.1)', whiteSpace: 'nowrap', textAlign: 'left'}}>
-                    <div style={{whiteSpace: 'nowrap', color: "black"}}>
+            justifyItems:'left', fontWeight: 'bolder', overflowX: 'scroll'}}>
+                <div style={{whiteSpace: 'nowrap', textAlign: 'left'}}>
+                    <div style={{whiteSpace: 'nowrap', color: 'black',  transform: 'scale(0.1)', transformOrigin: '0 0' }}>
                         {mainString}
+                        {forwardPrimers.map((primer, index) => (
+                            <div key={index} style={{position: 'absolute', top: `${index + 1}em`, left: 0}}>
+                                {'.'.repeat(primer.length)}
+                            </div>
+                        ))}
+                        {reversePrimers.map((primer, index) => (
+                            <div key={index} style={{position: 'absolute', top: `${index + 1 + forwardPrimers.length}em`, right: 0, transform: 'scaleX(-1)'}}>
+                                {'.'.repeat(primer.length)} 
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -65,7 +76,7 @@ function PrimerShowPage(inputtedSequence) {
                 <div>
                 {forwardPrimers.map((primer, index) => (
                     <React.Fragment key={index}>
-                        {primer} - {tempsForward[index]}°C
+                        {primer} - Melting Temperature: {tempsForward[index]}°C , GC Content: {gcContentsForward[index]}%
                         {index < forwardPrimers.length - 1 && <hr style={{marginTop:'2%', marginBottom: '2%'}}/>}
                     </React.Fragment>
                 ))}
@@ -77,7 +88,7 @@ function PrimerShowPage(inputtedSequence) {
                 <div>
                     {reversePrimers.map((primer, index) => (
                         <React.Fragment key={index}>
-                            {primer}
+                            {primer} - Melting Temperature: {tempsReverse[index]}°C , GC Content: {gcContentsReverse[index]}%
                             {index < reversePrimers.length - 1 && <hr style = {{marginTop:'2%', marginBottom: '2%'}}/>}
                         </React.Fragment>
                     ))}

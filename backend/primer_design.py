@@ -100,7 +100,6 @@ def gcContentCheck(primer_list, type, gc_content_list):
             if char == 'C': 
                 temp_c_count = temp_c_count +1
         if temp_g_count >=3 or temp_c_count >=3:
-            gc_content_list.pop(itemIndex)
             temp_list.remove(item)
         itemIndex = itemIndex+1
     # send back the list of primers that we found with the food GC content
@@ -136,8 +135,6 @@ def temperatureCheck(list, temperature_list, gc_content_list):
         if Tm>50 and Tm <64: 
             temp_list.append(item)
             temperature_list.append(Tm)
-        else: 
-            gc_content_list.pop(itemIndex)
         itemIndex = itemIndex+1
     # if none were in the range
     if len(temp_list) == 0:
