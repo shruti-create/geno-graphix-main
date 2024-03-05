@@ -51,7 +51,7 @@ function PrimerShowPage(inputtedSequence) {
     // reverse primers mapping on map isn't working, just shows up on the left side under the forward primers..
     return (
         <div style={{ padding: '1%', overflowY: 'scroll', height: '65vh', borderRadius: '1vh', borderColor: 'purple', borderWidth: '0.02vh', borderStyle: 'solid',}}>
-            <div style= {{borderRadius: '1vh', borderStyle:'solid', borderColor: 'black', height: '20vh', overflow: 'auto',whiteSpace: 'nowrap',  fontSize: '90px',
+            <div style= {{borderRadius: '1vh', borderStyle:'solid', borderColor: 'black', height: '10vh', overflow: 'auto',whiteSpace: 'nowrap',  fontSize: '90px',
             letterSpacing: '-2px',fontFamily: "'Courier New', monospace", lineHeight: '1em', width:'70vw', minWidth: '100%',textAlign: 'left', justifyContent: "left", 
             justifyItems:'left', fontWeight: 'bolder', overflowX: 'scroll'}}>
                 <div style={{whiteSpace: 'nowrap', textAlign: 'left'}}>
