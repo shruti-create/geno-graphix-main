@@ -95,7 +95,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
         }
         else{
           if(lastType === type){
-            return;
+            return; 
           }
         }
       }
@@ -144,9 +144,9 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     const preSelectionRange = range.cloneRange();
     preSelectionRange.selectNodeContents(document.querySelector(".sequence-container"));
     preSelectionRange.setEnd(range.startContainer, range.startOffset);
+    
     const startIndex = preSelectionRange.toString().length;
-  
-    const endIndex = startIndex + selectedText.length;
+    const endIndex = startIndex + selectedText.toString().length;
   
     console.log(
       "Selected sequence:",
@@ -157,8 +157,19 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
       endIndex
     );
   
-    onSequenceSelect(selectedText, startIndex, endIndex);
-  }, [onSequenceSelect]);
+    if (selectedText == "Delete") {
+      // Delete the selected portion of the sequence
+      const updatedSequence = sequence.slice(0, startIndex) + sequence.slice(endIndex);
+      console.log("Updated sequence:", updatedSequence);
+      console.log("Start Index:", startIndex);
+      console.log("End Index:", endIndex);
+      onSequenceSelect(updatedSequence, startIndex, endIndex);
+    } else {
+      //Inform the parent about the regular annotation
+      onSequenceSelect( selection.toString(), startIndex, endIndex);
+    }
+
+  }, [onSequenceSelect, sequence]);
   
 
   // JSX for rendering the component
@@ -169,6 +180,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
       </div>
     </div>
   );
+  
 };
 
 export default FullSequence;
