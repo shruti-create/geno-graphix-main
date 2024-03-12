@@ -41,13 +41,13 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     );
 
     sortedAnnotations.forEach(({ start, end, type }, index) => {
-      const annotatedPart = sequence.slice(start, end);
-      if ( start <= lastIndex){  // Current annotation is start in previous annotation
+      const annotatedPart = sequence.slice(start, end);   
+      if ( start < lastIndex){  // Current annotation is start in previous annotation
         console.log("hi theres an overlap");
-        result.pop();
-        if (end < lastIndex){   // If the current annotation is in the middle the previous annotation
+        if (end <= lastIndex){   // If the current annotation is in the middle the previous annotation
           // For overlapping annotations
-          result.push(
+          
+          /*result.push(
             <span
               key={`${index}-overlap-start`}
               style={{
@@ -58,26 +58,34 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
               }}
               className="sequence"
             >
+              {console.log("lastType =" + lastType)}
               {sequence.slice(sortedAnnotations[index-1].start, start)}
             </span>
-          );
+          );*/
+          if (index > 0) {
+            lastType = sortedAnnotations[index - 1].type;
+          }else{
+            lastType = type;
+          }
           result.push(
             <span
-              key={`${index}-overlap-end`}
+              key={`${index}-overlap`}
               style={{
-                backgroundColor: (lastType[0] === "#" || type[0] === "#") ? (lastType || type) : undefined,
-                borderBottom: (lastType||type) === "Underline" ? "2px solid #634c89f0" : undefined,
-                fontWeight: (lastType||type) === "Bold" ? "bold" : undefined,
-                textDecoration: (lastType||type) === "StrikeThrough" ? "line-through" : undefined,
+                backgroundColor: (lastType[0] === "#" || type[0] === "#" ) ? (lastType) :"",
+                borderBottom: (lastType||type) === "Underline" ? "2px solid #634c89f0" : "",
+                fontWeight: (lastType||type) === "Bold" ? "bold" : "normal",
+                textDecoration: (lastType||type) === "StrikeThrough" ? "line-through" :"",
               }}
               className="sequence"
             >
+              {console.log("Type =" + type)}
               {sequence.slice(start, end)}
+              {console.log(start, end)}
             </span>
           );
 
           // For non-overlapping annotations
-          result.push(
+         /* result.push(
             <span
               key={`${index}-non-overlap`}
               style={{
@@ -90,7 +98,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
             >
               {sequence.slice(end, sortedAnnotations[index-1].end)}
             </span>
-          );
+          );*/
 
         }
         else{
@@ -122,7 +130,6 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
       }
 
       lastIndex = end;
-      lastType = type;
     });
 
     // Add the remaining unannotated part of the sequence
