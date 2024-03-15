@@ -1,3 +1,5 @@
+from primers import create
+
 forward_sequence_list= []
 reverse_sequence_list =[]
 gc_content_list_forward = []
@@ -10,24 +12,37 @@ def manipulate_sequence(sequence):
     # getting sequences of the correct length first for the forward and reverse primers
     forward_sequence_list.clear()
     reverse_sequence_list.clear()
+   
     get_sequences(sequence['input'])
+    # TESTING PURPOSES BUT USE THIS ^^
+    #get_sequences(sequence)
+
+
     # getting the complementary sequence to be the basis of the primers
     complementarySequences(forward_sequence_list, forward_primers)
     complementarySequences(reverse_sequence_list, reverse_primers)
     # checking the gc content and ruling out more options for primers
-    gcContentCheck(forward_primers, "forward", gc_content_list_forward)
-    gcContentCheck(reverse_primers, "reverse", gc_content_list_reverse)
+    gcContentCheck(sequence['input'], forward_primers, "forward", gc_content_list_forward)
+    gcContentCheck(sequence['input'], reverse_primers, "reverse", gc_content_list_reverse)
+    # TESTING PURPOSES BUT USE THIS ^^
+    #gcContentCheck(sequence, forward_primers, "forward", gc_content_list_forward)
+    #gcContentCheck(sequence, reverse_primers, "reverse", gc_content_list_reverse)
+    print(forward_primers)
+    print(reverse_primers)
     # checking the melting temperature and ruling out more options for primers
     # if nothing matched the gcContentCheck:
     if len(forward_primers) == 0: 
         forward_primers = ["No good primers found."]
     else: 
-        temperatureCheck(forward_primers, temperature_list_forward, gc_content_list_forward)
+        temperatureCheck(sequence, forward_primers, "forward", temperature_list_forward, gc_content_list_forward)
     if len(reverse_primers) == 0: 
         reverse_primers = ["No good primers found."]
     else: 
-        temperatureCheck(reverse_primers, temperature_list_reverse, gc_content_list_reverse)  
+        temperatureCheck(sequence, reverse_primers, "reverse", temperature_list_reverse, gc_content_list_reverse)  
     print(forward_primers)
+    print(temperature_list_forward)
+    print(reverse_primers)
+    print(temperature_list_reverse)
     all_primers = [forward_primers, reverse_primers, gc_content_list_forward, gc_content_list_reverse, temperature_list_forward, temperature_list_reverse]
     return all_primers
 
@@ -52,8 +67,8 @@ def complementarySequences(list, endlist):
                 temp_sequence = temp_sequence + 'C'
         endlist.append(temp_sequence)
 
-# checking for GC content and sequences that are not eligible
-def gcContentCheck(primer_list, type, gc_content_list):
+# my old function: checking for GC content and sequences that are not eligible
+def gcContentCheck2(primer_list, type, gc_content_list):
     temp_list = []
     gc_content_percent_list = []
     gc_count = 0
@@ -106,8 +121,20 @@ def gcContentCheck(primer_list, type, gc_content_list):
     primer_list.clear()
     primer_list[:] = temp_list
 
-# checks the melting temperature of the primer and if it's in range
-def temperatureCheck(list, temperature_list, gc_content_list):
+# new function for gc content check
+def gcContentCheck(sequence, primer_list, type, gc_content_list):
+    for primer in primer_list:
+        if type == "forward": 
+            prim = create(sequence, add_fwd=primer)
+        else:
+            prim = create(sequence, add_rev=primer)
+        if prim[0].gc >0.4 and prim[0].gc <0.6:
+            gc_content_list.append(prim[0].gc)
+        else:
+            primer_list.remove(primer)
+
+# Shruti Function Version: checks the melting temperature of the primer and if it's in range
+def temperatureCheck2(list, temperature_list, gc_content_list):
     temp_list = []
     Tm_list = []
     # variables to look for the primer with the melting temperature closest to the range
@@ -149,7 +176,25 @@ def temperatureCheck(list, temperature_list, gc_content_list):
     list.clear()
     list[:] = temp_list
 
+def temperatureCheck(sequence, list, type, temperature_list, gc_content_list):
+    temp_list_gc= []
+    temp_list_primers =[]
+    for i in range (0, len(list)):
+        primer = list[i]
+        if type == "forward": 
+            prim = create(sequence, add_fwd=primer)
+        else:
+            prim = create(sequence, add_rev=primer)
+        print(prim[0].tm)
 
+        if prim[0].tm >55 and prim[0].tm <65:
+            print(prim[0].tm)
+            temperature_list.append(prim[0].tm)
+            temp_list_primers.append(primer)
+            temp_list_gc.append(gc_content_list[i])
+    list = temp_list_primers
+    temp_list_gc = gc_content_list
+        
 
     
 
