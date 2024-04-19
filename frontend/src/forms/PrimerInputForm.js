@@ -67,6 +67,11 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
       setErrorMessage('Invalid characters in the sequence.');
       return false;
     }
+    
+    if (cleanedInput.length <= 5) {
+        setErrorMessage('Sequence length must be greater than 5.');
+        return false;
+    }
 
     return true;
   };

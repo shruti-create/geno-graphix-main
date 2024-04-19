@@ -13,15 +13,12 @@ function PrimerShowPage(inputtedSequence) {
     }, [input]);
 
     function getColor(character) {
-        if (character === 'A' || character === 'a') {
-            return 'red';
-        } else if (character === 'C' || character === 'c') {
-            return 'green';
-        } else if (character === 'G' || character === 'g') {
-            return 'yellow';
-        } else {
-            return 'blue';
-        }
+        return {
+            'A': 'red', 'a': 'red',
+            'C': 'green', 'c': 'green',
+            'G': 'yellow', 'g': 'yellow',
+            'T': 'blue', 't': 'blue'
+        }[character] || 'grey';
     }
 
     function getRecs(input) {
@@ -37,7 +34,7 @@ function PrimerShowPage(inputtedSequence) {
 
     function handleCharacterChange(index) {
         const newChar = prompt(`Enter new character for position ${index + 1}`, input[index]);
-        if (newChar !== null && newChar.length === 1) {
+        if (newChar && newChar.length === 1) {
             const updatedInput = input.substring(0, index) + newChar + input.substring(index + 1);
             setInput(updatedInput);
         }
@@ -45,10 +42,8 @@ function PrimerShowPage(inputtedSequence) {
 
     function handleCharacterDelete() {
         const index = parseInt(deletePosition);
-        if (!isNaN(index) && index >= 0 && index <= input.length) {
+        if (!isNaN(index) && index >= 0 && index < input.length) {
             const updatedInput = input.substring(0, index) + input.substring(index + 1);
-            setAddCharacter('');
-            setAddPosition('');
             setInput(updatedInput);
         }
     }
@@ -58,17 +53,15 @@ function PrimerShowPage(inputtedSequence) {
         if (addCharacter && !isNaN(position) && position >= 0 && position <= input.length) {
             const updatedInput = input.substring(0, position) + addCharacter + input.substring(position);
             setInput(updatedInput);
-            setAddCharacter('');
-            setAddPosition('');
         }
     }
 
     return (
-        <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '1%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{
                     overflowY: 'scroll',
-                    height: '20vh',
+                    height: '30vh',
                     width: '45vw',
                     borderRadius: '1vh',
                     borderColor: 'purple',
@@ -93,33 +86,43 @@ function PrimerShowPage(inputtedSequence) {
                             {item}
                         </button>
                     ))}
+                    <div style = {{marginTop: '5vh', position: 'relative'}}>
+                        <label>Add Character: </label>
+                        <input type="text" value={addCharacter} onChange={(e) => setAddCharacter(e.target.value)} />
+                        <label> Position: </label>
+                        <input type="number" value={addPosition} onChange={(e) => setAddPosition(e.target.value)} />
+                        <button onClick={handleAddCharacter}>Add</button>
+                        <br/>
+                        <label>Delete Character: </label>
+                        <input type="number" value={deletePosition} onChange={(e) => setDeletePosition(e.target.value)} />
+                        <button onClick={handleCharacterDelete}>Delete</button>
+                    </div>
                 </div>
                 <div style={{
-                    height: '20vh',
-                    width: '43vw',
+                    height: '30vh',
+                    width: '42vw',
+                    borderRadius: '1vh',
+                    borderColor: 'purple',
+                    borderWidth: '0.02vh',
+                    borderStyle: 'solid',
+                    padding: '1%',
+                    overflowY: 'auto'
+                }}>
+                    <h3>Recommendations</h3>
+                    <div>{recommendation}</div>
+                </div>
+            </div>
+            <div style = {{
+                    padding: '1%', 
+                    height: '28vh',
+                    width: '90vw',
                     borderRadius: '1vh',
                     borderColor: 'purple',
                     borderWidth: '0.02vh',
                     borderStyle: 'solid',
                     padding: '1%',
                     overflowY: 'auto', 
-                }}>
-                    <h3>Recommendations</h3>
-                    <div>{recommendation}</div>
-                </div>
-            </div>
-            <div style = {{padding: '1%' }}>
-                <label>Add Character: </label>
-                <input type="text" value={addCharacter} onChange={(e) => setAddCharacter(e.target.value)} />
-                <label> Position: </label>
-                <input type="number" value={addPosition} onChange={(e) => setAddPosition(e.target.value)} />
-                <button onClick={handleAddCharacter}>Add</button>
-                <br/>
-                <label>Delete Character: </label>
-                <input type="number" value={deletePosition} onChange={(e) => setDeletePosition(e.target.value)} />
-                <button onClick={handleCharacterDelete}>Delete</button>
-            </div>
-            <div style = {{padding: '1%' }}>
+                    marginTop: '2vh'}}>
                 Map: 
             </div>
         </div>
