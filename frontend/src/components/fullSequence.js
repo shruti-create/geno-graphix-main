@@ -6,6 +6,8 @@ import "./FullSequence.css"; // Import the CSS file for styling
 // and sends the selected text along with start and end indices back to the parent component.
 const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
   const [formattedAnnotations, setFormattedAnnotations] = useState([]);
+  const sortedAnnotations = annotations ? annotations.sort((a, b) => a.start - b.start) : [];
+
 
   useEffect(() => {
     if (!annotations) {
@@ -34,42 +36,30 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     let result = [];
     let lastIndex = 0;
     let lastType = '';
-
-    // Sort the annotations by start index in ascending order
-    const sortedAnnotations = formattedAnnotations.sort(
-      (a, b) => a.start - b.start
-    );
+    const withComp = displayDNASequence();
+    console.log(withComp.length)
 
     sortedAnnotations.forEach(({ start, end, type }, index) => {
-      const annotatedPart = sequence.slice(start, end);   
-      if ( start < lastIndex){  // Current annotation is start in previous annotation
-        console.log("hi theres an overlap");
-        if (end <= lastIndex){   // If the current annotation is in the middle the previous annotation
-          // For overlapping annotations
-          
-          /*result.push(
-            <span
-              key={`${index}-overlap-start`}
-              style={{
-                backgroundColor: lastType[0] === "#" ? lastType : undefined,
-                borderBottom: lastType === "Underline" ? "2px solid #634c89f0" : undefined,
-                fontWeight: lastType === "Bold" ? "bold" : undefined,
-                textDecoration: lastType === "StrikeThrough" ? "line-through" : undefined,
-              }}
-              className="sequence"
-            >
-              {console.log("lastType =" + lastType)}
-              {sequence.slice(sortedAnnotations[index-1].start, start)}
-            </span>
-          );*/
+      const annotatedPart = withComp.slice(start, end);
+
+  
+      console.log(start, end, annotatedPart);
+      if ( end <= lastType){  // New annotation starts before previous annotation
+        
+        if (start <= sortedAnnotations[index-1].start){   // New annotation is in the middle the previous annotation
+
           if (index > 0) {
             lastType = sortedAnnotations[index - 1].type;
-          }else{
+          }
+          else{
             lastType = type;
+          }
+          if(lastType === type){
+            return; 
           }
           result.push(
             <span
-              key={`${index}-overlap`}
+              key={`${start}-${end}`}
               style={{
                 backgroundColor: (lastType[0] === "#" || type[0] === "#" ) ? (lastType) :"",
                 borderBottom: (lastType||type) === "Underline" ? "2px solid #634c89f0" : "",
@@ -101,16 +91,11 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
           );*/
 
         }
-        else{
-          if(lastType === type){
-            return; 
-          }
-        }
       }
 
       // Add the unannotated part of the sequence
       else{
-      result.push(sequence.slice(lastIndex, start));
+      result.push(withComp.slice(lastIndex, start));
 
       // Add the annotated part with appropriate styling
       result.push(
@@ -133,10 +118,40 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     });
 
     // Add the remaining unannotated part of the sequence
-    result.push(sequence.slice(lastIndex));
+    result.push(withComp.slice(lastIndex));
     console.log("Annotations: ", formattedAnnotations);
     return result;
   };
+
+  function displayDNASequence() {
+    let lines = sequence.match(/.{1,45}/g); // Split the sequence into lines of 40 characters
+    let results = '';
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        
+
+        let complement = line
+            .split('')
+            .map(base => {
+                switch (base) {
+                    case 'A': return 'T';
+                    case 'T': return 'A';
+                    case 'C': return 'G';
+                    case 'G': return 'C';
+                    default: return base;
+                }
+            })
+            .join('');
+
+        results +=`3' ${line} 5'\n`;
+
+        results += `5' ${complement} 3'\n\n`;
+    }
+    return results;
+}
+
+
+
 
   const logSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -184,6 +199,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     <div>
       <div className="sequence-container" onMouseUp={logSelection}>
         <pre className="sequence">{renderSequenceWithAnnotations()}</pre>
+        {/* <pre>{displayDNASequence()}</pre> */}
       </div>
     </div>
   );
