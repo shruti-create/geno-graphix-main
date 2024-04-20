@@ -1,6 +1,7 @@
 import './App.css';
 import VisualPage from "./pages/VisualPage";
 import PrimerPage from "./pages/PrimerPage";
+import LampPage from "./pages/LampPage";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import HomePage from "./pages/HomePage";
@@ -36,6 +37,7 @@ const NavBar = () => {
             <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Home Page</Link>
             <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Visual Page</Link>
             <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Primer Page</Link>
+            <Link to="/lamp-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">LAMP Page</Link>
         </div>
       </nav>
     );
@@ -50,6 +52,7 @@ function App() {
               <Route path="/home" element={<HomePage/>}/>
               <Route path="/visual-page" element={<VisualPage/>} />
               <Route path="/primer-page" element={<PrimerPage/>} />
+              <Route path="/lamp-page" element={<LampPage/>} />
               <Route path="*" element={<HomePage/>} />
           </Routes>
       </Router>

@@ -1,0 +1,2 @@
+[console_scripts]
+primers = primers.main:run
