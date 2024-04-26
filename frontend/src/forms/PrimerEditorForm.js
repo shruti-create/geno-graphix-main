@@ -7,8 +7,66 @@ function PrimerShowPage(inputtedSequence) {
     const [addPosition, setAddPosition] = useState('');
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
+    const [sequence, setSequence] = useState(String(inputtedSequence.input));
+    const [loops, setLoops] = useState([]);
+
+    
 
     useEffect(() => {
+        if (loops.length > 0) {
+            setRecommendation(loops.join(", "));
+        }
+    }, [loops]);
+
+    const reverseComplement = (seq) => {
+        const complement = { 'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C' };
+        return seq.split('').reverse().map(nuc => complement[nuc]).join('');
+    };
+
+    const findLargestUniqueLoops = () => {
+
+        let sequenceLength = sequence.length;
+        let potentialLoops = [];
+
+        for (let start = 0; start < sequenceLength; start++) {
+            for (let end = start + 1; end <= sequenceLength; end++) {
+                const subseq = sequence.slice(start, end);
+                const subseqRevComp = reverseComplement(subseq);
+                const pos = sequence.indexOf(subseqRevComp, end);
+                if (pos !== -1 && pos > end) {
+                    let loopSeq = sequence.substring(start, pos + subseqRevComp.length);
+                    potentialLoops.push({ loopSeq, start, end: pos + subseqRevComp.length - 1 });
+                }
+            }
+        }
+
+        potentialLoops.sort((a, b) => b.loopSeq.length - a.loopSeq.length || b.start - a.start);
+        let usedPositions = new Set();
+        let largestLoops = [];
+
+        for (const { loopSeq, start, end } of potentialLoops) {
+            let isOverlap = false;
+            for (let pos = start; pos <= end; pos++) {
+                if (usedPositions.has(pos)) {
+                    isOverlap = true;
+                    break;
+                }
+            }
+            if (!isOverlap) {
+                largestLoops.push(loopSeq);
+                for (let pos = start; pos <= end; pos++) {
+                    usedPositions.add(pos);
+                }
+            }
+        }
+
+        setLoops(largestLoops);
+        console.log(loops);
+    };
+
+
+    useEffect(() => {
+        setSequence(input);
         getRecs(input);
     }, [input]);
 
@@ -21,15 +79,8 @@ function PrimerShowPage(inputtedSequence) {
         }[character] || 'grey';
     }
 
-    function getRecs(input) {
-        const complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'};
-        const reverseComp = input.split('').map(char => complement[char.toUpperCase()] || char).reverse().join('');
-
-        if (input.includes(reverseComp)) {
-            setRecommendation("Possible self-amplification detected due to presence of inverted nucleotides.");
-        } else {
-            setRecommendation("No obvious self-amplification detected.");
-        }
+    function getRecs(dna) {
+        findLargestUniqueLoops();
     }
 
     function handleCharacterChange(index) {
