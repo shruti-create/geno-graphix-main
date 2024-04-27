@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import HomePage from "./pages/HomePage";
 import React from 'react';
 
+
 function changeTabColor(evt) {
   var i, navlinks;
   navlinks = document.getElementsByClassName("nav-link");
@@ -18,7 +19,7 @@ function changeTabColor(evt) {
 
 const NavBar = () => {
     const linkStyle = {
-        padding: '10px', 
+        padding: '20px', 
         fontSize: '20px',
         transition: 'box-shadow 0.3s ease', 
     };
@@ -27,7 +28,7 @@ const NavBar = () => {
           backgroundColor: '#ffffff', 
           display: 'flex',
           justifyContent: 'space-between',
-          padding: '20px 20px', 
+          padding: '0px 5px 5px 5px', 
           boxShadow: '0 6px 2px -2px rgba(0,0,0,.2)'
       }}>
         <h1 style={{ 
@@ -42,6 +43,7 @@ const NavBar = () => {
             display: 'flex', 
             justifyContent: 'flex-end', 
         }}>
+          
             <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
             <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
             <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>
