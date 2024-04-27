@@ -12,7 +12,13 @@
 
 .sequence {
   white-space: pre-wrap;
-  line-height: 4rem;
+  line-height: 2rem;
+  letter-spacing: 0.1em;
+}
+
+.complement {
+  white-space: pre-wrap;
+  line-height: 2rem;
   letter-spacing: 0.1em;
 }
 

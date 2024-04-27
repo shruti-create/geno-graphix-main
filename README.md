@@ -16,6 +16,8 @@ python app.py
 
 In the project directory, you can run:
 
+npm install concurrently
+
 ### `npm start`
 
 Runs the app in the development mode.\
