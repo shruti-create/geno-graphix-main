@@ -36,6 +36,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     let result = [];
     let lastIndex = 0;
     let lastType = '';
+    let withComp = displayDNASequence();
 
     // Sort the annotations by start index in ascending order
     const sortedAnnotations = formattedAnnotations.sort(
@@ -43,7 +44,8 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     );
 
     sortedAnnotations.forEach(({ start, end, type }, index) => {
-      const annotatedPart = sequence.slice(start, end);
+      
+      const annotatedPart = withComp.slice(start, end);
 
   
       console.log(start, end, annotatedPart);
