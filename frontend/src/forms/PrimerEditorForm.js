@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 function PrimerShowPage(inputtedSequence) {
     const [input, setInput] = useState(String(inputtedSequence.input));
@@ -14,7 +13,8 @@ function PrimerShowPage(inputtedSequence) {
 
     useEffect(() => {
         if (loops.length > 0) {
-            setRecommendation(loops.join(", "));
+            const loopSequences = loops.map(loop => loop.loopSeq).join(", ");
+            setRecommendation(loopSequences);
         }
     }, [loops]);
 
@@ -53,7 +53,7 @@ function PrimerShowPage(inputtedSequence) {
                 }
             }
             if (!isOverlap) {
-                largestLoops.push(loopSeq);
+                largestLoops.push({loopSeq, start, end});
                 for (let pos = start; pos <= end; pos++) {
                     usedPositions.add(pos);
                 }
@@ -68,7 +68,31 @@ function PrimerShowPage(inputtedSequence) {
     useEffect(() => {
         setSequence(input);
         getRecs(input);
+        findLargestUniqueLoops();
+        displaySequenceWithLoops();
     }, [input]);
+
+    const displaySequenceWithLoops = () => {
+        let display = [];
+        let loopIndex = 0;
+    
+        loops.sort((a, b) => a.start - b.start);
+    
+        console.log(loops);
+    
+        for (let i = 0; i < sequence.length; i++) {
+            if (loopIndex < loops.length && i === loops[loopIndex].start) {
+                display.push(<span key={i} style={{ color: 'red' }}>{sequence.substring(i, loops[loopIndex].end +1)} -- </span>);
+                i = loops[loopIndex].end; 
+                loopIndex++; 
+            } else {
+                display.push(<span key={i}>{sequence[i]} -- </span>);
+            }
+        }
+    
+        return display;
+    };
+    
 
     function getColor(character) {
         return {
@@ -160,7 +184,7 @@ function PrimerShowPage(inputtedSequence) {
                     overflowY: 'auto'
                 }}>
                     <h3>Recommendations</h3>
-                    <div>{recommendation}</div>
+                    <div> Potential Self Amplifying Regions: {recommendation}</div>
                 </div>
             </div>
             <div style = {{
@@ -174,7 +198,10 @@ function PrimerShowPage(inputtedSequence) {
                     padding: '1%',
                     overflowY: 'auto', 
                     marginTop: '2vh'}}>
-                Map: 
+                <h3> Map: </h3>
+                <div> Shows the potentially self amplifying regions in red. </div>
+                <br/>
+                <div>{displaySequenceWithLoops()}</div>
             </div>
         </div>
     );

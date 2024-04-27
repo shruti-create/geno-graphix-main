@@ -43,7 +43,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     );
 
     sortedAnnotations.forEach(({ start, end, type }, index) => {
-      const annotatedPart = withComp.slice(start, end);
+      const annotatedPart = sequence.slice(start, end);
 
   
       console.log(start, end, annotatedPart);
@@ -96,7 +96,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
 
       // Add the unannotated part of the sequence
       else{
-      result.push(withComp.slice(lastIndex, start));
+      result.push(sequence.slice(lastIndex, start));
 
         // Add the annotated part with appropriate styling
         result.push(
@@ -120,7 +120,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     });
 
     // Add the remaining unannotated part of the sequence
-    result.push(withComp.slice(lastIndex));
+    result.push(sequence.slice(lastIndex));
     console.log("Annotations: ", formattedAnnotations);
     return result;
   };
