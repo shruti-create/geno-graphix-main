@@ -16,13 +16,21 @@
   }
 }
 .nav-link:hover {
+     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+     border-radius: 5%;
+     transition: background-color 0.3s;
      box-shadow: 0px 0px 10px 0px #ece7f5;
  }
 
 body {
-  background-color: #ece7f5;
+  background-color: #ccd1e4;
 }
 
 h2 {
-  color: #665682
+  color: #0f3663
+}
+
+.nav-link.active {
+  background-color: #90aad8; /* Active color */
+  color: rgb(19, 29, 104);
 }
