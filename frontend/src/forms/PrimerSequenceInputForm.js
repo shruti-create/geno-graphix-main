@@ -98,7 +98,7 @@ const PrimerSequenceForm = ({ onValueChange, handleSequence }) => {
 
   // JSX for rendering the component
   return (
-    <div className='large-container'>
+    <div>
     <h2> Primer Design Tool</h2>
     <p1> Input your sequence or upload a file that contains your sequence. </p1>
       <h2 className='form-title'>Input Sequence</h2>

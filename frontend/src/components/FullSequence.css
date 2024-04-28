@@ -27,22 +27,22 @@
 }
 
 .sequence-container::-webkit-scrollbar-thumb {
-  background-color: #0f3663; /* thumb color */
+  background-color: #634c89a4; /* thumb color */
   border-radius: 2vw; /* Make the thumb rounded */
 }
 
 .sequence-container::-webkit-scrollbar-track {
   margin-top: 2vw;
   margin-bottom: 2vw;
-  background-color: #0f3663; /* track color */
+  background-color: #e7d9f65d; /* track color */
   border-radius: 2vw;
 }
 
 .sequence::-moz-selection {
-  background: #0f3663;
+  background: #8c76b178;
 }
 
 .sequence::selection {
-  background: #0f3663;
+  background: #8c76b178;
 }
 
