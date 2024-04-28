@@ -14,9 +14,13 @@ function PrimerShowPage(inputtedSequence) {
     useEffect(() => {
         if (loops.length > 0) {
             const loopSequences = loops.map(loop => loop.loopSeq).join(", ");
-            setRecommendation(loopSequences);
+            const recs = recommendations(input); // Calculate recommendations based on input
+            const formattedRecs = recs.concat("\nPotential Self Amplifying Regions: ", loopSequences).join("\n");
+            console.log(formattedRecs);
+            setRecommendation(formattedRecs);
         }
-    }, [loops]);
+    }, [loops, input]);
+    
 
     const reverseComplement = (seq) => {
         const complement = { 'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C' };
@@ -92,6 +96,44 @@ function PrimerShowPage(inputtedSequence) {
     
         return display;
     };
+
+    function recommendations(primer) {
+        const gc_content = calculateGCContent(primer);
+        const temperature = calculateMeltingTemperature(primer);
+        const recs = [];
+        
+        console.log(gc_content);
+        if (gc_content < 0.3) {
+            const to_add_gc = Math.ceil((0.3 - gc_content) * primer.length);
+            recs.push(`GC content is below the optimal range: Add ${to_add_gc} GC bases.`);
+        } else if (gc_content > 0.7) {
+            const to_remove_gc = Math.ceil((gc_content - 0.7) * primer.length);
+            recs.push(`GC content is above the optimal range: Remove ${to_remove_gc} GC bases.`);
+        }
+    
+        if (temperature < 50) {
+            const to_increase_temp = Math.ceil((50 - temperature) / 2);
+            recs.push(`Temperature is below the optimal range: Increase the temperature by ${to_increase_temp} degrees.`);
+        } else if (temperature > 64) {
+            const to_decrease_temp = Math.ceil((temperature - 64) / 2);
+            recs.push(`Temperature is above the optimal range: Decrease the temperature by ${to_decrease_temp} degrees.`);
+        }
+    
+        return recs;
+    }
+    
+    function calculateGCContent(primer) {
+        const gc_count = Array.from(primer).filter(base => base === 'G' || base === 'C').length;
+        return gc_count / primer.length;
+    }
+    
+    function calculateMeltingTemperature(primer) {
+        const a_count = (primer.match(/A/g) || []).length;
+        const t_count = (primer.match(/T/g) || []).length;
+        const c_count = (primer.match(/C/g) || []).length;
+        const g_count = (primer.match(/G/g) || []).length;
+        return 4 * (g_count + c_count) + 2 * (a_count + t_count);
+    }
     
 
     function getColor(character) {
@@ -184,7 +226,7 @@ function PrimerShowPage(inputtedSequence) {
                     overflowY: 'auto'
                 }}>
                     <h3>Recommendations</h3>
-                    <div> Potential Self Amplifying Regions: {recommendation}</div>
+                    <div style={{ whiteSpace: 'pre-line' }}>{recommendation}</div>
                 </div>
             </div>
             <div style = {{
