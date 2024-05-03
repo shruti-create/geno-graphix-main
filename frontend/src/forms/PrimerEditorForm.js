@@ -7,10 +7,10 @@ function PrimerShowPage(inputtedSequence) {
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
     const [sequence, setSequence] = useState(String(inputtedSequence.input));
-    const [loops, setLoops] = useState([]);
+    const [loops, setLoops] = useState([]); // found complementary sequences + biggest loops within sequences
 
     
-
+    // print reccommendations for loops 
     useEffect(() => {
         if (loops.length > 0) {
             const loopSequences = loops.map(loop => loop.loopSeq).join(", ");
@@ -18,16 +18,21 @@ function PrimerShowPage(inputtedSequence) {
         }
     }, [loops]);
 
+    // write function to check all parameters of the primer and their fit with the primer rules 
+
+    // get reverse complement for seq
     const reverseComplement = (seq) => {
         const complement = { 'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C' };
         return seq.split('').reverse().map(nuc => complement[nuc]).join('');
     };
 
+    // finding the loops and inputting in loops list
     const findLargestUniqueLoops = () => {
 
         let sequenceLength = sequence.length;
         let potentialLoops = [];
 
+        // sequences are approximately 18-25
         for (let start = 0; start < sequenceLength; start++) {
             for (let end = start + 1; end <= sequenceLength; end++) {
                 const subseq = sequence.slice(start, end);
@@ -40,10 +45,12 @@ function PrimerShowPage(inputtedSequence) {
             }
         }
 
+        // sorts the potential loops from small to large 
         potentialLoops.sort((a, b) => b.loopSeq.length - a.loopSeq.length || b.start - a.start);
         let usedPositions = new Set();
         let largestLoops = [];
 
+        // take the largest potential loop without no overlaps 
         for (const { loopSeq, start, end } of potentialLoops) {
             let isOverlap = false;
             for (let pos = start; pos <= end; pos++) {
@@ -60,6 +67,7 @@ function PrimerShowPage(inputtedSequence) {
             }
         }
 
+        // set loops variable with largest loops
         setLoops(largestLoops);
         console.log(loops);
     };
@@ -82,10 +90,13 @@ function PrimerShowPage(inputtedSequence) {
     
         for (let i = 0; i < sequence.length; i++) {
             if (loopIndex < loops.length && i === loops[loopIndex].start) {
+                // change - displaying the loop
+                // pushing red characters instead of loop all together
                 display.push(<span key={i} style={{ color: 'red' }}>{sequence.substring(i, loops[loopIndex].end +1)} -- </span>);
                 i = loops[loopIndex].end; 
                 loopIndex++; 
             } else {
+                // if no loop, push them with dashes in between
                 display.push(<span key={i}>{sequence[i]} -- </span>);
             }
         }
@@ -147,6 +158,7 @@ function PrimerShowPage(inputtedSequence) {
                     padding: '1%'
                 }}>
                     {input.split('').map((item, index) => (
+                        // when click on character, then user can change character
                         <button key={index} onClick={() => handleCharacterChange(index)} style={{
                             width: '40px', 
                             height: '40px',
