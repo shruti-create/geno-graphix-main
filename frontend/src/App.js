@@ -1,7 +1,6 @@
 import './App.css';
 import VisualPage from "./pages/VisualPage";
 import PrimerPage from "./pages/PrimerPage";
-import LampPage from "./pages/LampPage";
 import PrimerEditPage from "./pages/PrimerEditPage"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -9,18 +8,9 @@ import HomePage from "./pages/HomePage";
 import React from 'react';
 
 
-function changeTabColor(evt) {
-  var i, navlinks;
-  navlinks = document.getElementsByClassName("nav-link");
-  for (i = 0; i < navlinks.length; i++) {
-    navlinks[i].className = navlinks[i].className.replace(" active", "");
-  }
-  evt.currentTarget.className += " active";
-}
-
 const NavBar = () => {
     const linkStyle = {
-        padding: '20px', 
+        padding: '10px', 
         fontSize: '20px',
         transition: 'box-shadow 0.3s ease', 
     };
@@ -29,12 +19,12 @@ const NavBar = () => {
           backgroundColor: '#ffffff', 
           display: 'flex',
           justifyContent: 'space-between',
-          padding: '0px 5px 5px 5px', 
+          padding: '20px 20px', 
           boxShadow: '0 6px 2px -2px rgba(0,0,0,.2)'
       }}>
         <h1 style={{ 
             fontSize: '2rem', 
-            color: '#0f3663', 
+            color: '#665682', 
             marginBottom: '0', 
             flexShrink: 0 
         }}>
@@ -44,11 +34,9 @@ const NavBar = () => {
             display: 'flex', 
             justifyContent: 'flex-end', 
         }}>
-          
-            <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
-            <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
-            <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>
-            <Link to="/lamp-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link>
+            <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Home Page</Link>
+            <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Visual Page</Link>
+            <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Primer Page</Link>
             <Link to="/primer-edit-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link">Edit Primer Page</Link>
         </div>
       </nav>
@@ -64,7 +52,6 @@ function App() {
               <Route path="/home" element={<HomePage/>}/>
               <Route path="/visual-page" element={<VisualPage/>} />
               <Route path="/primer-page" element={<PrimerPage/>} />
-              <Route path="/lamp-page" element={<LampPage/>} />
               <Route path="/primer-edit-page" element={<PrimerEditPage/>} />
               <Route path="*" element={<HomePage/>} />
           </Routes>
