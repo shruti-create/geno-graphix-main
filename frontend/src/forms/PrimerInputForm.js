@@ -1,134 +1,108 @@
-import React, {useCallback, useState} from 'react';
+import React, { useState } from 'react';
 import "./PrimerSequenceInputForm.css";
 
-// PrimerSequenceForm component for inputting DNA sequence and generating primers.
 const PrimerInputForm = ({ onValueChange, handleSequence }) => {
-
-  const [inputText, setInputText] = useState('');
+  const [fullSequence, setFullSequence] = useState('');
+  const [primers, setPrimers] = useState([
+    { name: 'F3', sequence: '' },
+    { name: 'B3', sequence: '' },
+    { name: 'FIP', sequence: '' },
+    { name: 'BIP', sequence: '' },
+    { name: 'LF', sequence: '' },
+    { name: 'LB', sequence: '' }
+  ]);
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const[fileContent, setFileContent] = useState('');
 
-  // Handles text input change
-  const handleTextChange = (e) => {
-    setInputText(e.target.value);
-  };
- 
-  // Handles file input change
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    console.log('Selected file:', file);
-    readFileContent(file);
-    setInputText(''); 
+  const handleFullSequenceChange = (e) => {
+    setFullSequence(e.target.value);
   };
 
-  // Reads file content
-  const readFileContent = (file) => {
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const fileContent = e.target.result;
-      const lines = fileContent.split('\n');
-      const sequence = lines.slice(1).join('');
-      setInputText(sequence);
-    };
-
-    reader.readAsText(file);
+  const handlePrimerChange = (index, sequence) => {
+    const updatedPrimers = primers.map((primer, idx) => {
+      if (idx === index) {
+        return { ...primer, sequence };
+      }
+      return primer;
+    });
+    setPrimers(updatedPrimers);
   };
 
-  // Validates input 
   const validateInput = () => {
-    if (!inputText.trim() && !selectedFile) {
-      setErrorMessage('Please enter text or upload a file.');
+    if (!fullSequence.trim() && !primers.some(p => p.sequence.trim())) {
+      setErrorMessage('Please enter a full sequence or primer sequences.');
       return false;
     }
 
-  
-    if (selectedFile) {
-      const validFiles = ['.fasta', '.fa', '.fas', '.fna'];
-      const fileExtension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.'));
+    const validChar = /^[aAcCgGtTuU]+$/;
+    const cleanedFullSequence = fullSequence.replace(/\s/g, '');
+    if (fullSequence && !validChar.test(cleanedFullSequence)) {
+      setErrorMessage('Invalid characters in the full sequence.');
+      return false;
+    }
 
-      if (!validFiles.includes(fileExtension.toLowerCase())) {
-        setErrorMessage('Please upload a valid FASTA file.');
+    for (let primer of primers) {
+      const cleanedInput = primer.sequence.replace(/\s/g, '');
+      if (!validChar.test(cleanedInput)) {
+        setErrorMessage(`Invalid characters in ${primer.name} sequence.`);
         return false;
       }
-
-      setErrorMessage('Valid file received');
-      return true;
-    }
-
-    const cleanedInput = inputText.replace(/\s/g, '');
-    var validChar = /^[aAcCgGtTuU]+$/;
-
-    if (!validChar.test(cleanedInput)) {
-      setErrorMessage('Invalid characters in the sequence.');
-      return false;
-    }
-    
-    if (cleanedInput.length <= 5) {
-        setErrorMessage('Sequence length must be greater than 5.');
+      if (cleanedInput.length < 5) {
+        setErrorMessage(`${primer.name} sequence length must be at least 5.`);
         return false;
+      }
     }
 
+    setErrorMessage('');
     return true;
   };
 
-
-  // Handles form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    const textToValidate = inputText.trim();
-    const isValidInput = validateInput(textToValidate);
+    const isValidInput = validateInput();
     if (isValidInput) {
-        console.log('Submitted text:', inputText);
-        setValid(true);
-        setErrorMessage(''); 
-        onValueChange(true);
-        handleSequence(inputText);
-        setSelectedFile(null);
-      }
-     else {
-      console.log('Invalid input! Please enter a valid sequence.');
+      console.log('Submitted full sequence:', fullSequence);
+      console.log('Submitted primers:', primers);
+      setValid(true);
+      onValueChange(true);
+      handleSequence(fullSequence, primers);
+    } else {
       setValid(false);
     }
-    
   };
 
-  // JSX for rendering the component
   return (
     <div>
-    <h2> Primer Edit/Debug Tool</h2>
-    <p1> Input your sequence or upload a file that contains your sequence. </p1>
-      <h2 className='form-title'>Input Sequence</h2>
+      <h2>Primer Edit/Debug Tool</h2>
+      <p>Input your full sequence and/or sequences for each LAMP primer.</p>
       <form onSubmit={handleSubmit}>
-        <textarea
-          value={inputText}
-          onChange={handleTextChange}
-          placeholder="Enter your text"
-          className='text-area'
-        />
-       
-        <h2 className='form-title'>Upload a File</h2>
-        <div className='file-input-container'>
-          <input
-              type='file'
-              accept='.fasta, .fas, .fa, .fna'
-              onChange={handleFileChange}
-              className='file-upload'
+        <div className='input-container'>
+          <label>Full Sequence</label>
+          <textarea
+            value={fullSequence}
+            onChange={handleFullSequenceChange}
+            placeholder="Enter the full DNA sequence here"
           />
         </div>
-        
+        {primers.map((primer, index) => (
+          <div key={primer.name} className='input-container'>
+            <label>{primer.name}</label>
+            <input
+              type="text"
+              value={primer.sequence}
+              onChange={(e) => handlePrimerChange(index, e.target.value)}
+              placeholder={`Enter ${primer.name} sequence`}
+            />
+          </div>
+        ))}
+
         <div className='button-container'>
           <button className='generate-button'>Debug Primer</button>
         </div>
-       
+        
         {!isValid && (
-          <div className='error-message'> {errorMessage} </div>
+          <div className='error-message'>{errorMessage}</div>
         )}
-
       </form>
     </div>
   );

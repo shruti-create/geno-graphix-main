@@ -1,61 +1,104 @@
 import PrimerChosenForm from "../forms/PrimerEditorForm";
 import PrimerInput from "../forms/PrimerInputForm";
-import React, {useState} from "react";
+import React, { useState } from "react";
 
-// PrimerPage component for handling primer input and chosen form
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
-    const [inputtedSequence, setInputtedSequence]  = useState('');
-    
-    // Handles updating the inputted sequence
-    const handleInputtedSequence = (sequence) => {
-      setInputtedSequence(sequence);
+    const [inputtedSequence, setInputtedSequence] = useState({ fullSequence: '', primers: [] });
+    const [editingPrimer, setEditingPrimer] = useState(null);  // State to hold the currently editing primer
+
+    const handleInputtedSequence = (fullSequence, primers) => {
+      setInputtedSequence({ fullSequence, primers });
     };
-    
-    // Handles button click to go back to the input form
+
     const handleButtonClick = () => {
-      setBack(!back); 
+      setBack(!back);
+      setEditingPrimer(null); // Reset editing primer when going back
       setSubmitted(0);
     };
 
-    // Handles value change to update submission status
     const handleValueChange = (newValue) => {
       const newSubmittedValue = newValue ? 2 : 0; 
       setSubmitted(newSubmittedValue);
     };
 
-     // Component to conditionally render either the input form or the chosen form
-    function ChooseForm(){
-        if(submitted === 0 || (back && submitted === 0)){
-        return (
-            <div>
-                <PrimerInput onValueChange={handleValueChange} handleSequence = {handleInputtedSequence}/>
-            </div>
-        );
-        } else if (submitted === 2){
+    const handleEditPrimer = (primer) => {
+      setEditingPrimer(primer);  // Set the currently editing primer
+    };
+
+    function ChooseForm() {
+        if (submitted === 0 || (back && submitted === 0) || editingPrimer) {
+            if (editingPrimer) {
+                return (
+                    <div>
+                        <PrimerChosenForm input={editingPrimer.sequence}/>
+                        <button 
+                            style={{
+                                backgroundColor: '#665682',
+                                color: 'white',
+                                borderRadius: '5px',
+                                padding: '5px 10px',
+                                cursor: 'pointer',
+                                top: '20vh', 
+                            }}
+                            onClick={() => setEditingPrimer(null)}
+                        >
+                            Back
+                        </button>
+                    </div>
+                );
+            }
             return (
-            <div>
-                <PrimerChosenForm input = {inputtedSequence}/>
-                <button 
-                style={{
-                marginRight: '10px',
-                backgroundColor: '#665682',
-                border: '1px solid #665682',
-                color: 'white',
-                borderRadius: '5px',
-                padding: '5px 10px',
-                cursor: 'pointer',
-                marginBottom: '10px',
-                marginTop: '1%'
-                }}
-                onClick={handleButtonClick}>
-                Back
-                </button>
-            </div>
+                <div>
+                    <PrimerInput onValueChange={handleValueChange} handleSequence={handleInputtedSequence}/>
+                </div>
+            );
+        } else if (submitted === 2) {
+            return (
+                <div>
+                    <div style={{borderRadius: 5, borderWidth: 2}}>
+
+                    </div>
+                    {inputtedSequence.primers.map((primer) => (
+                        <button 
+                            key={primer.name}
+                            style={{
+                                marginRight: '10px',
+                                backgroundColor: '#665682',
+                                border: 'none',
+                                color: 'white',
+                                borderRadius: '5px',
+                                padding: '10px 20px',
+                                cursor: 'pointer',
+                                marginBottom: '10px', 
+                                width: '35vw', 
+                                height: '15vh'
+                            }}
+                            onClick={() => handleEditPrimer(primer)}
+                        >
+                            Edit {primer.name}
+                        </button>
+                    ))}
+                    <button 
+                        style={{
+                            backgroundColor: '#665682',
+                            color: 'white',
+                            borderRadius: '5px',
+                            padding: '5px 10px',
+                            cursor: 'pointer',
+                            position: 'fixed', 
+                            top: '85vh', 
+                            right: '3vw'
+                        }}
+                        onClick={handleButtonClick}
+                    >
+                        Back
+                    </button>
+                </div>
             );
         }
-      }
+    }
 
     return (
         <div>
