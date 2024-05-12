@@ -150,6 +150,21 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
           );
           result.push(  //Push overlapping part
             <span
+              key={`${lastStart}-${start}`}
+              style={{
+                backgroundColor: (lastType[0] === "#") ? (lastType) : undefined,
+                borderBottom: (lastType) === "Underline" ? "2px solid #634c89f0" : undefined,
+                fontWeight: (lastType) === "Bold" ? "bold" : undefined,
+                textDecoration: (lastType) === "StrikeThrough" ? "line-through" : undefined,
+              }}
+              className="sequence"
+            >
+              {withComp.slice(start, end)}
+              {withComp.slice(lastStart, start)}
+            </span>
+          );
+          result.push(  //Push overlapping part
+            <span
               key={`${start}-${end}`}
               style={{
                 backgroundColor: (lastType[0] === "#" || type[0] === "#") ? (lastType || type) : undefined,
@@ -159,6 +174,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
               }}
               className="sequence"
             >
+              {withComp.slice(end, sortedAnnotations[index-1].end)}
               {withComp.slice(start, end)}
             </span>
           );
@@ -167,6 +183,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
 
       // No overlap so add the annotated part of the sequence
       else{
+      result.push(withComp.slice(lastIndex, start));
       result.push(withComp.slice(lastEnd, start));
 
         // Add the annotated part with appropriate styling
@@ -191,6 +208,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     });
 
     // Add the remaining unannotated part of the sequence
+    result.push(withComp.slice(lastIndex));
     result.push(withComp.slice(lastEnd));
     console.log("Annotations: ", formattedAnnotations);
     return result;
