@@ -72,9 +72,8 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
       
       const annotatedPart = withComp.slice(start, end);
 
-  
       console.log(start, end, annotatedPart);
-      if (start < lastEnd){  // Overlap detected since start index is within previous one last index
+      noChange:if (start < lastEnd){  // Overlap detected since start index is within previous one last index
         
         if (end <= lastEnd){   // Overlap is in the middle the previous annotation
 
@@ -85,7 +84,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
             lastType = type;
           }
           console.log(lastType, type);
-          noChange: if(lastType === type){
+          if(lastType === type){
             console.log("same annotation");
             break noChange;
           }
