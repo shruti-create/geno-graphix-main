@@ -184,8 +184,8 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
 
       // No overlap so add the annotated part of the sequence
       else{
-      result.push(withComp.slice(lastIndex, start));
-      result.push(withComp.slice(lastEnd, start));
+      //result.push(withComp.slice(lastIndex, start));
+      //result.push(withComp.slice(lastEnd, start));
 
         // Add the annotated part with appropriate styling
         result.push(
@@ -209,8 +209,8 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     });
 
     // Add the remaining unannotated part of the sequence
-    result.push(withComp.slice(lastIndex));
-    result.push(withComp.slice(lastEnd));
+    //result.push(withComp.slice(lastIndex));
+   // result.push(withComp.slice(lastEnd));
     console.log("Annotations: ", formattedAnnotations);
     return result;
   };

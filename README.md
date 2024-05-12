@@ -2,11 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+To run the program:
+
 cd frontend \
 npm i --legacy-peer-deps \
 cd .. \
 cd backend \
-pip install flask-cors \
+pip install flask_cors \
 cd .. \
 bash start.sh \
 cd backend \
