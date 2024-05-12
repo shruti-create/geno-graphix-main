@@ -8,16 +8,6 @@
     column-gap: 2rem; 
 }
 
-.small-container {
-    background-color: #ffffff; 
-    padding: 5px;
-    display: flex;
-    align-items: 'left';
-    justify-content: 'left';            
-    gap: '10px'; 
-}
-
-
 .component{
     display: flex;
     flex-direction: column;
