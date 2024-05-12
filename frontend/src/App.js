@@ -2,6 +2,8 @@ import './App.css';
 import VisualPage from "./pages/VisualPage";
 import PrimerPage from "./pages/PrimerPage";
 import LampPage from "./pages/LampPage";
+import PrimerEditPage from "./pages/PrimerEditPage";
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import HomePage from "./pages/HomePage";
@@ -45,6 +47,7 @@ const NavBar = () => {
             <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
             <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
             <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>
+            <Link to="/primer-edit-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit Page</Link>
             <Link to="/lamp-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link>
         </div>
       </nav>
@@ -60,6 +63,7 @@ function App() {
               <Route path="/home" element={<HomePage/>}/>
               <Route path="/visual-page" element={<VisualPage/>} />
               <Route path="/primer-page" element={<PrimerPage/>} />
+              <Route path="/primer-edit-page" element={<PrimerEditPage/>} />
               <Route path="/lamp-page" element={<LampPage/>} />
               <Route path="*" element={<HomePage/>} />
           </Routes>
