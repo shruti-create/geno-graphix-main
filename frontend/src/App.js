@@ -3,7 +3,7 @@ import VisualPage from "./pages/VisualPage";
 import PrimerPage from "./pages/PrimerPage";
 import LampPage from "./pages/LampPage";
 import PrimerEditPage from "./pages/PrimerEditPage";
-
+import logo from './circle_dna_strands_transparent.png';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import HomePage from "./pages/HomePage";
@@ -27,17 +27,20 @@ const NavBar = () => {
     };
     return (
       <nav style={{ 
-          backgroundColor: '#ffffff', 
+          backgroundColor: '#0f3663', 
           display: 'flex',
           justifyContent: 'space-between',
           padding: '0px 5px 5px 5px', 
           boxShadow: '0 6px 2px -2px rgba(0,0,0,.2)'
       }}>
+        <img src={logo} alt="GenoGraphix Logo" style={{ position: 'absolute', height: '4vh', top: '1vh', marginLeft: '0vw' }} />
         <h1 style={{ 
-            fontSize: '2rem', 
-            color: '#0f3663', 
+            fontSize: '1.2rem', 
+            color: '#ffffff', 
             marginBottom: '0', 
-            flexShrink: 0 
+            flexShrink: 0, 
+            top: '0vh',
+            marginLeft: '4vw'
         }}>
           GenoGraphix
         </h1>
@@ -46,11 +49,11 @@ const NavBar = () => {
             justifyContent: 'flex-end', 
         }}>
           
-            <Link to="/home" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
-            <Link to="/visual-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
-            <Link to="/primer-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>
-            <Link to="/primer-edit-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit Page</Link>
-            <Link to="/lamp-page" style={{ color: 'black', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link>
+            <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
+            <Link to="/visual-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
+            <Link to="/primer-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>
+            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit Page</Link>
+            <Link to="/lamp-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link>
         </div>
       </nav>
     );

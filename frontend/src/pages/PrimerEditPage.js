@@ -35,7 +35,7 @@ function PrimerEditPage() {
                         <PrimerChosenForm input={editingPrimer.sequence}/>
                         <button 
                             style={{
-                                backgroundColor: '#665682',
+                                backgroundColor: '#0f3663',
                                 color: 'white',
                                 borderRadius: '5px',
                                 padding: '5px 10px',
@@ -65,7 +65,7 @@ function PrimerEditPage() {
                             key={primer.name}
                             style={{
                                 marginRight: '10px',
-                                backgroundColor: '#665682',
+                                backgroundColor: '#0f3663',
                                 border: 'none',
                                 color: 'white',
                                 borderRadius: '5px',
@@ -82,7 +82,7 @@ function PrimerEditPage() {
                     ))}
                     <button 
                         style={{
-                            backgroundColor: '#665682',
+                            backgroundColor: '#0f3663',
                             color: 'white',
                             borderRadius: '5px',
                             padding: '5px 10px',

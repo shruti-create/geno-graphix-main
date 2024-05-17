@@ -4,7 +4,9 @@ import React from "react";
 function HomePage() {
     return (
         <div>
-            <h1 style={{fontSize: '2rem', color: 'black', textAlign: 'center', marginTop: '50px'}}>Welcome to GenoGraphix</h1>
+            <div style= {{marginTop: '0vh', padding: '15%', backgroundColor: '#0f3663', height: '15vh', justifyContent: 'center', alignItems: 'center'}}>
+                <h1 style={{fontSize: '3rem', color: 'white', textAlign: 'center'}}>Welcome to GenoGraphix</h1>
+            </div>
             <p style={{ fontSize: '1.3rem', color: 'black', marginLeft: '8vw', marginRight: '10vw', marginTop: '50px'}}>
                 GenoGraphix is an amazing tool that helps you visualize and analyze genetic data. It provides insights into both DNA and RNA sequences, primer construction, and more. Explore the world of genetics with GenoGraphix, and delve into a user-friendly interface that simplifies complex genetic information for researchers and enthusiasts alike.
             </p>

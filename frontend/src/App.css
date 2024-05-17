@@ -22,7 +22,7 @@
  }
 
 body {
-  background-color: #ccd1e4;
+  background-color: #FFFFFF;
 }
 
 h2 {
@@ -30,6 +30,6 @@ h2 {
 }
 
 .nav-link.active {
-  background-color: #90aad8; /* Active color */
+  background-color: #FFFFFF; /* Active color */
   color: rgb(19, 29, 104);
 }
