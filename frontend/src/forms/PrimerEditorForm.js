@@ -249,7 +249,7 @@ function PrimerShowPage(inputtedSequence) {
                     </div>
                 </div>
                 <div style={{
-                    height: '30vh',
+                    height: '60vh',
                     width: '42vw',
                     borderRadius: '1vh',
                     borderColor: 'purple',
@@ -258,23 +258,25 @@ function PrimerShowPage(inputtedSequence) {
                     padding: '1%',
                     overflowY: 'auto'
                 }}>
-                    <h3>Recommendations</h3>
-                    <div style={{ whiteSpace: 'pre-line' }}>{recommendation}</div>
+                    <h3> Map: </h3>
+                    <img id="imgMap" src={imgMap} ></img>
                 </div>
             </div>
             <div style = {{
                     padding: '1%', 
-                    height: '28vh',
-                    width: '90vw',
+                    height: '25vh',
+                    width: '45vw',
                     borderRadius: '1vh',
                     borderColor: 'purple',
                     borderWidth: '0.02vh',
                     borderStyle: 'solid',
                     padding: '1%',
                     overflowY: 'auto', 
-                    marginTop: '2vh'}}>
-                <h3> Map: </h3>
-                <img id="imgMap" src={imgMap} ></img>
+                    marginTop: '34vh',
+                    position: 'absolute'
+                    }}>
+                <h3>Recommendations</h3>
+                <div style={{ whiteSpace: 'pre-line' }}>{recommendation}</div>
             </div>
         </div>
     );
