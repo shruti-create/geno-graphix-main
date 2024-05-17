@@ -4,7 +4,6 @@ import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 
 import SequenceSubmissionForm from '../forms/SequenceSubmissionForm';
-import DefaultSequenceForm from '../forms/DefaultSequenceForm';
 import VisualizationPage from "../forms/VisualizationForm";
 
 // VisualPage component for handling sequence input, demo sequence, and visualization
@@ -62,30 +61,15 @@ function VisualPage() {
               </div>
             );
           }
-        case 1:
-          return <DefaultSequenceForm onValueChange={handleValueChange} />;
-        default:
-          return null;
       }
     }
 
     return (
         <main style={{ margin: '20px' }}>
             <div>
-                {/* <h1 style={{ fontSize: '1.5rem', color: 'black', marginTop: '20px', marginBottom: '20px' }}>OR</h1>
-                <DefaultSequenceForm/> */}
+               
                 <Paper variant="outlined" style={{padding:20, borderRadius:10}}>
-                <Tabs
-                    value={tabNum}
-                    textColor="primary"
-                    indicatorColor="primary"
-                    onChange={(event, newTabNum) => {
-                        setTabNum(newTabNum);
-                    }}
-                >
-                    <Tab label="Input Sequence" />
-                    <Tab label="Demo Sequence" />
-                </Tabs>
+               
               <div style={{padding:10}}>
                 <ChooseForm/>
               </div>
