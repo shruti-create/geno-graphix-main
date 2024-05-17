@@ -1,4 +1,6 @@
+import { SettingsRemote } from '@mui/icons-material';
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function PrimerShowPage(inputtedSequence) {
     const [input, setInput] = useState(String(inputtedSequence.input));
@@ -8,6 +10,7 @@ function PrimerShowPage(inputtedSequence) {
     const [recommendation, setRecommendation] = useState("");
     const [sequence, setSequence] = useState(String(inputtedSequence.input));
     const [loops, setLoops] = useState([]); // found complementary sequences + biggest loops within sequences
+    const [imgMap, setImgMap] = useState('');
 
     
     // print reccommendations for loops 
@@ -113,7 +116,6 @@ function PrimerShowPage(inputtedSequence) {
         const temperature = calculateMeltingTemperature(primer);
         const recs = [];
         
-        console.log(gc_content);
         if (gc_content < 0.3) {
             const to_add_gc = Math.ceil((0.3 - gc_content) * primer.length);
             recs.push(`GC content is below the optimal range: Add ${to_add_gc} GC bases.`);
@@ -129,7 +131,7 @@ function PrimerShowPage(inputtedSequence) {
             const to_decrease_temp = Math.ceil((temperature - 64) / 2);
             recs.push(`Temperature is above the optimal range: Decrease the temperature by ${to_decrease_temp} degrees.`);
         }
-    
+
         return recs;
     }
     
@@ -183,6 +185,25 @@ function PrimerShowPage(inputtedSequence) {
             setInput(updatedInput);
         }
     }
+
+    const fetchQuickfoldMap = async () => {
+        try {
+            console.log(input);
+            // Make a POST request to the server to get primers
+            const response = await axios.post('http://127.0.0.1:5000/quickfold', {
+                sequence: input
+            });
+            // Update state with forward and reverse primers
+            setImgMap(response.data.results_img)
+            console.log("Image URL", imgMap);
+        } catch (error) {
+            console.error('Error fetching manipulated sequence', error);
+        }
+    };
+
+    React.useEffect(() => {
+        if (inputtedSequence) fetchQuickfoldMap();
+    }, [inputtedSequence]);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', padding: '1%' }}>
@@ -256,6 +277,7 @@ function PrimerShowPage(inputtedSequence) {
                 <div> Shows the potentially self amplifying regions in red. </div>
                 <br/>
                 <div>{displaySequenceWithLoops()}</div>
+                <img id="imgMap" src={imgMap} ></img>
             </div>
         </div>
     );
