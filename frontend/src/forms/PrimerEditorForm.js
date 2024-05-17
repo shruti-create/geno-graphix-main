@@ -18,7 +18,7 @@ function PrimerShowPage(inputtedSequence) {
         if (loops.length > 0) {
             const loopSequences = loops.map(loop => loop.loopSeq).join(", ");
             const recs = recommendations(input); // Calculate recommendations based on input
-            const formattedRecs = recs.concat("\nPotential Self Amplifying Regions: ", loopSequences).join("\n");
+            const formattedRecs = recs;
             console.log(formattedRecs);
             setRecommendation(formattedRecs);
         }
@@ -274,9 +274,6 @@ function PrimerShowPage(inputtedSequence) {
                     overflowY: 'auto', 
                     marginTop: '2vh'}}>
                 <h3> Map: </h3>
-                <div> Shows the potentially self amplifying regions in red. </div>
-                <br/>
-                <div>{displaySequenceWithLoops()}</div>
                 <img id="imgMap" src={imgMap} ></img>
             </div>
         </div>
