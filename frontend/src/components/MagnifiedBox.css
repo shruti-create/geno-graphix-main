@@ -19,7 +19,7 @@
   }
   
   .box::-webkit-scrollbar-thumb {
-    background-color: #634c89a4; /* thumb color */
+    background-color: #0f3663; /* thumb color */
     border-radius: 2vh; /* Make the thumb rounded */
   }
   

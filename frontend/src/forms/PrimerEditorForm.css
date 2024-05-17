@@ -1,0 +1,28 @@
+.map-container{
+    padding: 1%;
+    max-height: 100vh;
+    width: 90vw;
+    border-radius: '1vh';
+    border-color: 'purple';
+    border-width: '0.02vh';
+    border-style: 'solid';
+    padding: '1%';
+    overflow-y: auto;
+
+    margin-top: '2vh'
+}
+
+.rec-container{
+    height: '30vh';
+    width: '42vw';
+    border-radius: '1vh';
+    border-color: 'purple';
+    border-width: '0.02vh';
+    border-style: 'solid';
+    padding: '1%';
+    overflow-y: 'auto'
+}
+
+#imgMap {
+    scale: 20%;
+}

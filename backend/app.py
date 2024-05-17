@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify, Response
 from primer_design import manipulate_sequence
+from quickfold import sequenceMap
 from flask_cors import CORS
+
+import requests
 
 
 app = Flask(__name__)
@@ -19,6 +22,15 @@ def design_sequence():
         return jsonify({'error': 'No sequence provided!'}), 400
     manipulated_sequence = manipulate_sequence(sequence)
     response = jsonify({'allPrimers': manipulated_sequence})
+    return response
+
+@app.route('/quickfold', methods=['POST'])
+def get_sequence_map():
+    # Get the sequence from the request
+    sequence = request.json['sequence']
+
+    results_img = sequenceMap(sequence)
+    response = jsonify({'results_img': results_img})
     return response
 
 if __name__ == '__main__':
