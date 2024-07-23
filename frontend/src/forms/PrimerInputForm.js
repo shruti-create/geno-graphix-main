@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./PrimerSequenceInputForm.css";
+import './PrimerSequenceInputForm.css';
 
 const PrimerInputForm = ({ onValueChange, handleSequence }) => {
   const [fullSequence, setFullSequence] = useState('');
@@ -9,8 +9,8 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
     { name: 'F3', sequence: '' },
     { name: 'B1c', sequence: '' },
     { name: 'B2', sequence: '' },
-    { name: 'B3', sequence: '' }, 
-    { name: 'LF', sequence: '' }, 
+    { name: 'B3', sequence: '' },
+    { name: 'LF', sequence: '' },
     { name: 'LB', sequence: '' }
   ]);
   const [isValid, setValid] = useState(true);
@@ -74,37 +74,41 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Primer Edit/Debug Tool</h2>
-      <p>Input your full sequence and/or sequences for each LAMP primer.</p>
-      <form onSubmit={handleSubmit}>
-        <div className='input-container'>
-          <label>Full Sequence</label><br/><br/>
+      <p className="form-description">Input your full sequence and/or sequences for each LAMP primer.</p>
+      <form onSubmit={handleSubmit} className="primer-form">
+        <div className="input-group">
+          <label htmlFor="full-sequence">Full Sequence</label>
           <textarea
+            id="full-sequence"
             value={fullSequence}
             onChange={handleFullSequenceChange}
             placeholder="Enter the full DNA sequence here"
-            style = {{width: "53%", height: "15vh"}}
+            className="textarea-input"
           />
         </div>
-        {primers.map((primer, index) => (
-          <div key={primer.name} className='input-container'>
-            <br/><label>{primer.name}</label>
-            <input
-              type="text"
-              value={primer.sequence}
-              onChange={(e) => handlePrimerChange(index, e.target.value)}
-              placeholder={`Enter ${primer.name} sequence`}
-              style = {{width: "50%", height:"2vh"}}
-            />
-          </div>
-        ))}
-        <div className='button-container'>
-          <button className='generate-button'>Debug Primer</button>
+        <div className="primers-container">
+          {primers.map((primer, index) => (
+            <div key={primer.name} className="input-group primer-column">
+              <label htmlFor={`primer-${primer.name}`}>{primer.name}</label>
+              <input
+                id={`primer-${primer.name}`}
+                type="text"
+                value={primer.sequence}
+                onChange={(e) => handlePrimerChange(index, e.target.value)}
+                placeholder={`Enter ${primer.name} sequence`}
+                className="text-input"
+              />
+            </div>
+          ))}
+        </div>
+        <div className="button-container">
+          <button type="submit" className="generate-button">Debug Primer</button>
         </div>
         
         {!isValid && (
-          <div className='error-message'>{errorMessage}</div>
+          <div className="error-message">{errorMessage}</div>
         )}
       </form>
     </div>
