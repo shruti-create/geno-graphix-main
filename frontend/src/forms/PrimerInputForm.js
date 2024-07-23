@@ -4,11 +4,13 @@ import "./PrimerSequenceInputForm.css";
 const PrimerInputForm = ({ onValueChange, handleSequence }) => {
   const [fullSequence, setFullSequence] = useState('');
   const [primers, setPrimers] = useState([
+    { name: 'F1c', sequence: '' },
+    { name: 'F2', sequence: '' },
     { name: 'F3', sequence: '' },
-    { name: 'B3', sequence: '' },
-    { name: 'FIP', sequence: '' },
-    { name: 'BIP', sequence: '' },
-    { name: 'LF', sequence: '' },
+    { name: 'B1c', sequence: '' },
+    { name: 'B2', sequence: '' },
+    { name: 'B3', sequence: '' }, 
+    { name: 'LF', sequence: '' }, 
     { name: 'LB', sequence: '' }
   ]);
   const [isValid, setValid] = useState(true);
@@ -77,25 +79,26 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
       <p>Input your full sequence and/or sequences for each LAMP primer.</p>
       <form onSubmit={handleSubmit}>
         <div className='input-container'>
-          <label>Full Sequence</label>
+          <label>Full Sequence</label><br/><br/>
           <textarea
             value={fullSequence}
             onChange={handleFullSequenceChange}
             placeholder="Enter the full DNA sequence here"
+            style = {{width: "53%", height: "15vh"}}
           />
         </div>
         {primers.map((primer, index) => (
           <div key={primer.name} className='input-container'>
-            <label>{primer.name}</label>
+            <br/><label>{primer.name}</label>
             <input
               type="text"
               value={primer.sequence}
               onChange={(e) => handlePrimerChange(index, e.target.value)}
               placeholder={`Enter ${primer.name} sequence`}
+              style = {{width: "50%", height:"2vh"}}
             />
           </div>
         ))}
-
         <div className='button-container'>
           <button className='generate-button'>Debug Primer</button>
         </div>

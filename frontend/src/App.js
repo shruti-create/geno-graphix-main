@@ -10,15 +10,6 @@ import HomePage from "./pages/HomePage";
 import React from 'react';
 
 
-function changeTabColor(evt) {
-  var i, navlinks;
-  navlinks = document.getElementsByClassName("nav-link");
-  for (i = 0; i < navlinks.length; i++) {
-    navlinks[i].className = navlinks[i].className.replace(" active", "");
-  }
-  evt.currentTarget.className += " active";
-}
-
 const NavBar = () => {
     const linkStyle = {
         padding: '20px', 
@@ -27,11 +18,14 @@ const NavBar = () => {
     };
     return (
       <nav style={{ 
-          backgroundColor: '#0f3663', 
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '0px 5px 5px 5px', 
-          boxShadow: '0 6px 2px -2px rgba(0,0,0,.2)'
+        backgroundColor: '#0f3663', 
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '0px 5px 5px 5px', 
+        boxShadow: '0 6px 2px -2px rgba(0,0,0,.2)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000, 
       }}>
         <img src={logo} alt="GenoGraphix Logo" style={{ position: 'absolute', height: '4vh', top: '1vh', marginLeft: '0vw' }} />
         <h1 style={{ 
@@ -51,9 +45,9 @@ const NavBar = () => {
           
             <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
             <Link to="/visual-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
-            <Link to="/primer-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>
+            {/* <Link to="/primer-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>*/}
             <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit Page</Link>
-            <Link to="/lamp-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link>
+            {/* <Link to="/lamp-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link> */}
         </div>
       </nav>
     );

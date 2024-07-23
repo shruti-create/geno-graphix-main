@@ -1,6 +1,9 @@
 import PrimerChosenForm from "../forms/PrimerEditorForm";
 import PrimerInput from "../forms/PrimerInputForm";
 import React, { useState } from "react";
+import primersImage from '../components/primers.png';
+import './PrimerEdit.css';
+
 
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
@@ -58,7 +61,7 @@ function PrimerEditPage() {
             return (
                 <div>
                     <div style={{borderRadius: 5, borderWidth: 2}}>
-
+                        <img src={primersImage} alt="Primers" className="small-image" />
                     </div>
                     {inputtedSequence.primers.map((primer) => (
                         <button 
@@ -73,13 +76,27 @@ function PrimerEditPage() {
                                 cursor: 'pointer',
                                 marginBottom: '10px', 
                                 width: '35vw', 
-                                height: '15vh'
+                                height: '12vh'
                             }}
                             onClick={() => handleEditPrimer(primer)}
                         >
                             Edit {primer.name}
                         </button>
+                        
                     ))}
+                    <div style={{
+                            backgroundColor: '#0f3663',
+                            color: 'white',
+                            top: '10vh', 
+                            right: '3vw',
+                            position: 'fixed', 
+                            width: '20vw', 
+                            height: '78vh', 
+                            borderRadius: '5px',
+                            padding: '5px 10px',
+                        }}>
+                        Full Sequence: {inputtedSequence.fullSequence}
+                    </div>
                     <button 
                         style={{
                             backgroundColor: '#0f3663',
@@ -88,7 +105,7 @@ function PrimerEditPage() {
                             padding: '5px 10px',
                             cursor: 'pointer',
                             position: 'fixed', 
-                            top: '85vh', 
+                            top: '90vh', 
                             right: '3vw'
                         }}
                         onClick={handleButtonClick}
