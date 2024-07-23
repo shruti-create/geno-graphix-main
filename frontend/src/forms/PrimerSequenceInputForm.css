@@ -1,21 +1,21 @@
 /* PrimerSequenceInputForm.css */
 
 .form-container {
-    max-width: 800px;
+    max-width: 100vw;
     margin: auto;
-    padding: 20px;
+    padding: 1vw;
+    top: 0%;
   }
   
   .form-description {
     font-size: 1.1rem;
     color: #0f3663;
-    margin-bottom: 20px;
   }
   
   .primer-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 3vh;
   }
   
   .input-group {
@@ -25,28 +25,30 @@
   }
   
   .textarea-input {
-    width: 100%;
-    height: 150px;
-    padding: 10px;
+    width: 97.5%;
+    height: 15vh;
+    padding: 2vh;
     font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 1vh;
+    border: 0.05vh solid #ccc;
     resize: vertical;
   }
   
   .text-input {
-    width: 100%;
-    height: 40px;
-    padding: 10px;
+    width: 95%;
+    height: 2vh;
+    padding: 2vh;
+    left: 1vh;
     font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 1vh;
+    border: 0.05vh solid #ccc;
+    margin-right: 2vw; 
   }
   
   .primers-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 2vh;
   }
   
   .primer-column {
