@@ -43,10 +43,10 @@ const NavBar = () => {
             justifyContent: 'flex-end', 
         }}>
           
-            <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home Page</Link>
-            <Link to="/visual-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visual Page</Link>
+            <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home</Link>
+            <Link to="/visual-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visualization</Link>
             {/* <Link to="/primer-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>*/}
-            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit Page</Link>
+            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit</Link>
             {/* <Link to="/lamp-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link> */}
         </div>
       </nav>
