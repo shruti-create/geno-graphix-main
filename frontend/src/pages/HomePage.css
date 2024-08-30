@@ -40,14 +40,16 @@
 }
 
 .title {
-    font-size: 3rem;
+    font-size: 4rem;
     color: white;
     text-align: center;
 }
 
 .subtitle {
     color: white;
+    font-size: 2rem;
     text-align: center;
+    font-weight: 400;
 }
 
 .description {

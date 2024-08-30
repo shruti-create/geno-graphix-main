@@ -15,7 +15,7 @@ function HomePage() {
                 <div className="overlay"></div>
                 <div className="content">
                     <h1 className="title">Welcome to GenoGraphix</h1>
-                    <h3 className="subtitle">Produced by Boolean Lab at UCSD</h3>
+                    <h2 className="subtitle">Produced by Boolean Lab at UCSD</h2>
                 </div>
             </div>
             <p className="description">
