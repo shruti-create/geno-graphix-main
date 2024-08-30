@@ -76,7 +76,7 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
   return (
     <div className="form-container">
       <h2>Primer Edit/Debug Tool</h2>
-      <p className="form-description">Input your full sequence and/or sequences for each LAMP primer.</p>
+      <p className="form-description">Input your full sequence and sequences for each LAMP primer.</p>
       <form onSubmit={handleSubmit} className="primer-form">
         <div className="input-group">
           <label htmlFor="full-sequence">Full Sequence</label>
