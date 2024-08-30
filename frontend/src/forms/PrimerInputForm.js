@@ -10,8 +10,6 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
     { name: 'B1c', sequence: '' },
     { name: 'B2', sequence: '' },
     { name: 'B3', sequence: '' },
-    { name: 'LF', sequence: '' },
-    { name: 'LB', sequence: '' }
   ]);
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
