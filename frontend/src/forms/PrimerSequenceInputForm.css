@@ -1,49 +1,80 @@
-.form-title{
-    font-size: rem;
-    color: #0f3663;
-    margin-bottom: 10px;
-}
+/* PrimerSequenceInputForm.css */
 
-.text-area {
-    width: 80%;
-    height: 100px;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    white-space: normal;
-}
-
-.file-input-container {
-    margin-bottom: 10px;
-}
-
-.file-upload {
-    display: inline-block;
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    color: #0f3663;
-    cursor: pointer;
+.form-container {
+    max-width: 100vw;
   }
-
   
-.button-container{
-    margin-top: 20px;
-}
-
-.generate-button {
-    background-color: #0f3663;
+  .form-description {
+    font-size: 1.1rem;
+    color: #0f3663;
+  }
+  
+  .primer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5vh;
+  }
+  
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .textarea-input {
+    width: 97.5%;
+    height: 15vh;
+    padding: 2vh;
+    font-size: 1rem;
+    border-radius: 1vh;
+    border: 0.05vh solid #ccc;
+    resize: vertical;
+  }
+  
+  .text-input {
+    width: 95%;
+    height: 2vh;
+    padding: 2vh;
+    left: 1vh;
+    font-size: 1rem;
+    border-radius: 1vh;
+    border: 0.05vh solid #ccc;
+    margin-right: 2vw; 
+  }
+  
+  .primers-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2vh;
+  }
+  
+  .primer-column {
+    flex: 1 1 45%; 
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .generate-button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
     color: white;
-    border: 1px solid #0f3663;
+    background-color: #0f3663;
+    border: none;
     border-radius: 5px;
-    padding: 5px 10px;
     cursor: pointer;
-    margin-bottom: 10px;
-}
-
-.error-message{
-    color: #801921;
-    margin-top: 5px;
-    font-weight: bold;
-}
+    transition: background-color 0.3s ease;
+  }
+  
+  .generate-button:hover {
+    background-color: #0d2a4e;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+  

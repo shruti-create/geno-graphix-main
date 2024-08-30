@@ -3,7 +3,7 @@ import FullSequence from "../components/fullSequence";
 import MagnifiedBox from "../components/MagnifiedBox";
 import "./VisualizationForm.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { faFloppyDisk, faRotateRight, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import AnnotationBox from "../components/Annotations";
 
 // Component for visualizing genomic sequence and controls what happems afer clicking generate buttom
@@ -16,6 +16,8 @@ function VisualizationPage({ input }) {
   const [endIndex, setEndIndex] = useState(0);
   const [fileContent, setFileContent] = useState(input); 
   const [displayAnnotation,setDisplay] = useState([]);
+  const [undoneAnnotations, setUndoneAnnotations] = useState([]);
+
   
   // useEffect to update fileContent when annotations are added
   useEffect(() => {
@@ -26,6 +28,29 @@ function VisualizationPage({ input }) {
     
   }, [annotation, startIndex, endIndex]);
  
+  // Reset all the annotations
+  const resetAnnotations = () => {
+    setDisplay([]); // Clear all annotations
+    setFileContent(input); // Reset file content to the original input
+  };
+
+  // Undo the last annotation action
+  const undoAnnotations = () => {
+    if (displayAnnotation.length > 0) {
+      const updatedAnnotations = [...displayAnnotation]; // create shallow copy
+      const undoneAnnotation = updatedAnnotations.pop();
+      setDisplay(updatedAnnotations); // Update the state with the new annotations
+      setUndoneAnnotations((prevUndone) => [...prevUndone, undoneAnnotation]);
+    }
+  };
+
+  const redoAnnotations = () => {
+    if (undoneAnnotations.length > 0){
+      const redoAnnotation = undoneAnnotations.pop();
+      setDisplay((prevAnnotations) => [...prevAnnotations, redoAnnotation]);
+    }
+  }
+
   // Handles the selection of a sequence range for annotation
   const handleSequenceSelect = (sequence, start, end) => {
     setStartIndex(start);
@@ -86,6 +111,24 @@ function VisualizationPage({ input }) {
 
   return (
     <div>
+      <div className="small-container">
+          <button style={{marginTop: '2%', width: '7%', height: '10%', marginLeft: '10px', padding: '5px', cursor: 'pointer'}} onClick={resetAnnotations}>
+            Reset
+          </button>
+
+          <button style={{marginTop: '2%', width: '7%', height: '10%', marginLeft: '10px', padding: '5px', cursor: 'pointer'}} onClick={resetAnnotations}>
+            Clear
+          </button>
+
+          <button style={{ marginTop: '2%', width: '7%', height: '10%', marginLeft: '10px', padding: '5px', cursor: 'pointer'}} onClick={undoAnnotations}>
+            <FontAwesomeIcon icon={faRotateLeft} style={{fontSize: '1.2em'}} />
+          </button>
+
+          <button style={{marginTop: '2%', width: '7%', height: '10%', marginLeft: '10px', padding: '5px', cursor: 'pointer'}} onClick={redoAnnotations}>
+            <FontAwesomeIcon icon={faRotateRight} style={{fontSize: '1.2em'}} />
+          </button>
+
+       </div>
       <h2>Genomic Sequence</h2>
       <div style={{ fontSize: "1.2rem", color: "black", margin: "20px" }}>
         <div className="container">
@@ -100,7 +143,7 @@ function VisualizationPage({ input }) {
             <AnnotationBox onAnnotationSelect={handleAnnotation} />
             <MagnifiedBox sequence={selectedSequence}/>
             <button style = {{marginTop: '3%', width: '15%', height: '5%'}} onClick={downloadFileContent}>
-              <FontAwesomeIcon icon={faFloppyDisk} style={{ marginRight: '5px', fontSize: '1.2em'}} />
+              Save 
             </button>
           </div>
         </div>
