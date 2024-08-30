@@ -1,5 +1,38 @@
 /* HomePage.css */
 
+
+.advantages-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    padding: 2rem 2;
+    margin: 5vh 10vw; /* Optional: center the container */
+    
+}
+
+.advantage {
+    background: #f9f9f9;
+    width: 35vw;
+    padding: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: left; 
+    position: relative;
+
+}
+
+.advantage h3 {
+    margin-top: 0;
+    color: #0f3663;
+    font-size: 1.3rem;
+}
+
+.advantage p {
+    color: #333;
+    font-size: 1.1rem;
+    line-height: 1.5;
+
+}
+
 .background-container {
     position: relative;
     margin-top: 0vh;
@@ -40,12 +73,15 @@
 }
 
 .title {
-    font-size: 4rem;
+    margin-top: 1rem;
+    font-size: 4.5rem;
     color: white;
     text-align: center;
+    margin-bottom: 1rem;
 }
 
 .subtitle {
+    margin-top: 0;
     color: white;
     font-size: 2rem;
     text-align: center;
@@ -53,17 +89,24 @@
 }
 
 .description {
-    font-size: 1.2rem;
+    font-size: 2rem;
     color: #0f3663;
-    margin: 5vh 10vw 0;
-    font-weight: bold;
+    margin: 7vh 10vw;
+    font-weight: 600;
+}
+
+.description2 {
+    font-size: 1.3rem;
+    color: #0f3663;
+    margin: 8vh 10vw 0;
 }
 
 .buttons-container {
-    height: 50vh;
+    height: 35vh;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    padding-bottom: 10vh;
 }
 
 .button {
