@@ -3,8 +3,17 @@ import backImage from '../components/genographix-back.png';
 import visual from '../components/visual.png';
 import edit from '../components/edit.png';
 import './HomePage.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDna, faCogs, faChartBar, faUsers } from '@fortawesome/free-solid-svg-icons';
+
+
 
 function HomePage() {
+    function scrollToSection() {
+        const section = document.querySelector('.description');
+        section.scrollIntoView({ behavior: 'smooth' });
+
+    }
     return (
         <div>
             <div className="background-container">
@@ -17,33 +26,48 @@ function HomePage() {
                     <h1 className="title">Welcome to GenoGraphix</h1>
                     <h1 className="subtitle">A free interactive tool to explore, visualize and analyze genetic data.</h1>
                 </div>
+                 <div className="down-arrow" onClick={() => scrollToSection()}>
+                    &#x2193;
+                </div>
             </div>
             
             {/* <p className="description2">
                 Provides insights into both DNA and RNA sequences, primer construction, and more. Explore the world of genetics with GenoGraphix, and delve into a user-friendly interface that simplifies complex genetic information for researchers and enthusiasts alike.
             </p> */}
         
+        
             <p className="description">
                 Why Choose GenoGraphix?
             </p>
 
-        
             <div className="advantages-container">
                 <div className="advantage">
                     <h3>Comprehensive Analysis</h3>
-                    <p>Get detailed insights into DNA and RNA sequences with our advanced tools.</p>
+                    <div className="advantage-inside">
+                        <p>Get detailed insights into DNA and RNA sequences with our advanced tools.</p>
+                        <FontAwesomeIcon icon={faDna} className="advantage-icon" />
+                    </div>
                 </div>
                 <div className="advantage">
                     <h3>Easy Primer Design</h3>
-                    <p>Optimize primer design with our intuitive and user-friendly interface.</p>
+                    <div className="advantage-inside">
+                        <p>Optimize primer design with our intuitive and user-friendly interface.</p>
+                        <FontAwesomeIcon icon={faCogs} className="advantage-icon" />
+                    </div>
                 </div>
                 <div className="advantage">
                     <h3>Efficient Visualization</h3>
-                    <p>Visualize complex genetic data effortlessly with interactive graphics.</p>
+                    <div className="advantage-inside">
+                        <p> Visualize complex genetic data effortlessly with interactive graphics and features.</p>
+                        <FontAwesomeIcon icon={faChartBar} className="advantage-icon" />
+                    </div>
                 </div>
                 <div className="advantage">
                     <h3>Accessible for All</h3>
-                    <p>Whether you're a researcher or enthusiast, our tool is designed for ease of use.</p>
+                    <div className="advantage-inside">
+                        <p>Whether you're a researcher or enthusiast, our tool is free and designed for ease of use.</p>
+                        <FontAwesomeIcon icon={faUsers} className="advantage-icon" />
+                    </div>
                 </div>
             </div>
 

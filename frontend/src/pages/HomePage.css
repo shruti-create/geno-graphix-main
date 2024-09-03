@@ -1,27 +1,60 @@
 /* HomePage.css */
 
+.down-arrow {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 4.5rem;
+    color: white;
+    cursor: pointer;
+    animation: bounce 2s infinite;
+}
 
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+.advantage-icon {
+    font-size: 3.9rem;
+    padding-right: 0.2rem;
+    padding-left: 1rem;
+    color: #0f3663;
+}
 .advantages-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2.5rem;
     padding: 2rem 2;
     margin: 5vh 10vw; /* Optional: center the container */
-    
 }
 
 .advantage {
+    align-items: center;
     background: #f9f9f9;
     width: 35vw;
     padding: 2.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     text-align: left; 
-    position: relative;
-
+    padding-bottom: 2rem;
+    /* position: relative; */
+}
+.advantage-inside {
+    display: flex;
+    gap: 1.5rem;
 }
 
 .advantage h3 {
     margin-top: 0;
+    margin-bottom: 5px;
+
     color: #0f3663;
     font-size: 1.3rem;
 }
@@ -37,7 +70,7 @@
     position: relative;
     margin-top: 0vh;
     padding: 15%;
-    height: 40vh;
+    height: 37vh;
     display: flex;
     justify-content: center;
     align-items: center;
