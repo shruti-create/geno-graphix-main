@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import './PrimerEditorForm.css'
 
 function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
     const [input, setInput] = useState(String(inputtedSequence));
@@ -108,7 +109,6 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                     height: '30vh',
                     width: '45vw',
                     borderRadius: '1vh',
-                    borderColor: 'purple',
                     borderWidth: '0.02vh',
                     borderStyle: 'solid',
                     display: 'flex',
@@ -146,13 +146,11 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                     height: '60vh',
                     width: '42vw',
                     borderRadius: '1vh',
-                    borderColor: 'purple',
                     borderWidth: '0.02vh',
                     borderStyle: 'solid',
                     padding: '1%',
                     overflowY: 'auto'
                 }}>
-                    <h3> Map: </h3>
                     <img id="imgMap" src={imgMap} alt="Quickfold Map" />
                 </div>
             </div>
@@ -161,7 +159,6 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                 height: '25vh',
                 width: '45vw',
                 borderRadius: '1vh',
-                borderColor: 'purple',
                 borderWidth: '0.02vh',
                 borderStyle: 'solid',
                 overflowY: 'auto',

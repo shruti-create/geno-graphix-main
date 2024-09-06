@@ -117,6 +117,7 @@ function PrimerEditPage() {
                         height: '74vh',
                         borderRadius: '5px',
                         padding: '4vh',
+                        overflowWrap: 'break-word',
                         overflow: 'scroll'
                     }}>
                         Full Sequence: {inputtedSequence.fullSequence}
