@@ -1,8 +1,9 @@
 import PrimerChosenForm from "../forms/PrimerEditorForm";
 import PrimerInput from "../forms/PrimerInputForm";
-import React, { useState } from "react";
+import React, { useState, useCallback} from "react";
 import primersImage from '../components/primers.png';
 import './PrimerEdit.css';
+import axios from 'axios';
 
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
@@ -10,10 +11,53 @@ function PrimerEditPage() {
     const [inputtedSequence, setInputtedSequence] = useState({ fullSequence: '', primers: [] });
     const [editingPrimer, setEditingPrimer] = useState(null);  // State to hold the currently editing primer
     const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' }); // Initialize with an empty object
+    const [simulationOutput, setSimulationOutput] = useState('');
+    const [error, setError] = useState('');
 
     const handleInputtedSequence = (fullSequence, primers) => {
         setInputtedSequence({ fullSequence, primers });
     };
+
+    const runSimulation = useCallback(async () => {
+        let sequence = inputtedSequence.fullSequence;
+        let F2 = '';
+        let F1c = '';
+        let B2 = '';
+        let B1c = '';
+        inputtedSequence.primers.forEach(primer => {
+            console.log(primer.name);
+            switch (primer.name) {
+                case 'F2':
+                    F2 = primer.sequence;
+                    break;
+                case 'F1c':
+                    F1c = primer.sequence;
+                    break;
+                case 'B2':
+                    B2 = primer.sequence;
+                    break;
+                case 'B1c':
+                    B1c = primer.sequence;
+                    break;
+                default:
+                    break;
+            }
+        });
+        try {
+            const response = await axios.post('http://127.0.0.1:5000/run-simulation', {
+                sequence: sequence,
+                F2: F2,
+                F1c: F1c,
+                B2: B2,
+                B1c: B1c
+            });
+    
+            const data = response.data;
+            setSimulationOutput(data.output);
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    }, [inputtedSequence]);
 
     const handleButtonClick = () => {
         setBack(!back);
@@ -32,11 +76,11 @@ function PrimerEditPage() {
 
     const handleEditPrimer = (primer) => {
         setEditingPrimer(primer);  // Set the currently editing primer
-        setEditedPrimer({ name: '', sequence: '' }); // Initialize edited primer for the next page
+        setEditedPrimer({ name: '', sequence: '' }); // initialize edited primer for the next page
     };
 
     const handlePrimerChange = (name, newSequence) => {
-        setEditedPrimer({ name, sequence: newSequence }); // Update edited primer state
+        setEditedPrimer({ name, sequence: newSequence }); // update edited primer state
     };
 
     const updateEditedPrimer = () => {
@@ -120,7 +164,20 @@ function PrimerEditPage() {
                         overflowWrap: 'break-word',
                         overflow: 'scroll'
                     }}>
-                        Full Sequence: {inputtedSequence.fullSequence}
+                        Run LAMP simulation with primers:  
+                        <br/>
+                        <button onClick={runSimulation}>Run Simulation</button>
+                        {simulationOutput && (
+                            <div style={{ marginTop: '2vh' }}>
+                            <h3>Simulation Output:</h3>
+                            <pre>{simulationOutput}</pre>
+                            </div>
+                        )}
+                        {error && (
+                            <div style={{ color: 'red', marginTop: '2vh' }}>
+                            <strong>Error:</strong> {error}
+                            </div>
+                        )}
                     </div>
                     <button
                         style={{

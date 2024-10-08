@@ -1,10 +1,10 @@
 sequence = "CATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCAAGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAACATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGAATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTACACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAGTCATTTTGCTGAATAAGCATATTGACGCATACAAAACATTCCCACCAACAGA"
-F3 = "CAGAACAAACCCAAGGAAAT"
-B3 = "TCTTTGTCATCCAATTTGATGG"
-F2 = "GGGACCAGGAACTAATCAGA"
-F1c = "ATTGTGCAATTTGCGGCCAA"
-B2 = "CCTGTGTAGGTCAACCAC"
-B1c = "CGCTTCAGCGTTCTTCGGAA"
+F3 = "ACAATGTAACACAAGCTTTCG"
+B3 = "GTAGGTCAACCACGTTCC"
+F2 = "AGACGTGGTCCAGAACAA"
+F1c = "TCAGTTCCTTGTCTGATTAGTTCCT"
+B2 = "GTGTGACTTCCATGCCAA"
+B1c = "TGGCCGCAAATTGCACAATT"
 
 def complement(sequence):
     complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
@@ -17,17 +17,22 @@ def reverse_complement(sequence):
 def fip_strand_invasion(F1c, F2, sequence):
     # use F2 primer with F1c overhang and create strand from target strand
     FIP = F1c + F2
+    print("1", F2, flush = True)
+    print(complement(F2), flush = True)
     F2c = complement(F2)
+    print(F2c, flush = True)
+    print("2" ,sequence.find(F2c), flush = True)
     # traverse string to find the starting point with F2c
     index = sequence.find(F2c)
-    print(index)
-    if index == None: 
+
+    if index == -1: 
         print("F2 primer exact complement not found in sequence. LAMP fails.")
         return None
     # creating the first strand with the first strand invasion
-    strand = FIP +  complement(sequence[index+len(F2):])
+    # checking to add FIP to the start of F1 and accounting for additional spaces
+    strand = FIP +  complement(sequence[sequence.find(F1c[::-1]):])
     print("Strand created with FIP: ", strand)
-    return strand,index
+    return strand
 
 def disassociate_strand(primer, sequence):
     # F3/B3 attaches to the original sequence to break the strand off by making a new stand 
@@ -41,16 +46,16 @@ def disassociate_strand(primer, sequence):
 
 def bip_strand_invasion(B1c, B2, sequence):
     # Backward inner primer complementary to B2c attaches and synthesizes the rest of the strand
-    BIP = reverse_complement(B1c) + B2[::-1] 
+    BIP = B2[::-1]+ B1c[::-1]
     B2c = reverse_complement(B2)
     # traverse string to find the starting point with F2c
     index = sequence.find(B2c)
     print(index)
-    if index == None: 
+    if index == -1: 
         print("B2 primer exact complement not found in sequence. LAMP fails.")
         return None
     # creating the first strand with the first strand invasion
-    strand = complement(sequence[0:index])+  BIP
+    strand = complement(sequence[0:sequence.find(B1c)+len(B1c)])+  BIP
     print("Strand created with BIP: ", strand)
     return strand
 
@@ -63,34 +68,40 @@ def similar(a, b):
     return similarity_ratio
 
 def extract_magnified_sequence(sequence, F1c, B1c):
-    start = sequence.find(F1c)
-    end = sequence.find(B1c) + len(B1c)
+    # +1 because need to start on the index AFTER the F1c Primer
+    start = sequence.find(reverse_complement(F1c)) + len(F1c)
+    end = sequence.find(B1c) 
     print(start, end)
     return sequence[start:end]
 
-def extract_magnified_sequence_full(sequence, F1c, dumbell):
-    start = sequence.find(reverse_complement(F1c))
-    end = start + len(dumbell)
+def extract_magnified_sequence_full(sequence, F1c, B1c):
+    start = sequence.find(reverse_complement(F1c)) + len(F1c)
+    end = sequence.find(B1c)
     print(start, end)
     return sequence[start:end]
 
 
 
-def create_lamp_dumbell(sequence, F3, B3, F2, F1c, B2, B1c):
-    print("Sequence: ", sequence)
+def create_lamp_dumbell(sequence, F2, F1c, B2, B1c):
+    print("Sequence: ", sequence, flush=True)
+    print("primers", F2, F1c, B2, B1c,flush=True)
     bip_strand= bip_strand_invasion(B1c, B2, sequence)
-    disassociate_strand(F3, sequence)
-    dumbell,_ = fip_strand_invasion(F1c, F2, bip_strand)
-    disassociate_strand(B3, sequence)
-    
-    print("lamp dumbell structure comes from strand: ", dumbell)
+    if bip_strand != None:
+        dumbell= fip_strand_invasion(F1c, F2, bip_strand)    
+        print("lamp dumbell structure comes from strand: ", dumbell, flush=True)
+        if dumbell != None: 
+            dumbell = extract_magnified_sequence(dumbell, F1c, B1c)
+            index = sequence.find(dumbell)
+            sequence = extract_magnified_sequence_full(sequence, F1c, B1c)
+            ratio = similar(sequence, dumbell)
+            print(index)
+            print(sequence, dumbell)
+            print("Resulting strand similarity with sequence: ", ratio)
+            return ratio
+        else: 
+            return -1
+    else: 
+        return -1
 
-    dumbell = extract_magnified_sequence(dumbell, F1c, B1c)
-
-    sequence = extract_magnified_sequence_full(sequence, F1c, dumbell)
-    ratio = similar(sequence, dumbell)
-    print(sequence, dumbell)
-    print("Resulting strand similarity with sequence: ", ratio)
-
-create_lamp_dumbell(sequence, F3, B3, F2, F1c, B2, B1c)
+#create_lamp_dumbell(sequence, F2, F1c, B2, B1c)
 
