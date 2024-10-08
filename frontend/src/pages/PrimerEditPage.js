@@ -164,13 +164,13 @@ function PrimerEditPage() {
                         overflowWrap: 'break-word',
                         overflow: 'scroll'
                     }}>
-                        Run LAMP simulation with primers:  
+                        <h3> Run LAMP simulation with primers:  </h3>
                         <br/>
                         <button onClick={runSimulation}>Run Simulation</button>
                         {simulationOutput && (
                             <div style={{ marginTop: '2vh' }}>
                             <h3>Simulation Output:</h3>
-                            <pre>{simulationOutput}</pre>
+                            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{simulationOutput}</pre>
                             </div>
                         )}
                         {error && (

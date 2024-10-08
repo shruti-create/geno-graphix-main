@@ -27,7 +27,7 @@ def fip_strand_invasion(F1c, F2, sequence):
 
     if index == -1: 
         print("F2 primer exact complement not found in sequence. LAMP fails.")
-        return None
+        return "F2 primer exact complement not found in sequence. LAMP fails."
     # creating the first strand with the first strand invasion
     # checking to add FIP to the start of F1 and accounting for additional spaces
     strand = FIP +  complement(sequence[sequence.find(F1c[::-1]):])
@@ -53,7 +53,7 @@ def bip_strand_invasion(B1c, B2, sequence):
     print(index)
     if index == -1: 
         print("B2 primer exact complement not found in sequence. LAMP fails.")
-        return None
+        return "B2 primer exact complement not found in sequence. LAMP fails."
     # creating the first strand with the first strand invasion
     strand = complement(sequence[0:sequence.find(B1c)+len(B1c)])+  BIP
     print("Strand created with BIP: ", strand)
@@ -86,10 +86,10 @@ def create_lamp_dumbell(sequence, F2, F1c, B2, B1c):
     print("Sequence: ", sequence, flush=True)
     print("primers", F2, F1c, B2, B1c,flush=True)
     bip_strand= bip_strand_invasion(B1c, B2, sequence)
-    if bip_strand != None:
+    if bip_strand != "B2 primer exact complement not found in sequence. LAMP fails.":
         dumbell= fip_strand_invasion(F1c, F2, bip_strand)    
         print("lamp dumbell structure comes from strand: ", dumbell, flush=True)
-        if dumbell != None: 
+        if dumbell != "F2 primer exact complement not found in sequence. LAMP fails.": 
             dumbell = extract_magnified_sequence(dumbell, F1c, B1c)
             index = sequence.find(dumbell)
             sequence = extract_magnified_sequence_full(sequence, F1c, B1c)
@@ -99,9 +99,9 @@ def create_lamp_dumbell(sequence, F2, F1c, B2, B1c):
             print("Resulting strand similarity with sequence: ", ratio)
             return ratio
         else: 
-            return -1
+            return -1, " " + dumbell
     else: 
-        return -1
+        return -1, " " + bip_strand
 
 #create_lamp_dumbell(sequence, F2, F1c, B2, B1c)
 
