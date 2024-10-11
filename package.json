@@ -4,6 +4,9 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "d3": "^7.9.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1"
   }
 }
