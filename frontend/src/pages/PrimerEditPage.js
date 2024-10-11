@@ -1,17 +1,15 @@
 import PrimerChosenForm from "../forms/PrimerEditorForm";
 import PrimerInput from "../forms/PrimerInputForm";
-import React, { useState, useCallback} from "react";
-import primersImage from '../components/primers.png';
-import './PrimerEdit.css';
+import React, { useState, useCallback } from "react";
 import axios from 'axios';
-
+import './PrimerEdit.css';
 
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
     const [inputtedSequence, setInputtedSequence] = useState({ fullSequence: '', primers: [] });
-    const [editingPrimer, setEditingPrimer] = useState(null);  // State to hold the currently editing primer
-    const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' }); // Initialize with an empty object
+    const [editingPrimer, setEditingPrimer] = useState(null);
+    const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' });
     const [simulationOutput, setSimulationOutput] = useState('');
     const [error, setError] = useState('');
 
@@ -26,7 +24,6 @@ function PrimerEditPage() {
         let B2 = '';
         let B1c = '';
         inputtedSequence.primers.forEach(primer => {
-            console.log(primer.name);
             switch (primer.name) {
                 case 'F2':
                     F2 = primer.sequence;
@@ -52,7 +49,7 @@ function PrimerEditPage() {
                 B2: B2,
                 B1c: B1c
             });
-    
+
             const data = response.data;
             setSimulationOutput(data.output);
         } catch (error) {
@@ -67,7 +64,7 @@ function PrimerEditPage() {
 
     const handleBackFromEdit = () => {
         setEditingPrimer(null);
-        updateEditedPrimer(); // update primer list with edited primer
+        updateEditedPrimer();
     };
 
     const handleValueChange = (newValue) => {
@@ -76,12 +73,12 @@ function PrimerEditPage() {
     };
 
     const handleEditPrimer = (primer) => {
-        setEditingPrimer(primer);  // Set the currently editing primer
-        setEditedPrimer({ name: '', sequence: '' }); // initialize edited primer for the next page
+        setEditingPrimer(primer);
+        setEditedPrimer({ name: '', sequence: '' });
     };
 
     const handlePrimerChange = (name, newSequence) => {
-        setEditedPrimer({ name, sequence: newSequence }); // update edited primer state
+        setEditedPrimer({ name, sequence: newSequence });
     };
 
     const updateEditedPrimer = () => {
@@ -91,6 +88,23 @@ function PrimerEditPage() {
             );
             return { ...prevState, primers: updatedPrimers };
         });
+    };
+
+    const saveToFile = () => {
+        let textContent = `Full Sequence:\n${inputtedSequence.fullSequence}\n\nPrimers:\n`;
+        inputtedSequence.primers.forEach((primer) => {
+            textContent += `${primer.name}: ${primer.sequence}\n`;
+        });
+
+        const blob = new Blob([textContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'primers_and_sequence.txt';  
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a); 
+        window.URL.revokeObjectURL(url);  
     };
 
     function ChooseForm() {
@@ -116,7 +130,6 @@ function PrimerEditPage() {
                             onClick={() => {
                                 localStorage.clear();  
                                 handleBackFromEdit();
-
                             }}
                         >
                             Back
@@ -186,6 +199,7 @@ function PrimerEditPage() {
                             </div>
                         )}
                     </div>
+
                     <button
                         style={{
                             backgroundColor: '#0f3663',
@@ -196,6 +210,22 @@ function PrimerEditPage() {
                             position: 'fixed',
                             top: '93vh',
                             right: '3vw'
+                        }}
+                        onClick={saveToFile}  
+                    >
+                        Save and Download
+                    </button>
+
+                    <button
+                        style={{
+                            backgroundColor: '#0f3663',
+                            color: 'white',
+                            borderRadius: '5px',
+                            padding: '5px 10px',
+                            cursor: 'pointer',
+                            position: 'fixed',
+                            top: '93vh',
+                            left: '3vw'
                         }}
                         onClick={() => {
                             localStorage.clear();  
