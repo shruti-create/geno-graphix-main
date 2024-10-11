@@ -5,6 +5,7 @@ import primersImage from '../components/primers.png';
 import './PrimerEdit.css';
 import axios from 'axios';
 
+
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
@@ -13,6 +14,15 @@ function PrimerEditPage() {
     const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' }); // Initialize with an empty object
     const [simulationOutput, setSimulationOutput] = useState('');
     const [error, setError] = useState('');
+    const [primers, setPrimers] = useState(inputtedSequence.primers);
+    const [sequence, setSequence] = useState(inputtedSequence.fullSequence);
+
+    const handlePrimerDrop = (index, position) => {
+        // Update primer position based on drop position
+        const updatedPrimers = [...primers];
+        updatedPrimers[index].position = position;
+        setPrimers(updatedPrimers);
+    };
 
     const handleInputtedSequence = (fullSequence, primers) => {
         setInputtedSequence({ fullSequence, primers });
@@ -125,8 +135,8 @@ function PrimerEditPage() {
         } else if (submitted === 2) {
             return (
                 <div>
-                    <div style={{ borderRadius: 5, borderWidth: 2 }}>
-                        <img src={primersImage} alt="Primers" className="small-image" />
+                    <div style={{ display: 'flex' }}>
+                        {/* MAP HERE */}
                     </div>
                     {inputtedSequence.primers.map((primer) => (
                         <button
