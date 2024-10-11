@@ -100,7 +100,9 @@ function PrimerEditPage() {
                     <div>
                         <PrimerChosenForm
                             inputtedSequence={editingPrimer.sequence}
-                            onPrimerChange={(newSequence) => handlePrimerChange(editingPrimer.name, newSequence)}
+                            onPrimerChange={(newSequence) => {
+                                handlePrimerChange(editingPrimer.name, newSequence);
+                            }}
                         />
                         <button
                             style={{
@@ -111,7 +113,11 @@ function PrimerEditPage() {
                                 cursor: 'pointer',
                                 top: '20vh',
                             }}
-                            onClick={() => handleBackFromEdit()}
+                            onClick={() => {
+                                localStorage.clear();  
+                                handleBackFromEdit();
+
+                            }}
                         >
                             Back
                         </button>
@@ -191,7 +197,10 @@ function PrimerEditPage() {
                             top: '93vh',
                             right: '3vw'
                         }}
-                        onClick={handleButtonClick}
+                        onClick={() => {
+                            localStorage.clear();  
+                            handleButtonClick(); 
+                        }}
                     >
                         Back
                     </button>

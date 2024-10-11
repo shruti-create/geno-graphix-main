@@ -2,32 +2,36 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './PrimerEditorForm.css'
 
-function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
-    const [input, setInput] = useState(String(inputtedSequence));
+function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
+    const [input, setInput] = useState(inputtedSequence || '');  
     const [addCharacter, setAddCharacter] = useState('');
     const [addPosition, setAddPosition] = useState('');
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
     const [imgMap, setImgMap] = useState('');
-    const [updatedPrimer, setUpdatedPrimer] = useState(null);
 
-    // Memoized fetch function to avoid re-creation on each render
+    useEffect(() => {
+        const cachedInput = localStorage.getItem('primerInput');
+        if (cachedInput) {
+            setInput(cachedInput);  
+        }
+    }, []);  
+
     const fetchQuickfoldMap = useCallback(async () => {
         try {
             const response = await axios.post('http://127.0.0.1:5000/quickfold', {
                 sequence: input
             });
             setImgMap(response.data.results_img);
-            console.log("Image URL", response.data.results_img);
         } catch (error) {
             console.error('Error fetching manipulated sequence', error);
         }
     }, [input]);
 
     useEffect(() => {
-        setRecommendation(recommendations(input));
+        setRecommendation(recommendations(input)); 
         fetchQuickfoldMap();
-    }, [input]);
+    }, [input, fetchQuickfoldMap]);
 
     function recommendations(primer) {
         const gc_content = calculateGCContent(primer);
@@ -80,16 +84,16 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
         if (newChar && newChar.length === 1) {
             const updatedInput = input.substring(0, index) + newChar + input.substring(index + 1);
             setInput(updatedInput);
-           
+            localStorage.setItem('primerInput', updatedInput);  
         }
     }
-    
+
     function handleCharacterDelete() {
         const index = parseInt(deletePosition);
         if (!isNaN(index) && index >= 0 && index < input.length) {
             const updatedInput = input.substring(0, index) + input.substring(index + 1);
             setInput(updatedInput);
-            
+            localStorage.setItem('primerInput', updatedInput);  
         }
     }
 
@@ -98,9 +102,9 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
         if (addCharacter && !isNaN(position) && position >= 0 && position <= input.length) {
             const updatedInput = input.substring(0, position) + addCharacter + input.substring(position);
             setInput(updatedInput);
+            localStorage.setItem('primerInput', updatedInput); 
         }
     }
-
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', padding: '1%' }}>
@@ -178,7 +182,12 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                     cursor: 'pointer',
                     top: '20vh',
                 }}
-                onClick={onPrimerChange(input) + console.log("IN ON CLICK :)")}
+                onClick={(event) => {
+                    event.preventDefault();  
+                    localStorage.setItem('primerInput', input);  
+                    onPrimerChange(input); 
+                    
+                }}
             >
                 Save
             </button>
