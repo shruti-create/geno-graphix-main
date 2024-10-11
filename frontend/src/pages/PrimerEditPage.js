@@ -14,15 +14,6 @@ function PrimerEditPage() {
     const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' }); // Initialize with an empty object
     const [simulationOutput, setSimulationOutput] = useState('');
     const [error, setError] = useState('');
-    const [primers, setPrimers] = useState(inputtedSequence.primers);
-    const [sequence, setSequence] = useState(inputtedSequence.fullSequence);
-
-    const handlePrimerDrop = (index, position) => {
-        // Update primer position based on drop position
-        const updatedPrimers = [...primers];
-        updatedPrimers[index].position = position;
-        setPrimers(updatedPrimers);
-    };
 
     const handleInputtedSequence = (fullSequence, primers) => {
         setInputtedSequence({ fullSequence, primers });

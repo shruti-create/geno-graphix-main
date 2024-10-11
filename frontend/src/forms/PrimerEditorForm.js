@@ -101,6 +101,7 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
         }
     }
 
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', padding: '1%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -168,6 +169,19 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                 <h3>Recommendations</h3>
                 <div style={{ whiteSpace: 'pre-line' }}>{recommendation}</div>
             </div>
+            <button 
+                style={{
+                    backgroundColor: '#0f3663',
+                    color: 'white',
+                    borderRadius: '5px',
+                    padding: '5px 10px',
+                    cursor: 'pointer',
+                    top: '20vh',
+                }}
+                onClick={onPrimerChange(input) + console.log("IN ON CLICK :)")}
+            >
+                Save
+            </button>
         </div>
     );
 }
