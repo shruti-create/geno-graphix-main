@@ -19,7 +19,7 @@ function HomePage() {
             <div className="background-container">
                 <div 
                     className="background-image" 
-                    style={{ backgroundImage: `url(${backImage})` }}>
+                    style={{ backgroundImage: `url(${backImage})`, height: '95vh' }}>
                 </div>
                 <div className="overlay"></div>
                 <div className="content">

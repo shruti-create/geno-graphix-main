@@ -8,7 +8,6 @@
     border-style: 'solid';
     padding: '1%';
     overflow-y: auto;
-
     margin-top: '2vh'
 }
 
@@ -24,5 +23,6 @@
 }
 
 #imgMap {
-    scale: 20%;
+    max-width: 100%;
+
 }

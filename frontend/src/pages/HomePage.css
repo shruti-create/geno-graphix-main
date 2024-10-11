@@ -156,10 +156,21 @@
 
 .visual-button {
     color: #0f3663;
-    left: 4vw
+    left: 4vw;
+    cursor: pointer;
+}
+
+.visual-button:hover {
+    scale: 102%;
 }
 
 .primer-button {
     color: white;
-    right: 4vw
+    right: 4vw;
+    cursor: pointer;
+
+}
+
+.primer-button:hover {
+    scale: 102%;
 }

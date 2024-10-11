@@ -47,7 +47,7 @@ function VisualPage() {
                 <button 
                 style={{
                   marginRight: '10px',
-                  backgroundColor: '#665682',
+                  backgroundColor: '#0f3663',
                   border: '1px solid #665682',
                   color: 'white',
                   borderRadius: '5px',
