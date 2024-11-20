@@ -1,6 +1,6 @@
 import PrimerChosenForm from "../forms/PrimerEditorForm";
 import PrimerInput from "../forms/PrimerInputForm";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import axios from 'axios';
 import './PrimerEdit.css';
 
@@ -12,10 +12,44 @@ function PrimerEditPage() {
     const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' });
     const [simulationOutput, setSimulationOutput] = useState('');
     const [error, setError] = useState('');
+    const [mapImage, setMapImage] = useState(null);
+
 
     const handleInputtedSequence = (fullSequence, primers) => {
         setInputtedSequence({ fullSequence, primers });
     };
+
+    const fetchPrimerMap = useCallback(async () => {
+        if (!inputtedSequence.fullSequence || inputtedSequence.primers.length === 0) {
+            return;
+        }
+    
+        try {
+            const response = await axios.post('http://127.0.0.1:5000/primer-map', {
+                sequence: inputtedSequence.fullSequence,
+                primers: inputtedSequence.primers.map(primer => primer.sequence)
+            }, {
+                responseType: 'blob' 
+            });
+    
+            const imageUrl = URL.createObjectURL(response.data);  
+            setMapImage(imageUrl);  
+        } catch (error) {
+            console.error('Error fetching primer map:', error);
+            setError('Failed to fetch the primer map.');
+        }
+    }, [inputtedSequence]);
+    
+    
+    
+    
+
+    useEffect(() => {
+        if (submitted === 2) {
+            fetchPrimerMap();
+        }
+    }, [submitted, fetchPrimerMap]);
+    
 
     const runSimulation = useCallback(async () => {
         let sequence = inputtedSequence.fullSequence;
@@ -145,9 +179,41 @@ function PrimerEditPage() {
         } else if (submitted === 2) {
             return (
                 <div>
-                    <div style={{ display: 'flex' }}>
-                        {/* MAP HERE */}
+                    <textbf style = {{color: '#0f3663', fontSize: "large"}}>Primer Map</textbf> 
+                    <text style = {{fontSize: "small"}}> Click on the primer sequences to edit them. </text>
+
+                    <div style={{
+                        display: 'flex',
+                        overflowX: 'auto',
+                        width: '70vw',
+                        height: '30vh', 
+                        border: '2px solid #0f3663',  
+                        marginBottom: '3vh', 
+                        marginTop: '3vh'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',  
+                            height: '100%'  
+                        }}>
+                            {mapImage ? (
+                                <img 
+                                    src={mapImage} 
+                                    style={{
+                                        height: '100%',  
+                                        width: 'auto',   
+                                    }} 
+                                    alt="Primer Map" 
+                                />
+                            ) : (
+                                <p>Loading Primer Map...</p>
+                            )}
+                        </div>
                     </div>
+
+
+
                     {inputtedSequence.primers.map((primer) => (
                         <button
                             key={primer.name}

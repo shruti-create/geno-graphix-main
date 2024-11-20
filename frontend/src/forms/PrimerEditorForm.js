@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback , useRef} from 'react';
 import axios from 'axios';
 import './PrimerEditorForm.css'
 
@@ -9,13 +9,21 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
     const [imgMap, setImgMap] = useState('');
+    const mapRef = useRef(null);
 
     useEffect(() => {
         const cachedInput = localStorage.getItem('primerInput');
         if (cachedInput) {
             setInput(cachedInput);  
         }
-    }, []);  
+    }, []); 
+
+    const handleMapLoad = (() =>{
+        const loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) {
+            loadingMessage.remove(); 
+        }
+    })
 
     const fetchQuickfoldMap = useCallback(async () => {
         try {
@@ -53,7 +61,10 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
             const to_decrease_temp = Math.ceil((temperature - 64) / 2);
             recs.push(`Temperature is above the optimal range: Decrease the temperature by ${to_decrease_temp} degrees.`);
         }
-
+        if (recs.length === 0){
+            recs.push('No recommendations at this moment. ')
+        }
+        recs.push("Refer to the map on the right for information about potential loops forming in the sequence. ")
         return recs;
     }
 
@@ -97,6 +108,12 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
         }
     }
 
+    useEffect(() => {
+        if (mapRef.current) {
+            mapRef.current.onload = handleMapLoad;
+        }
+    }, []);
+
     function handleAddCharacter() {
         const position = parseInt(addPosition);
         if (addCharacter && !isNaN(position) && position >= 0 && position <= input.length) {
@@ -135,7 +152,7 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
                             {item}
                         </button>
                     ))}
-                    <div style={{ marginTop: '5vh', position: 'relative' }}>
+                    <div style={{ marginTop: '25vh', position: 'fixed' }}>
                         <label>Add Character: </label>
                         <input type="text" value={addCharacter} onChange={(e) => setAddCharacter(e.target.value)} />
                         <label> Position: </label>
@@ -147,17 +164,18 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
                         <button onClick={handleCharacterDelete}>Delete</button>
                     </div>
                 </div>
-                <div style={{
-                    height: '60vh',
-                    width: '42vw',
-                    borderRadius: '1vh',
-                    borderWidth: '0.02vh',
-                    borderStyle: 'solid',
-                    padding: '1%',
-                    overflowY: 'auto'
-                }}>
-                    <img id="imgMap" src={imgMap} alt="Quickfold Map" />
+                
+                <div id="mapContainer">
+                    <p id="loadingMessage" style = {{paddingLeft: '1vw'}}>Map Loading...</p>
+                    <embed
+                        id="imgMap"
+                        ref={mapRef}
+                        src={imgMap}
+                        title="Quickfold Map"
+                        type="application/pdf"
+                    />
                 </div>
+                                
             </div>
             <div style={{
                 padding: '1%',

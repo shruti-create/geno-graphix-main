@@ -13,7 +13,7 @@
 
 .rec-container{
     height: '30vh';
-    width: '42vw';
+    width: '60vw';
     border-radius: '1vh';
     border-color: 'purple';
     border-width: '0.02vh';
@@ -23,6 +23,9 @@
 }
 
 #imgMap {
-    max-width: 100%;
-
+    width: 45vw;
+    height: 63vh; 
+    padding-bottom: 3%;
+    padding-left: 1%;
+    border: 1% black;
 }

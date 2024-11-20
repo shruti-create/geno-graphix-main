@@ -1,9 +1,12 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, send_file
 from primer_design import manipulate_sequence
+from map import graph_sequence_with_primers
 from lamp import create_lamp_dumbell
 from quickfold import sequenceMap
 from flask_cors import CORS
 import logging
+
+import os
 
 
 import requests
@@ -38,6 +41,20 @@ def get_sequence_map():
     results_img = sequenceMap(sequence)
     response = jsonify({'results_img': results_img})
     return response
+
+@app.route('/primer-map', methods=['POST'])
+def get_primer_map():
+    sequence = request.json['sequence']
+    primers = request.json['primers']
+
+    img_stream = graph_sequence_with_primers(sequence, primers)
+
+    return send_file(
+        img_stream,
+        mimetype='image/png',
+        as_attachment=False,
+        download_name="primer_map.png"
+    )
 
 @app.route('/run-simulation', methods=['POST']) 
 def run_simulation():
