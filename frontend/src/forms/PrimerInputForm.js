@@ -70,11 +70,26 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
       setValid(false);
     }
   };
+  const handleSamplePrimers = () =>{
+    setFullSequence("CATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCAAGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAACATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGAATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTACACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAGTCATTTTGCTGAATAAGCATATTGACGCATACAAAACATTCCCACCAACAGA");
+      setPrimers([
+        { name: 'F1c', sequence: 'ATTGTGCAATTTGCGGCCAA' },
+        { name: 'F2', sequence: 'GGGACCAGGAACTAATCAGA' },
+        { name: 'F3', sequence: 'CAGAACAAACCCAAGGAAAT' },
+        { name: 'B1c', sequence: 'CGCTTCAGCGTTCTTCGGAA' },
+        { name: 'B2', sequence: 'CCTGTGTAGGTCAACCAC' },
+        { name: 'B3', sequence: 'TCTTTGTCATCCAATTTGATGG' },
+    ]);
+  }
 
   return (
     <div className="form-container">
       <h2>Primer Edit/Debug Tool</h2>
-      <p className="form-description">Input your full sequence and sequences for each LAMP primer.</p>
+      <p className="form-description">Input your full sequence and sequences for each LAMP primer  OR  try  </p>
+      <button style = {{paddingTop: '0.5vh', paddingBottom: '0.5vh', position: 'absolute', top: '21.5vh', left: '40vw'}} onClick={handleSamplePrimers}> 
+        Sample Primers! 
+      </button>
+
       <form onSubmit={handleSubmit} className="primer-form">
         <div className="input-group">
           <label htmlFor="full-sequence">Full Sequence</label>
@@ -104,7 +119,7 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
         <div className="button-container">
           <button type="submit" className="generate-button">Debug Primer</button>
         </div>
-        
+
         {!isValid && (
           <div className="error-message">{errorMessage}</div>
         )}

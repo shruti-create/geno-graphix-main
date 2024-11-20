@@ -1,32 +1,55 @@
 import PrimerChosenForm from "../forms/PrimerEditorForm";
 import PrimerInput from "../forms/PrimerInputForm";
-import React, { useState, useCallback} from "react";
-import primersImage from '../components/primers.png';
-import './PrimerEdit.css';
+import React, { useState, useCallback, useEffect } from "react";
 import axios from 'axios';
-
+import './PrimerEdit.css';
 
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
     const [back, setBack] = useState(false);
     const [inputtedSequence, setInputtedSequence] = useState({ fullSequence: '', primers: [] });
-    const [editingPrimer, setEditingPrimer] = useState(null);  // State to hold the currently editing primer
-    const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' }); // Initialize with an empty object
+    const [editingPrimer, setEditingPrimer] = useState(null);
+    const [editedPrimer, setEditedPrimer] = useState({ name: '', sequence: '' });
     const [simulationOutput, setSimulationOutput] = useState('');
     const [error, setError] = useState('');
-    const [primers, setPrimers] = useState(inputtedSequence.primers);
-    const [sequence, setSequence] = useState(inputtedSequence.fullSequence);
+    const [mapImage, setMapImage] = useState(null);
 
-    const handlePrimerDrop = (index, position) => {
-        // Update primer position based on drop position
-        const updatedPrimers = [...primers];
-        updatedPrimers[index].position = position;
-        setPrimers(updatedPrimers);
-    };
 
     const handleInputtedSequence = (fullSequence, primers) => {
         setInputtedSequence({ fullSequence, primers });
     };
+
+    const fetchPrimerMap = useCallback(async () => {
+        if (!inputtedSequence.fullSequence || inputtedSequence.primers.length === 0) {
+            return;
+        }
+    
+        try {
+            const response = await axios.post('http://127.0.0.1:5000/primer-map', {
+                sequence: inputtedSequence.fullSequence,
+                primers: inputtedSequence.primers.map(primer => primer.sequence)
+            }, {
+                responseType: 'blob' 
+            });
+    
+            const imageUrl = URL.createObjectURL(response.data);  
+            setMapImage(imageUrl);  
+        } catch (error) {
+            console.error('Error fetching primer map:', error);
+            setError('Failed to fetch the primer map.');
+        }
+    }, [inputtedSequence]);
+    
+    
+    
+    
+
+    useEffect(() => {
+        if (submitted === 2) {
+            fetchPrimerMap();
+        }
+    }, [submitted, fetchPrimerMap]);
+    
 
     const runSimulation = useCallback(async () => {
         let sequence = inputtedSequence.fullSequence;
@@ -35,7 +58,6 @@ function PrimerEditPage() {
         let B2 = '';
         let B1c = '';
         inputtedSequence.primers.forEach(primer => {
-            console.log(primer.name);
             switch (primer.name) {
                 case 'F2':
                     F2 = primer.sequence;
@@ -61,7 +83,7 @@ function PrimerEditPage() {
                 B2: B2,
                 B1c: B1c
             });
-    
+
             const data = response.data;
             setSimulationOutput(data.output);
         } catch (error) {
@@ -76,7 +98,7 @@ function PrimerEditPage() {
 
     const handleBackFromEdit = () => {
         setEditingPrimer(null);
-        updateEditedPrimer(); // update primer list with edited primer
+        updateEditedPrimer();
     };
 
     const handleValueChange = (newValue) => {
@@ -85,12 +107,12 @@ function PrimerEditPage() {
     };
 
     const handleEditPrimer = (primer) => {
-        setEditingPrimer(primer);  // Set the currently editing primer
-        setEditedPrimer({ name: '', sequence: '' }); // initialize edited primer for the next page
+        setEditingPrimer(primer);
+        setEditedPrimer({ name: '', sequence: '' });
     };
 
     const handlePrimerChange = (name, newSequence) => {
-        setEditedPrimer({ name, sequence: newSequence }); // update edited primer state
+        setEditedPrimer({ name, sequence: newSequence });
     };
 
     const updateEditedPrimer = () => {
@@ -102,6 +124,23 @@ function PrimerEditPage() {
         });
     };
 
+    const saveToFile = () => {
+        let textContent = `Full Sequence:\n${inputtedSequence.fullSequence}\n\nPrimers:\n`;
+        inputtedSequence.primers.forEach((primer) => {
+            textContent += `${primer.name}: ${primer.sequence}\n`;
+        });
+
+        const blob = new Blob([textContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'primers_and_sequence.txt';  
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a); 
+        window.URL.revokeObjectURL(url);  
+    };
+
     function ChooseForm() {
         if (submitted === 0 || (back && submitted === 0) || editingPrimer) {
             if (editingPrimer) {
@@ -109,7 +148,9 @@ function PrimerEditPage() {
                     <div>
                         <PrimerChosenForm
                             inputtedSequence={editingPrimer.sequence}
-                            onPrimerChange={(newSequence) => handlePrimerChange(editingPrimer.name, newSequence)}
+                            onPrimerChange={(newSequence) => {
+                                handlePrimerChange(editingPrimer.name, newSequence);
+                            }}
                         />
                         <button
                             style={{
@@ -120,7 +161,10 @@ function PrimerEditPage() {
                                 cursor: 'pointer',
                                 top: '20vh',
                             }}
-                            onClick={() => handleBackFromEdit()}
+                            onClick={() => {
+                                localStorage.clear();  
+                                handleBackFromEdit();
+                            }}
                         >
                             Back
                         </button>
@@ -135,9 +179,41 @@ function PrimerEditPage() {
         } else if (submitted === 2) {
             return (
                 <div>
-                    <div style={{ display: 'flex' }}>
-                        {/* MAP HERE */}
+                    <textbf style = {{color: '#0f3663', fontSize: "large"}}>Primer Map</textbf> 
+                    <text style = {{fontSize: "small"}}> Click on the primer sequences to edit them. </text>
+
+                    <div style={{
+                        display: 'flex',
+                        overflowX: 'auto',
+                        width: '70vw',
+                        height: '30vh', 
+                        border: '2px solid #0f3663',  
+                        marginBottom: '3vh', 
+                        marginTop: '3vh'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',  
+                            height: '100%'  
+                        }}>
+                            {mapImage ? (
+                                <img 
+                                    src={mapImage} 
+                                    style={{
+                                        height: '100%',  
+                                        width: 'auto',   
+                                    }} 
+                                    alt="Primer Map" 
+                                />
+                            ) : (
+                                <p>Loading Primer Map...</p>
+                            )}
+                        </div>
                     </div>
+
+
+
                     {inputtedSequence.primers.map((primer) => (
                         <button
                             key={primer.name}
@@ -189,6 +265,7 @@ function PrimerEditPage() {
                             </div>
                         )}
                     </div>
+
                     <button
                         style={{
                             backgroundColor: '#0f3663',
@@ -200,7 +277,26 @@ function PrimerEditPage() {
                             top: '93vh',
                             right: '3vw'
                         }}
-                        onClick={handleButtonClick}
+                        onClick={saveToFile}  
+                    >
+                        Save and Download
+                    </button>
+
+                    <button
+                        style={{
+                            backgroundColor: '#0f3663',
+                            color: 'white',
+                            borderRadius: '5px',
+                            padding: '5px 10px',
+                            cursor: 'pointer',
+                            position: 'fixed',
+                            top: '93vh',
+                            left: '3vw'
+                        }}
+                        onClick={() => {
+                            localStorage.clear();  
+                            handleButtonClick(); 
+                        }}
                     >
                         Back
                     </button>

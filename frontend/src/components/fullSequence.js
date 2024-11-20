@@ -39,7 +39,7 @@ const FullSequence = ({ sequence, onSequenceSelect, annotations }) => {
     const sortedAnnotations = formattedAnnotations.sort((a, b) => a.start - b.start);
   
     sortedAnnotations.forEach(({ start, end, type }, index) => {
-      const annotatedPart = sequence.slice(start, end);
+      const annotatedPart = sequence.slice(start, end+1);
   
       // Add the unannotated part of the sequence
       result.push(sequence.slice(lastIndex, start));
