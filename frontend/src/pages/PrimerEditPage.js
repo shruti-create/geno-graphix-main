@@ -4,6 +4,7 @@ import React, { useState, useCallback} from "react";
 import primersImage from '../components/primers.png';
 import './PrimerEdit.css';
 import axios from 'axios';
+// import {GraphicFeature, GraphicRecord} from dna_features_viewer
 
 
 function PrimerEditPage() {
@@ -137,6 +138,8 @@ function PrimerEditPage() {
                 <div>
                     <div style={{ display: 'flex' }}>
                         {/* MAP HERE */}
+                        
+                        {/* find */}
                     </div>
                     {inputtedSequence.primers.map((primer) => (
                         <button
