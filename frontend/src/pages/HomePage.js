@@ -1,6 +1,6 @@
 import React from "react";
 import backImage from '../components/genographix-back.png';
-import visual from '../components/visual.png';
+import about from '../components/about.png';
 import edit from '../components/edit.png';
 import './HomePage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -76,11 +76,11 @@ function HomePage() {
             </p>
             <br/>
             <div className="buttons-container">
-                <a href={'http://localhost:3000/visual-page'}>
+                <a href={'http://localhost:3000/about-page'}>
                     <button 
                         className="button visual-button" 
-                        style={{ backgroundImage: `url(${visual})` }}>
-                        Visual Page
+                        style={{ backgroundImage: `url(${about})` }}>
+                        About Page
                     </button>
                 </a>
                 <a href={'http://localhost:3000/primer-edit-page'}>

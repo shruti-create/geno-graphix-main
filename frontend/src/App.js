@@ -45,11 +45,11 @@ const NavBar = () => {
         }}>
           
             <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home</Link>
-            <Link to="/visual-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visualization</Link>
+            <Link to="/about-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">About Us! </Link>
+            {/* <Link to="/visual-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Visualization</Link> */}
             {/* <Link to="/primer-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Page</Link>*/}
-            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Edit</Link>
+            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Editor</Link>
             {/* <Link to="/lamp-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">LAMP Page</Link> */}
-            <Link to="/about-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">About</Link>
 
         </div>
       </nav>
@@ -63,10 +63,10 @@ function App() {
           <NavBar />
           <Routes>
               <Route path="/home" element={<HomePage/>}/>
-              <Route path="/visual-page" element={<VisualPage/>} />
-              <Route path="/primer-page" element={<PrimerPage/>} />
+              {/* <Route path="/visual-page" element={<VisualPage/>} /> */}
+              {/*<Route path="/primer-page" element={<PrimerPage/>} />*/}
               <Route path="/primer-edit-page" element={<PrimerEditPage/>} />
-              <Route path="/lamp-page" element={<LampPage/>} />
+              {/*<Route path="/lamp-page" element={<LampPage/>} />*/}
               <Route path="/about-page" element={<AboutPage/>} />
 
               <Route path="*" element={<HomePage/>} />
