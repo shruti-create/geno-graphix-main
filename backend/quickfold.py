@@ -29,7 +29,7 @@ def sequenceMap(sequence):
         results_url = response.url.replace('quikfold.cgi', 'results2/quikfold')
         results_img = results_url.replace('/results2/quikfold/', '/cgi-bin/DINAMelt/quikfold-structure.cgi?tag=')
         results_img = results_img[:-1]
-        results_img = results_img + "&which=1&type=png"
+        results_img = results_img + "&which=all&type=pdf"
         print(f"Results URL: {results_url}\n Image URL: {results_img}")
     else:
         print(f"Error: {response.status_code}")
