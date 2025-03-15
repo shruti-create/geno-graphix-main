@@ -39,7 +39,7 @@
 .advantage {
     align-items: center;
     background: #f9f9f9;
-    width: 35vw;
+    width: 33vw; 
     padding: 2.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     text-align: left; 
@@ -54,7 +54,7 @@
 .advantage h3 {
     margin-top: 0;
     margin-bottom: 5px;
-
+    width: 38vw;
     color: #0f3663;
     font-size: 1.3rem;
 }
@@ -63,7 +63,7 @@
     color: #333;
     font-size: 1.1rem;
     line-height: 1.5;
-
+    width: 38vw;
 }
 
 .background-container {

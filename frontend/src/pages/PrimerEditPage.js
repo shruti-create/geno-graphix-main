@@ -255,15 +255,24 @@ function PrimerEditPage() {
                         <button onClick={runSimulation}>Run Simulation</button>
                         {simulationOutput && (
                             <div style={{ marginTop: '2vh' }}>
-                            <h3>Simulation Output:</h3>
-                            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{simulationOutput}</pre>
+                                <h3>Simulation Output:</h3>
+                                <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', fontSize: 'small'}}>
+                                    {simulationOutput === 1
+                                        ? "The simulation ran without any issues. The primers successfully passed the baseline LAMP simulation, indicating strong compatibility and reliability." 
+                                        : "The simulation encountered issues, suggesting potential problems such as primer self-amplification, primer dimers, or suboptimal binding. Further optimization may be required to address these challenges."}
+                                </pre>
                             </div>
                         )}
+
                         {error && (
                             <div style={{ color: 'red', marginTop: '2vh' }}>
                             <strong>Error:</strong> {error}
                             </div>
                         )}
+                        <div>
+                            <text style={{ fontSize: 'x-small', color: 'white', }}
+                            > Disclaimer: This simulation provides a preliminary assessment and should not be considered definitive. It does not account for the intricate strand displacement steps inherent to the LAMP process, which are critical for accurate amplification dynamics. As such, further experimental validation is recommended to confirm the reliability of the primers under actual LAMP conditions.</text>
+                        </div>
                     </div>
 
                     <button

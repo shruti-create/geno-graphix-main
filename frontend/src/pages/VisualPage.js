@@ -37,6 +37,7 @@ function VisualPage() {
           if(submitted === 0 || (back && submitted === 0)){
           return (
             <div>
+              <h1> ** Page Still Under Construction ** </h1>
               <SequenceSubmissionForm onValueChange={handleValueChange} handleSequence = {handleInputtedSequence} />
             </div>
           );
