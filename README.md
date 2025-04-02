@@ -1,5 +1,7 @@
 # GenoGraphix Main Codebase
 
+### Explore how GenoGraphix is transforming genetic analysis and diagnostics through innovative tools and accessible design.
+
 ## Our Mission
 
 LAMP holds significant promise for rapid, on-site diagnostics due to its constant temperature operation. However, challenges such as primer self-amplification and primer dimers—where primers amplify themselves or bind to each other instead of the target DNA—reduce its reliability. Moreover, existing tools for selecting LAMP primers are often outdated and difficult to navigate.
