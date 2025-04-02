@@ -8,6 +8,21 @@ LAMP holds significant promise for rapid, on-site diagnostics due to its constan
 
 GenoGraphix aims to address these challenges by developing a web-based application that enhances primer design, minimizes issues like self-amplification and primer dimers, and improves usability and reliability. Our platform is designed for both research and at-home diagnostics.
 
+## Features
+
+### Interactive Primer Mapping
+
+GenoGraphix provides a visual representation of primer placement on the target sequence, allowing users to assess primer coverage and alignment. This ensures even distribution of primers, minimizing non-specific amplification risks. 
+
+### Primer Set Validation and Debugging
+
+Unlike conventional tools that evaluate primers individually, GenoGraphix simulates the collective behavior of all six primers. This is crucial for LAMP, where unintended cross-interactions between primers can compromise reaction reliability. By detecting and flagging these issues early, GenoGraphix helps researchers prevent experimental failures and improve diagnostic accuracy.
+
+### Real-Time Feedback and Recommendations
+
+GenoGraphix provides dynamic feedback as users adjust their primers. For example, if a primer’s GC content is too high, the system suggests modifications to improve specificity while maintaining binding efficiency. This iterative improvement process reduces the need for trial-and-error synthesis, streamlining primer optimization.
+
+
 ## Open a Local Instance of GenoGraphix
 
 cd frontend \
