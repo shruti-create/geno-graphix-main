@@ -1,4 +1,4 @@
-# GenoGraphix Main Codebase
+# GenoGraphix 
 
 ### Explore how GenoGraphix is transforming genetic analysis and diagnostics through innovative tools and accessible design.
 
