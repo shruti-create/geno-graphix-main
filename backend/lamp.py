@@ -1,10 +1,6 @@
-sequence = "CATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCAAGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAACATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGAATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTACACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAGTCATTTTGCTGAATAAGCATATTGACGCATACAAAACATTCCCACCAACAGA"
-F3 = "ACAATGTAACACAAGCTTTCG"
-B3 = "GTAGGTCAACCACGTTCC"
-F2 = "AGACGTGGTCCAGAACAA"
-F1c = "TCAGTTCCTTGTCTGATTAGTTCCT"
-B2 = "GTGTGACTTCCATGCCAA"
-B1c = "TGGCCGCAAATTGCACAATT"
+# LAMP Algorithm testing file: this file is used as the backend to test if the primers 
+# pass through a baseline LAMP simulation. Edit this file to test for specific conditions 
+# and different primers. 
 
 def complement(sequence):
     complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
@@ -103,5 +99,4 @@ def create_lamp_dumbell(sequence, F2, F1c, B2, B1c):
     else: 
         return -1, " " + bip_strand
 
-#create_lamp_dumbell(sequence, F2, F1c, B2, B1c)
 

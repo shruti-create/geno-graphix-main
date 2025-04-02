@@ -1,3 +1,5 @@
+# Map Generating file 
+
 from dna_features_viewer import GraphicRecord, GraphicFeature
 import logging
 import matplotlib

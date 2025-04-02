@@ -1,3 +1,5 @@
+# File for Creating the sequence map (with mappings from Unifold)
+
 import requests
 
 
@@ -36,7 +38,6 @@ def sequenceMap(sequence):
     return results_img
 
 
-# Install the software locally instead of calling the server
 
 
 sequenceMap('GGGTGTTGGGATGGGAGCAGGTCCCCAACCTCCCAAAGCCTGTGGGTTTCTCCCAGAGCCCAAGCCCCCAAGTTTTGTCGTCCGCTACAAGCAGGGGAGAAGAGACATCTAAGTGTGTTGCCACAGGACAAGTTGTGCAGAAGTAACGCACATAGTCCGGTGGCCCAGAC')

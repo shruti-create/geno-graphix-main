@@ -5,15 +5,13 @@ from lamp import create_lamp_dumbell
 from quickfold import sequenceMap
 from flask_cors import CORS
 import logging
-
 import os
-
-
 import requests
 
 logging.basicConfig(level=logging.DEBUG)
 
 
+# routing 
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
