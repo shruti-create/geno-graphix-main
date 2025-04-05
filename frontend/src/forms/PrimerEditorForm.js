@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback , useRef} from 'react';
 import axios from 'axios';
 import './PrimerEditorForm.css'
-import BACKEND_URL from './config';
+import BACKEND_URL from '../config';
 
 
 function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
@@ -29,7 +29,7 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
 
     const fetchQuickfoldMap = useCallback(async () => {
         try {
-            const response = await axios.post('${BACKEND_URL}/quickfold', {
+            const response = await axios.post(`${BACKEND_URL}/quickfold`, {
                 sequence: input
             });
             setImgMap(response.data.results_img);
