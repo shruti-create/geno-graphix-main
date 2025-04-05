@@ -42,7 +42,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 ## Open the Hosted Site
 
-If you would like to test out the size, use this link to view it in your browser: [https://shruti-create.github.io/geno-graphix-main/] (https://shruti-create.github.io/geno-graphix-main/). 
+If you would like to test out the size, use this link to view it in your browser: [https://shruti-create.github.io/geno-graphix-main/](https://shruti-create.github.io/geno-graphix-main/). 
 If the backend services are initially not working, please wait 2 minutes. For any other issues/concerns with the link, please contact us. 
 
 ## Contact Us
