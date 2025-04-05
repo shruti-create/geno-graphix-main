@@ -5,6 +5,7 @@ import edit from '../components/edit.png';
 import './HomePage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDna, faCogs, faChartBar, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { Link } from "react-router-dom";
 
 
 
@@ -76,20 +77,20 @@ function HomePage() {
             </p>
             <br/>
             <div className="buttons-container">
-                <a href={'http://localhost:3000/about-page'}>
+                <Link to="/about-page">
                     <button 
                         className="button visual-button" 
                         style={{ backgroundImage: `url(${about})` }}>
                         About Page
                     </button>
-                </a>
-                <a href={'http://localhost:3000/primer-edit-page'}>
+                </Link>
+                <Link to="/primer-edit-page">
                     <button 
                         className="button primer-button" 
                         style={{ backgroundImage: `url(${edit})` }}>
                         Primer Editor
                     </button>
-                </a>
+                </Link>
         
             </div>
         </div>

@@ -2,7 +2,7 @@ import './App.css';
 import PrimerEditPage from "./pages/PrimerEditPage";
 import AboutPage from "./pages/AboutPage"
 import logo from './circle_dna_strands_transparent.png';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import HomePage from "./pages/HomePage";
 import React from 'react';
