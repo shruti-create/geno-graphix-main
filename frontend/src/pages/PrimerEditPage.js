@@ -3,6 +3,7 @@ import PrimerInput from "../forms/PrimerInputForm";
 import React, { useState, useCallback, useEffect } from "react";
 import axios from 'axios';
 import './PrimerEdit.css';
+import BACKEND_URL from './config';
 
 function PrimerEditPage() {
     const [submitted, setSubmitted] = useState(0);
@@ -25,7 +26,7 @@ function PrimerEditPage() {
         }
     
         try {
-            const response = await axios.post('http://127.0.0.1:5000/primer-map', {
+            const response = await axios.post('${BACKEND_URL}/primer-map', {
                 sequence: inputtedSequence.fullSequence,
                 primers: inputtedSequence.primers.map(primer => primer.sequence)
             }, {
@@ -76,7 +77,7 @@ function PrimerEditPage() {
             }
         });
         try {
-            const response = await axios.post('http://127.0.0.1:5000/run-simulation', {
+            const response = await axios.post('${BACKEND_URL}/run-simulation', {
                 sequence: sequence,
                 F2: F2,
                 F1c: F1c,
