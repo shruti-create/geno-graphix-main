@@ -9,6 +9,7 @@
     "@mui/material": "^5.15.15",
     "concurrently": "^8.2.2",
     "d3": "^7.9.0",
+    "gh-pages": "^6.3.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1"
   }
