@@ -109,7 +109,9 @@ function AboutPage() {
                 <p>
                     The map visually represents the primer alignment along the sequence, allowing users to click and edit primers directly from the map view.
                 </p>
-
+                <div className="image-container">
+                    <img src={primer_edit} alt="Description of image" />
+                </div>
                 <h3>Error Detection</h3>
                 <p>
                 It highlights potential issues such as overlapping primers, incorrect placements, or sequences prone to self-amplification.
@@ -136,9 +138,7 @@ function AboutPage() {
                     or integration into workflows.
                 </p>
 
-                <div className="image-container">
-                    <img src={primer_edit} alt="Description of image" />
-                </div>
+                
 
                 <p>
                     When you select a specific primer for editing, the Edit Primer Feature provides an intuitive interface to adjust and refine primer sequences.
