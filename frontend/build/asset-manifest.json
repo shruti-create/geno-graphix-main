@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/geno-graphix-main/static/css/main.584c7698.css",
+    "main.js": "/geno-graphix-main/static/js/main.a0a7e55c.js",
+    "static/media/edit.png": "/geno-graphix-main/static/media/edit.df2b08542b825f659a36.png",
+    "static/media/about.png": "/geno-graphix-main/static/media/about.28bf506a4039f04c187b.png",
+    "static/media/genographix-back.png": "/geno-graphix-main/static/media/genographix-back.0eca642c50c94dce4d06.png",
+    "static/media/circle_dna_strands_transparent.png": "/geno-graphix-main/static/media/circle_dna_strands_transparent.52b310fec73dc6f91b9a.png",
+    "index.html": "/geno-graphix-main/index.html",
+    "main.584c7698.css.map": "/geno-graphix-main/static/css/main.584c7698.css.map",
+    "main.a0a7e55c.js.map": "/geno-graphix-main/static/js/main.a0a7e55c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.584c7698.css",
+    "static/js/main.a0a7e55c.js"
+  ]
+}
