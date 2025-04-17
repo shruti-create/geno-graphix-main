@@ -1,13 +1,14 @@
-.about-container {
-    margin: 10vh 10vw;
+
+.about-page {
     font-family: Arial, sans-serif;
-    line-height: 1.8;
     color: #0f3663;
+    padding: 5vw 10vw;
+    line-height: 1.8;
 }
 
 .about-header {
     text-align: center;
-    margin-bottom: 5vh;
+    margin-bottom: 4rem;
 }
 
 .about-header h1 {
@@ -21,14 +22,29 @@
 }
 
 .about-section {
-    margin-bottom: 5vh;
+    margin-bottom: 3rem;
 }
 
 .about-section h2 {
     font-size: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2.5rem;
     color: #0f3663;
 }
+
+.about-section h3 {
+    font-size: 1.75rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: #df0404;
+}
+
+.about-section h4 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
 
 .about-section p {
     font-size: 1.2rem;
@@ -36,25 +52,67 @@
     text-align: justify;
 }
 
-.mission-container {
-    background-color: #f9f9f9;
-    padding: 4rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.about-section ul {
+    padding-left: 1.5rem;
+    list-style: disc;
 }
 
-.mission-header h2 {
-    color: #0f3663;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-.mission-header p {
+.about-section ul li {
     font-size: 1.2rem;
-    line-height: 1.6;
     color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.about-footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.back-button {
+    background-color: #0f3663;
+    color: white;
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .back-button:hover {
     background-color: #09274d;
+}
+
+.image-container {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    width: 1300px; /* Set your desired width */
+    height: 600px; /* Set your desired height */
+    overflow: hidden; /* Hide any overflow */
+    position: relative; /* Establish a positioning context */
+}
+
+.image-container img {
+    border: 3px solid #b3aeae;
+    width: 100%; /* Adjust width to fit the container */
+    height: 100%; /* Adjust height to fit the container */
+    border-radius: 10px; /* Adjust the value for more or less rounding */
+    box-sizing: border-box; /* Include border in the element's total width and height */
+}
+
+.image-container2 {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    width: 1300px; /* Set your desired width */
+    height: 700px; /* Set your desired height */
+    overflow: hidden; /* Hide any overflow */
+    position: relative; /* Establish a positioning context */
+}
+
+.image-container2 img {
+    border: 3px solid #b3aeae;
+    width: 100%; /* Adjust width to fit the container */
+    height: 100%; /* Adjust height to fit the container */
+    border-radius: 10px; /* Adjust the value for more or less rounding */
+    box-sizing: border-box; /* Include border in the element's total width and height */
 }
