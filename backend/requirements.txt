@@ -1,0 +1,6 @@
+flask
+dna_features_viewer
+requests
+flask_cors
+primers
+gunicorn

@@ -8,13 +8,12 @@
     border-style: 'solid';
     padding: '1%';
     overflow-y: auto;
-
     margin-top: '2vh'
 }
 
 .rec-container{
     height: '30vh';
-    width: '42vw';
+    width: '60vw';
     border-radius: '1vh';
     border-color: 'purple';
     border-width: '0.02vh';
@@ -24,5 +23,9 @@
 }
 
 #imgMap {
-    scale: 20%;
+    width: 45vw;
+    height: 63vh; 
+    padding-bottom: 3%;
+    padding-left: 1%;
+    border: 1% black;
 }

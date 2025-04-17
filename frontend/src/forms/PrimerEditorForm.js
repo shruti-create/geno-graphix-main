@@ -1,32 +1,47 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback , useRef} from 'react';
 import axios from 'axios';
+import './PrimerEditorForm.css'
+import BACKEND_URL from '../config';
 
-function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
-    const [input, setInput] = useState(String(inputtedSequence));
+
+function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
+    const [input, setInput] = useState(inputtedSequence || '');  
     const [addCharacter, setAddCharacter] = useState('');
     const [addPosition, setAddPosition] = useState('');
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
     const [imgMap, setImgMap] = useState('');
-    const [updatedPrimer, setUpdatedPrimer] = useState(null);
+    const mapRef = useRef(null);
 
-    // Memoized fetch function to avoid re-creation on each render
+    useEffect(() => {
+        const cachedInput = localStorage.getItem('primerInput');
+        if (cachedInput) {
+            setInput(cachedInput);  
+        }
+    }, []); 
+
+    const handleMapLoad = (() =>{
+        const loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) {
+            loadingMessage.remove(); 
+        }
+    })
+
     const fetchQuickfoldMap = useCallback(async () => {
         try {
-            const response = await axios.post('http://127.0.0.1:5000/quickfold', {
+            const response = await axios.post(`${BACKEND_URL}/quickfold`, {
                 sequence: input
             });
             setImgMap(response.data.results_img);
-            console.log("Image URL", response.data.results_img);
         } catch (error) {
             console.error('Error fetching manipulated sequence', error);
         }
     }, [input]);
 
     useEffect(() => {
-        setRecommendation(recommendations(input));
+        setRecommendation(recommendations(input)); 
         fetchQuickfoldMap();
-    }, [input]);
+    }, [input, fetchQuickfoldMap]);
 
     function recommendations(primer) {
         const gc_content = calculateGCContent(primer);
@@ -48,7 +63,10 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
             const to_decrease_temp = Math.ceil((temperature - 64) / 2);
             recs.push(`Temperature is above the optimal range: Decrease the temperature by ${to_decrease_temp} degrees.`);
         }
-
+        if (recs.length === 0){
+            recs.push('No recommendations at this moment. ')
+        }
+        recs.push("Refer to the map on the right for information about potential loops forming in the sequence. ")
         return recs;
     }
 
@@ -79,24 +97,31 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
         if (newChar && newChar.length === 1) {
             const updatedInput = input.substring(0, index) + newChar + input.substring(index + 1);
             setInput(updatedInput);
-           
+            localStorage.setItem('primerInput', updatedInput);  
         }
     }
-    
+
     function handleCharacterDelete() {
         const index = parseInt(deletePosition);
         if (!isNaN(index) && index >= 0 && index < input.length) {
             const updatedInput = input.substring(0, index) + input.substring(index + 1);
             setInput(updatedInput);
-            
+            localStorage.setItem('primerInput', updatedInput);  
         }
     }
+
+    useEffect(() => {
+        if (mapRef.current) {
+            mapRef.current.onload = handleMapLoad;
+        }
+    }, []);
 
     function handleAddCharacter() {
         const position = parseInt(addPosition);
         if (addCharacter && !isNaN(position) && position >= 0 && position <= input.length) {
             const updatedInput = input.substring(0, position) + addCharacter + input.substring(position);
             setInput(updatedInput);
+            localStorage.setItem('primerInput', updatedInput); 
         }
     }
 
@@ -108,7 +133,6 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                     height: '30vh',
                     width: '45vw',
                     borderRadius: '1vh',
-                    borderColor: 'purple',
                     borderWidth: '0.02vh',
                     borderStyle: 'solid',
                     display: 'flex',
@@ -130,7 +154,7 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                             {item}
                         </button>
                     ))}
-                    <div style={{ marginTop: '5vh', position: 'relative' }}>
+                    <div style={{ marginTop: '25vh', position: 'fixed' }}>
                         <label>Add Character: </label>
                         <input type="text" value={addCharacter} onChange={(e) => setAddCharacter(e.target.value)} />
                         <label> Position: </label>
@@ -142,26 +166,24 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                         <button onClick={handleCharacterDelete}>Delete</button>
                     </div>
                 </div>
-                <div style={{
-                    height: '60vh',
-                    width: '42vw',
-                    borderRadius: '1vh',
-                    borderColor: 'purple',
-                    borderWidth: '0.02vh',
-                    borderStyle: 'solid',
-                    padding: '1%',
-                    overflowY: 'auto'
-                }}>
-                    <h3> Map: </h3>
-                    <img id="imgMap" src={imgMap} alt="Quickfold Map" />
+                
+                <div id="mapContainer">
+                    <p id="loadingMessage" style = {{paddingLeft: '1vw'}}>Map Loading...</p>
+                    <embed
+                        id="imgMap"
+                        ref={mapRef}
+                        src={imgMap}
+                        title="Quickfold Map"
+                        type="application/pdf"
+                    />
                 </div>
+                                
             </div>
             <div style={{
                 padding: '1%',
                 height: '25vh',
                 width: '45vw',
                 borderRadius: '1vh',
-                borderColor: 'purple',
                 borderWidth: '0.02vh',
                 borderStyle: 'solid',
                 overflowY: 'auto',
@@ -171,6 +193,24 @@ function PrimerShowPage({ inputtedSequence, onPrimerChange }) {
                 <h3>Recommendations</h3>
                 <div style={{ whiteSpace: 'pre-line' }}>{recommendation}</div>
             </div>
+            <button 
+                style={{
+                    backgroundColor: '#0f3663',
+                    color: 'white',
+                    borderRadius: '5px',
+                    padding: '5px 10px',
+                    cursor: 'pointer',
+                    top: '20vh',
+                }}
+                onClick={(event) => {
+                    event.preventDefault();  
+                    localStorage.setItem('primerInput', input);  
+                    onPrimerChange(input); 
+                    
+                }}
+            >
+                Save
+            </button>
         </div>
     );
 }

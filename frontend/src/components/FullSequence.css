@@ -33,10 +33,10 @@
 }
 
 .sequence::-moz-selection {
-  background: #0f3663;
+  background: #80a5d0;
 }
 
 .sequence::selection {
-  background: #0f3663;
+  background: #80a5d0;
 }
 

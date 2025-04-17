@@ -1,8 +1,33 @@
-# Getting Started with Create React App
+# GenoGraphix 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Explore how GenoGraphix is transforming genetic analysis and diagnostics through innovative tools and accessible design.
 
-To run the program:
+## Background 
+
+Genetic amplification is crucial for producing multiple copies of a genomic sequence, enabling detailed study and applications such as disease diagnosis and genetic research. The process involves primers, short nucleotide sequences targeting a specific DNA region for amplification. While Polymerase Chain Reaction (PCR) is the gold standard, it requires controlled temperature cycles, making it resource-intensive. In contrast, Loop-Mediated Isothermal Amplification (LAMP) operates at a constant temperature, making it more efficient, especially for low-resource settings or at-home diagnostics. Despite its advantages, the process of designing effective primers for LAMP can be challenging, with issues like self-amplification or primer dimers impacting reliability.
+
+## Our Mission
+
+LAMP holds significant promise for rapid, on-site diagnostics due to its constant temperature operation. However, challenges such as primer self-amplification and primer dimers—where primers amplify themselves or bind to each other instead of the target DNA—reduce its reliability. Moreover, existing tools for selecting LAMP primers are often outdated and difficult to navigate.
+
+GenoGraphix aims to address these challenges by developing a web-based application that enhances primer design, minimizes issues like self-amplification and primer dimers, and improves usability and reliability. Our platform is designed for both research and at-home diagnostics.
+
+## Features
+
+### Interactive Primer Mapping
+
+GenoGraphix provides a visual representation of primer placement on the target sequence, allowing users to assess primer coverage and alignment. This ensures even distribution of primers, minimizing non-specific amplification risks. 
+
+### Primer Set Validation and Debugging
+
+Unlike conventional tools that evaluate primers individually, GenoGraphix simulates the collective behavior of all six primers. This is crucial for LAMP, where unintended cross-interactions between primers can compromise reaction reliability. By detecting and flagging these issues early, GenoGraphix helps researchers prevent experimental failures and improve diagnostic accuracy.
+
+### Real-Time Feedback and Recommendations
+
+GenoGraphix provides dynamic feedback as users adjust their primers. For example, if a primer’s GC content is too high, the system suggests modifications to improve specificity while maintaining binding efficiency. This iterative improvement process reduces the need for trial-and-error synthesis, streamlining primer optimization.
+
+
+## Open a Local Instance of GenoGraphix
 
 cd frontend \
 npm i --legacy-peer-deps \
@@ -10,78 +35,21 @@ cd .. \
 cd backend \
 pip install flask_cors \
 cd .. \
-bash start.sh \
-cd backend \
-python app.py
+bash start.sh 
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
+The script will run the app in development mode. 
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Open the Hosted Site
 
-### `npm test`
+If you would like to test out the size, use this link to view it in your browser: [https://shruti-create.github.io/geno-graphix-main/](https://shruti-create.github.io/geno-graphix-main/). 
+If the backend services are initially not working, please wait 2 minutes. For any other issues/concerns with the link, please contact us. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Contact Us
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-### issues
-
-use this " export NODE_OPTIONS=--openssl-legacy-provider "
+Shruti Bhamidipati - shbhamidipati@ucsd.edu
+\\
+Uliyaah Dionisio - udionisio@ucsd.edu
+\\
+Vinuthna Maradana - vmaradana@ucsd.edu
 

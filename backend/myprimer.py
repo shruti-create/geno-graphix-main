@@ -1,3 +1,6 @@
+# File for Condition Checking for Primers: checks the primers for basic primer design conditions 
+# Creates recommendations to show how primers can better fit conditions
+
 from primers import create
 
 forward_sequence_list= []

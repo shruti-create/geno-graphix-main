@@ -2,6 +2,7 @@
   "name": "geno-graphix",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://shruti-create.github.io/geno-graphix-main",
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
@@ -14,7 +15,10 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.7",
+    "d3": "^7.9.0",
     "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.3",
     "react-scripts": "^5.0.1",
@@ -24,7 +28,9 @@
     "start": "concurrently \"react-scripts start\" \"cd .. && cd ./backend && python app.py\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -43,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+    },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
