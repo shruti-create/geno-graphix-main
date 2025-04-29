@@ -148,6 +148,7 @@ function PrimerEditPage() {
                 return (
                     <div>
                         <PrimerChosenForm
+                            sequence = {inputtedSequence.fullSequence}
                             inputtedSequence={editingPrimer.sequence}
                             onPrimerChange={(newSequence) => {
                                 handlePrimerChange(editingPrimer.name, newSequence);
@@ -174,7 +175,7 @@ function PrimerEditPage() {
             }
             return (
                 <div>
-                    <PrimerInput onValueChange={handleValueChange} handleSequence={handleInputtedSequence} />
+                    <PrimerInput  onValueChange={handleValueChange} handleSequence={handleInputtedSequence} />
                 </div>
             );
         } else if (submitted === 2) {

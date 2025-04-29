@@ -100,7 +100,7 @@ def gcContentCheck(primer_list, type):
                 temp_c_count = temp_c_count +1
         if temp_g_count >=3 or temp_c_count >=3:
             temp_list.remove(item)
-    # send back the list of primers that we found with the food GC content
+    # send back the list of primers that we found with the good GC content
     primer_list.clear()
     primer_list[:] = temp_list
 
