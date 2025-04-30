@@ -13,6 +13,10 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
     const [imgMap, setImgMap] = useState('');
     const mapRef = useRef(null);
 
+    const [rnaStructure, setRnaStructure] = useState(null);
+    const [submitted, setSubmitted] = useState(0);
+    const [error, setError] = useState("");
+
     useEffect(() => {
         const cachedInput = localStorage.getItem('primerInput');
         if (cachedInput) {
@@ -27,21 +31,39 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
         }
     })
 
-    const fetchQuickfoldMap = useCallback(async () => {
+
+    const handleInputtedSequence = (fullSequence, primers) => {
+        setInput({ fullSequence, primers });
+    };
+
+    const fetchSequenceStructure = useCallback(async () => {
+        if (!input.fullSequence) {
+            return;
+        }
+    
         try {
-            const response = await axios.post(`${BACKEND_URL}/quickfold`, {
-                sequence: input
+            const response = await axios.post(`${BACKEND_URL}/update-sequence`, {
+                sequence: input.fullSequence
             });
-            setImgMap(response.data.results_img);
+    
+            // Assuming the backend returns the structure, you can render it in FornaContainer or use it as needed.
+            const structure = response.data.structure;
+    
+            // If you want to display or process the structure (e.g., dot-bracket notation), set it to state.
+            setRnaStructure(structure);  // or handle it based on your needs
+    
         } catch (error) {
-            console.error('Error fetching manipulated sequence', error);
+            console.error('Error fetching sequence structure:', error);
+            setError('Failed to fetch RNA structure.');
         }
     }, [input]);
-
+    
     useEffect(() => {
-        setRecommendation(recommendations(input)); 
-        fetchQuickfoldMap();
-    }, [input, fetchQuickfoldMap]);
+        if (submitted === 2) {
+            fetchSequenceStructure();
+        }
+    }, [submitted, fetchSequenceStructure]);
+    
 
     function recommendations(primer) {
         const gc_content = calculateGCContent(primer);
@@ -168,14 +190,12 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
                 </div>
                 
                 <div id="mapContainer">
-                    <p id="loadingMessage" style = {{paddingLeft: '1vw'}}>Map Loading...</p>
-                    <embed
-                        id="imgMap"
-                        ref={mapRef}
-                        src={imgMap}
-                        title="Quickfold Map"
-                        type="application/pdf"
-                    />
+                    <iframe
+                        src= {`${BACKEND_URL}/forna/`}
+                        width="900"
+                        height="500"
+                        style={{ border: 'none' }}
+                        ></iframe>
                 </div>
                                 
             </div>

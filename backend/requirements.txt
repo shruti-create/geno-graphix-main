@@ -4,3 +4,6 @@ requests
 flask_cors
 primers
 gunicorn
+seqfold
+dash
+dash_bio
