@@ -4,7 +4,8 @@ import './PrimerEditorForm.css'
 import BACKEND_URL from '../config';
 
 
-function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
+function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
+    const [characters, setCharacters]= useState([]);
     const [input, setInput] = useState(inputtedSequence || '');  
     const [addCharacter, setAddCharacter] = useState('');
     const [addPosition, setAddPosition] = useState('');
@@ -23,6 +24,28 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
             setInput(cachedInput);  
         }
     }, []); 
+    useEffect(() => {
+        if (inputtedSequence) {
+            setInput(inputtedSequence);
+        }
+    }, [inputtedSequence]);
+    useEffect(() => {
+        console.log(sequence);
+        console.log("Updated characters:", characters);
+    }, [characters]);
+
+    useEffect(() => {
+        if (!input || !sequence) return;
+    
+        const index = sequence.indexOf(input);
+        if (index === -1) return;
+    
+        const before = sequence.slice(Math.max(0, index - 3), index);
+        const after = sequence.slice(index + input.length, index + input.length + 3);
+    
+        setCharacters([before, after]);
+      }, [input, sequence]);
+    
 
     const handleMapLoad = (() =>{
         const loadingMessage = document.getElementById('loadingMessage');
@@ -212,7 +235,16 @@ function PrimerShowPage({name, inputtedSequence, onPrimerChange }) {
             }}>
                 <h3>Recommendations</h3>
                 <div style={{ whiteSpace: 'pre-line' }}>{recommendation}</div>
-            </div>
+                <h3>Characters before and after the primer</h3>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ marginRight: '10px' }}>
+                        Before: {characters[0]}
+                    </div>
+                    <div>
+                        After: {characters[1]}
+                    </div>
+                </div>
+             </div>
             <button 
                 style={{
                     backgroundColor: '#0f3663',
