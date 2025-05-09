@@ -11,8 +11,6 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
     const [addPosition, setAddPosition] = useState('');
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
-    const [imgMap, setImgMap] = useState('');
-    const mapRef = useRef(null);
 
     const [rnaStructure, setRnaStructure] = useState(null);
     const [submitted, setSubmitted] = useState(0);
@@ -54,7 +52,6 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
         }
     })
 
-
     const handleInputtedSequence = (fullSequence, primers) => {
         setInput({ fullSequence, primers });
     };
@@ -80,13 +77,14 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
             setError('Failed to fetch RNA structure.');
         }
     }, [input]);
-    
+
+
     useEffect(() => {
+        setRecommendation(recommendations(input)); 
         if (submitted === 2) {
             fetchSequenceStructure();
         }
-    }, [submitted, fetchSequenceStructure]);
-    
+    }, [submitted, fetchSequenceStructure, input]);
 
     function recommendations(primer) {
         const gc_content = calculateGCContent(primer);
@@ -155,12 +153,7 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
         }
     }
 
-    useEffect(() => {
-        if (mapRef.current) {
-            mapRef.current.onload = handleMapLoad;
-        }
-    }, []);
-
+    
     function handleAddCharacter() {
         const position = parseInt(addPosition);
         if (addCharacter && !isNaN(position) && position >= 0 && position <= input.length) {
@@ -213,12 +206,16 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
                 </div>
                 
                 <div id="mapContainer">
+                    <div></div>
+                    <p id="loadingMessage" style = {{paddingLeft: '1vw'}}>Map Loading...</p>
                     <iframe
                         src= {`${BACKEND_URL}/forna/`}
                         width="900"
                         height="500"
                         style={{ border: 'none' }}
-                        ></iframe>
+                        id = 'imgMap'
+                    ></iframe>
+                   
                 </div>
                                 
             </div>
