@@ -42,15 +42,43 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
     
     useEffect(() => {
         if (!input || !sequence) return;
-    
-        const index = sequence.indexOf(input);
-        if (index === -1) return;
-    
-        const before = sequence.slice(Math.max(0, index - 3), index);
-        const after = sequence.slice(index + input.length, index + input.length + 3);
-    
+      
+        const len = input.length;
+        const threshold = 0.5; 
+      
+        let matchIndex = -1;
+        let bestScore = 0;
+      
+        for (let i = 0; i <= sequence.length - len; i++) {
+          const window = sequence.slice(i, i + len);
+      
+          let matches = 0;
+          for (let j = 0; j < len; j++) {
+            if (window[j] === input[j]) matches++;
+          }
+      
+          const score = matches / len;
+          if (score >= threshold && score > bestScore) {
+            bestScore = score;
+            matchIndex = i;
+          }
+        }
+      
+        console.log(`Best fuzzy score: ${bestScore} at index ${matchIndex}`);
+        if (matchIndex === -1) return;
+      
+        const before = sequence.slice(
+          Math.max(0, matchIndex - 3),
+          matchIndex
+        );
+        const after = sequence.slice(
+          matchIndex + len,
+          matchIndex + len + 3
+        );
+      
         setCharacters([before, after]);
       }, [input, sequence]);
+      
     
       
     const handleMapLoad = (() =>{
