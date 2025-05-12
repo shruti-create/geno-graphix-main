@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.7",
     "d3": "^7.9.0",
+    "fornac": "^1.1.8",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
@@ -49,7 +50,7 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-    },
+  },
   "devDependencies": {
     "gh-pages": "^6.3.0"
   }

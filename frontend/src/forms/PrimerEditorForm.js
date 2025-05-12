@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback , useRef} from 'react';
 import axios from 'axios';
 import './PrimerEditorForm.css'
 import BACKEND_URL from '../config';
+import { FornaContainer } from 'fornac';
+
 
 
 function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
@@ -11,11 +13,21 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
     const [addPosition, setAddPosition] = useState('');
     const [deletePosition, setDeletePosition] = useState('');
     const [recommendation, setRecommendation] = useState("");
-
-    const [rnaStructure, setRnaStructure] = useState(null);
-    const [submitted, setSubmitted] = useState(0);
     const [error, setError] = useState("");
 
+    const fornaRef = useRef(null);
+    const [fornaContainer, setFornaContainer] = useState(null);
+    const [structure, setStructure] = useState('');
+
+    useEffect(() => {
+    if (fornaRef.current) {
+        const fc = new FornaContainer(fornaRef.current, {
+        allowPanningAndZooming: true,
+        zoomOnScroll: true,
+        });
+        setFornaContainer(fc);
+    }
+    }, []);
     useEffect(() => {
         const cachedInput = localStorage.getItem('primerInput');
         if (cachedInput) {
@@ -27,11 +39,7 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
             setInput(inputtedSequence);
         }
     }, [inputtedSequence]);
-    useEffect(() => {
-        console.log(sequence);
-        console.log("Updated characters:", characters);
-    }, [characters]);
-
+    
     useEffect(() => {
         if (!input || !sequence) return;
     
@@ -44,48 +52,92 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
         setCharacters([before, after]);
       }, [input, sequence]);
     
-
+      
     const handleMapLoad = (() =>{
-        const loadingMessage = document.getElementById('loadingMessage');
-        if (loadingMessage) {
-            loadingMessage.remove(); 
-        }
+        const iframe = document.getElementById("imgMap");
+        const loadingMessage = document.getElementById("loadingMessage");
     })
-
-    const handleInputtedSequence = (fullSequence, primers) => {
-        setInput({ fullSequence, primers });
-    };
+    
+    useEffect(() => {
+        handleMapLoad();
+      }, []);
+   
 
     const fetchSequenceStructure = useCallback(async () => {
-        if (!input.fullSequence) {
+        if (!input) {
             return;
         }
     
         try {
             const response = await axios.post(`${BACKEND_URL}/update-sequence`, {
-                sequence: input.fullSequence
+                sequence: input
             });
-    
-            // Assuming the backend returns the structure, you can render it in FornaContainer or use it as needed.
-            const structure = response.data.structure;
-    
-            // If you want to display or process the structure (e.g., dot-bracket notation), set it to state.
-            setRnaStructure(structure);  // or handle it based on your needs
-    
+            const { structure, sequence } = response.data;
+            console.log('Received structure:', structure);
+            setStructure(structure);    
         } catch (error) {
             console.error('Error fetching sequence structure:', error);
             setError('Failed to fetch RNA structure.');
         }
     }, [input]);
+    
 
+    useEffect(() => {
+        if (!fornaRef.current || !input || !structure) return;
+      
+        const trimmed = structure.trim();
+        if (trimmed.length !== input.length) {
+          console.error(
+            `Length mismatch: input=${input.length}, structure=${trimmed.length}`
+          );
+          setError(
+            `Sequence/structure length mismatch: ${input.length} vs ${trimmed.length}`
+          );
+          return;
+        }
+      
+        fornaRef.current.innerHTML = "";
+      
+        const fc = new FornaContainer(fornaRef.current, {
+          allowPanningAndZooming: true,
+          zoomOnScroll: true,
+        });
+      
+        try {
+          console.log(
+            'Drawing with:',
+            'input length =', input.length, input,
+            'structure length =', trimmed.length, JSON.stringify(trimmed)
+          );
+          fc.addRNA(trimmed, {
+            sequence: input,
+            name: 'primer-structure',
+            charHeight: 12,
+            charWidth: 8,
+            color: ({ base }) =>
+              ({ A: '#c00', C: '#0a0', G: '#00c', T: '#aa0' }[base] || '#888'),
+          });
+
+          setFornaContainer(fc); 
+        } catch (err) {
+          console.log('forna container:', fornaContainer);
+          console.error("Forna render error:", err);
+          setError("Failed to render structure: " + err.message);
+        }
+      }, [input, structure]);
+      
 
     useEffect(() => {
         setRecommendation(recommendations(input)); 
-        if (submitted === 2) {
+        fetchSequenceStructure();
+    }, [ input]);
+    useEffect(() => {
+        if (input) {
             fetchSequenceStructure();
         }
-    }, [submitted, fetchSequenceStructure, input]);
-
+    }, [input, fetchSequenceStructure]);
+    
+    
     function recommendations(primer) {
         const gc_content = calculateGCContent(primer);
         const temperature = calculateMeltingTemperature(primer);
@@ -162,14 +214,14 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
             localStorage.setItem('primerInput', updatedInput); 
         }
     }
-
+    
     return (
         <div style={{ display: 'flex', flexDirection: 'column', padding: '1%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{
                     overflowY: 'scroll',
                     height: '30vh',
-                    width: '45vw',
+                    width: '43vw',
                     borderRadius: '1vh',
                     borderWidth: '0.02vh',
                     borderStyle: 'solid',
@@ -207,14 +259,18 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
                 
                 <div id="mapContainer">
                     <div></div>
-                    <p id="loadingMessage" style = {{paddingLeft: '1vw'}}>Map Loading...</p>
-                    <iframe
-                        src= {`${BACKEND_URL}/forna/`}
-                        width="900"
-                        height="500"
-                        style={{ border: 'none' }}
-                        id = 'imgMap'
-                    ></iframe>
+                    {/*<p id="loadingMessage" style = {{paddingLeft: '1vw'}}>Map Loading...</p>*/}
+                    <div
+                        ref={fornaRef}
+                        style={{
+                        width: '45vw',
+                        height: '65vh',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        marginBottom: '4vh'
+                        }}
+                    >
+                    </div>
                    
                 </div>
                                 
@@ -222,12 +278,12 @@ function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
             <div style={{
                 padding: '1%',
                 height: '25vh',
-                width: '45vw',
+                width: '43vw',
                 borderRadius: '1vh',
                 borderWidth: '0.02vh',
                 borderStyle: 'solid',
                 overflowY: 'auto',
-                marginTop: '34vh',
+                marginTop: '37vh',
                 position: 'absolute'
             }}>
                 <h3>Recommendations</h3>

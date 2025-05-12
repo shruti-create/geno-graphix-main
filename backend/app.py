@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, Response, send_file
 from primer_design import manipulate_sequence
 from map import graph_sequence_with_primers
 from lamp import create_lamp_dumbell
-from dash import Dash, html, Input, Output, State
+from dash import Dash, html, Input, Output, State, dcc
 import dash_bio as dashbio
 from seqfold import fold,  dot_bracket
 from flask_cors import CORS
@@ -21,20 +21,29 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 dash_app = Dash(__name__, server=app, url_base_pathname='/forna/')
 
-# This is the function that takes the sequence, folds it, and returns the dot-bracket structure
 def get_dot_bracket_structure(sequence):
     return dot_bracket(sequence, fold(sequence))
 
-# Dash app layout
+@dash_app.callback(
+    Output('forna', 'sequences'),
+    Input('sequence-store', 'data')
+)
+def update_forna(data):
+    if data:
+        sequence = data.get('sequence')
+        structure = data.get('structure')
+        return [{'sequence': sequence, 'structure': structure}]
+    return []
+
 dash_app.layout = html.Div([
     html.H2(""),
+    dcc.Store(id='sequence-store'),
     dashbio.FornaContainer(
         id='forna',
-        sequences=[],  # Initial empty sequence
+        sequences=[],  
         height=500,
         width=900
     ),
-    # Hidden div for passing the updated sequence
     html.Div(id='hidden-sequence', style={'display': 'none'})
 ])
 
@@ -44,25 +53,10 @@ def update_sequence():
     sequence = request.json.get('sequence', '')
     if not sequence:
         return jsonify({'error': 'No sequence provided'}), 400
-    
-    # Call the sequence folding function to get the dot-bracket structure
     structure = get_dot_bracket_structure(sequence)
-    
-    return jsonify({'structure': structure})
+    return jsonify({'structure': structure, 'sequence': sequence})
 
-# Dash callback to update the FornaContainer with the new sequence and structure
-@dash_app.callback(
-    Output('forna', 'sequences'),
-    Output('hidden-sequence', 'children'),
-    Input('hidden-sequence', 'children'),
-    State('hidden-sequence', 'children')
-)
-def update_forna_structure(sequence, current_sequence):
-    # If no new sequence is provided, return the current structure
-    if sequence != current_sequence:
-        structure = get_dot_bracket_structure(sequence)
-        return [{'sequence': sequence, 'structure': structure}], sequence
-    return [], current_sequence
+
 
 @app.route('/')
 def hello_world():
