@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/geno-graphix-main/static/css/main.6ea12575.css",
-    "main.js": "/geno-graphix-main/static/js/main.ffd4a08b.js",
+    "main.css": "/geno-graphix-main/static/css/main.abbbdb49.css",
+    "main.js": "/geno-graphix-main/static/js/main.755fbc68.js",
     "static/media/edit.png": "/geno-graphix-main/static/media/edit.df2b08542b825f659a36.png",
     "static/media/primer_map.png": "/geno-graphix-main/static/media/primer_map.817882ff6d13330c082a.png",
     "static/media/about.png": "/geno-graphix-main/static/media/about.28bf506a4039f04c187b.png",
@@ -10,11 +10,11 @@
     "static/media/primer_input.png": "/geno-graphix-main/static/media/primer_input.0d51dc2e34602cacd064.png",
     "static/media/primer_edit.png": "/geno-graphix-main/static/media/primer_edit.fa2aaeea33b15a6512d2.png",
     "index.html": "/geno-graphix-main/index.html",
-    "main.6ea12575.css.map": "/geno-graphix-main/static/css/main.6ea12575.css.map",
-    "main.ffd4a08b.js.map": "/geno-graphix-main/static/js/main.ffd4a08b.js.map"
+    "main.abbbdb49.css.map": "/geno-graphix-main/static/css/main.abbbdb49.css.map",
+    "main.755fbc68.js.map": "/geno-graphix-main/static/js/main.755fbc68.js.map"
   },
   "entrypoints": [
-    "static/css/main.6ea12575.css",
-    "static/js/main.ffd4a08b.js"
+    "static/css/main.abbbdb49.css",
+    "static/js/main.755fbc68.js"
   ]
 }
