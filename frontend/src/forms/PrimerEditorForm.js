@@ -1,388 +1,510 @@
-import React, { useState, useEffect, useCallback , useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import axios from 'axios';
-import './PrimerEditorForm.css'
+import './PrimerEditorForm.css';
 import BACKEND_URL from '../config';
 import { FornaContainer } from 'fornac';
 
+// ── Nearest-neighbour Tm (SantaLucia 1998, 1 M NaCl, 250 nM primer) ──
+const NN = {
+    AA:[-7.9,-22.2], AT:[-7.2,-20.4], AC:[-8.4,-22.4], AG:[-7.8,-21.0],
+    TA:[-7.2,-21.3], TT:[-7.9,-22.2], TC:[-8.2,-22.2], TG:[-8.5,-22.7],
+    CA:[-8.5,-22.7], CT:[-7.8,-21.0], CC:[-8.0,-19.9], CG:[-10.6,-27.2],
+    GA:[-8.2,-22.2], GT:[-8.4,-22.4], GC:[-9.8,-24.4], GG:[-8.0,-19.9],
+};
+const INIT_GC = [0.1, -2.8], INIT_AT = [2.3, 4.1];
+const R_GAS = 1.987, CT = 250e-9;
 
+function calcTmNN(seq) {
+    seq = seq.toUpperCase();
+    if (seq.length < 2) return 0;
+    let dH = ('GC'.includes(seq[0]) ? INIT_GC[0] : INIT_AT[0]) +
+             ('GC'.includes(seq[seq.length - 1]) ? INIT_GC[0] : INIT_AT[0]);
+    let dS = ('GC'.includes(seq[0]) ? INIT_GC[1] : INIT_AT[1]) +
+             ('GC'.includes(seq[seq.length - 1]) ? INIT_GC[1] : INIT_AT[1]);
+    for (let i = 0; i < seq.length - 1; i++) {
+        const p = seq[i] + seq[i + 1];
+        if (NN[p]) { dH += NN[p][0]; dS += NN[p][1]; }
+    }
+    return Math.round(((dH * 1000) / (dS + R_GAS * Math.log(CT / 4)) - 273.15) * 10) / 10;
+}
 
-function PrimerShowPage({sequence, inputtedSequence, onPrimerChange }) {
-    const [characters, setCharacters]= useState([]);
-    const [input, setInput] = useState(inputtedSequence || '');  
-    const [addCharacter, setAddCharacter] = useState('');
-    const [addPosition, setAddPosition] = useState('');
-    const [deletePosition, setDeletePosition] = useState('');
-    const [recommendation, setRecommendation] = useState("");
-    const [error, setError] = useState("");
+function calcGC(seq) {
+    if (!seq.length) return 0;
+    return Math.round(seq.toUpperCase().split('').filter(c => 'GC'.includes(c)).length / seq.length * 100);
+}
 
+function revComp(seq) {
+    const m = { A: 'T', T: 'A', G: 'C', C: 'G' };
+    return seq.toUpperCase().split('').reverse().map(c => m[c] || 'N').join('');
+}
+
+function hasRun(seq) { return /(.)\1{3,}/.test(seq.toUpperCase()); }
+
+function checkHairpin(seq, stem = 4) {
+    const s = seq.toUpperCase();
+    if (s.length < stem * 2 + 4) return false;
+    return s.slice(0, -stem).includes(revComp(s.slice(-stem)));
+}
+
+function findAllMappings(fullSeq, primer, minScore = 0.65) {
+    const s = fullSeq.toUpperCase(), p = primer.toUpperCase();
+    const n = p.length;
+    if (!s || !p || n > s.length) return [];
+    const raw = [];
+    for (const [strand, query] of [['+', p], ['-', revComp(p)]]) {
+        for (let i = 0; i <= s.length - n; i++) {
+            let m = 0;
+            for (let j = 0; j < n; j++) if (s[i + j] === query[j]) m++;
+            const score = m / n;
+            if (score >= minScore) raw.push({ start: i, end: i + n, score, strand, slice: s.slice(i, i + n) });
+        }
+    }
+    raw.sort((a, b) => b.score - a.score || a.start - b.start);
+    const out = [];
+    for (const r of raw) {
+        if (!out.some(d => Math.abs(d.start - r.start) < n / 2)) out.push(r);
+        if (out.length >= 5) break;
+    }
+    return out;
+}
+
+function scorePrimer(seq, name) {
+    let score = 0;
+    const gc = calcGC(seq) / 100, tm = calcTmNN(seq);
+    const outer = ['F2', 'B2', 'F3', 'B3'].includes(name);
+    const [lo, hi] = outer ? [68, 76] : [70, 78];
+    score += (gc >= 0.40 && gc <= 0.65) ? 25 : Math.max(0, 25 - Math.abs(gc - 0.525) * 100);
+    score += (tm >= lo && tm <= hi) ? 25 : Math.max(0, 25 - Math.min(Math.abs(tm - lo), Math.abs(tm - hi)) * 4);
+    const last2 = seq.slice(-2).toUpperCase();
+    score += last2.split('').filter(b => 'GC'.includes(b)).length * 10;
+    if (!checkHairpin(seq)) score += 15;
+    if (!hasRun(seq)) score += 15;
+    return Math.round(score);
+}
+
+function computeInsights(seq, name) {
+    const s = seq.toUpperCase(), gc = calcGC(s), tm = calcTmNN(s), n = s.length;
+    const outer = ['F2', 'B2', 'F3', 'B3'].includes(name);
+    const [lo, hi] = outer ? [68, 76] : [70, 78];
+    const ins = (cat, level, msg) => ({ cat, level, msg });
+    return [
+        n < 15  ? ins('Length', 'warning', `${n} bp — below minimum 15 bp. Too short for specific binding.`)
+        : n > 28 ? ins('Length', 'warning', `${n} bp — above recommended 28 bp. May form secondary structures.`)
+        :           ins('Length', 'pass', `${n} bp is within the recommended 15–28 bp range.`),
+
+        gc < 40  ? ins('GC Content', 'warning', `${gc}% GC — below optimal 40–65%. Low GC reduces binding stability.`)
+        : gc > 65 ? ins('GC Content', 'warning', `${gc}% GC — above optimal 40–65%. High GC promotes secondary structures.`)
+        :            ins('GC Content', 'pass', `${gc}% GC is within the optimal 40–65% range.`),
+
+        tm < lo  ? ins('Melting Temp', 'warning', `Tm ≈ ${tm}°C — below target ${lo}–${hi}°C. Increase GC content or extend the primer.`)
+        : tm > hi ? ins('Melting Temp', 'warning', `Tm ≈ ${tm}°C — above target ${lo}–${hi}°C. Reduce GC content or shorten the primer.`)
+        :            ins('Melting Temp', 'pass', `Tm ≈ ${tm}°C (nearest-neighbour, 1M NaCl) is within the ${lo}–${hi}°C target.`),
+
+        (() => {
+            const last2 = s.slice(-2), clamp = last2.split('').filter(b => 'GC'.includes(b)).length;
+            return clamp === 0
+                ? ins("3' GC Clamp", 'warning', `Ends in '${last2}' — no G/C in last 2 bases. A 3' clamp improves polymerase grip and reduces mispriming.`)
+                : ins("3' GC Clamp", 'pass', `${clamp} G/C in last 2 bases ('${last2}') — good 3' stability.`);
+        })(),
+
+        checkHairpin(s)
+            ? ins('Hairpin', 'warning', `3' end can fold onto an internal region — may block polymerase extension.`)
+            : ins('Hairpin', 'pass', `No significant 3' hairpin detected.`),
+
+        hasRun(s)
+            ? ins('Complexity', 'warning', `Contains 4+ identical consecutive bases — risk of polymerase slippage or non-specific binding.`)
+            : ins('Complexity', 'pass', `No low-complexity mono-nucleotide runs detected.`),
+    ];
+}
+
+function findSuggestion(fullSeq, primer, primaryMapping, name) {
+    if (!primaryMapping) return null;
+    const { start, strand } = primaryMapping;
+    const s = fullSeq.toUpperCase(), n = primer.length;
+    const cur = scorePrimer(primer, name);
+    let best = cur, bestSeq = null;
+    for (let off = -6; off <= 6; off++) {
+        const ns = start + off;
+        if (ns < 0) continue;
+        for (let len = Math.max(15, n - 3); len <= Math.min(28, n + 3); len++) {
+            if (ns + len > s.length) continue;
+            const slice = s.slice(ns, ns + len);
+            const cand = strand === '-' ? revComp(slice) : slice;
+            const sc = scorePrimer(cand, name);
+            if (sc > best) { best = sc; bestSeq = cand; }
+        }
+    }
+    if (!bestSeq) return null;
+    const ogGC = calcGC(primer), sugGC = calcGC(bestSeq);
+    const ogTm = calcTmNN(primer), sugTm = calcTmNN(bestSeq);
+    const outer = ['F2', 'B2', 'F3', 'B3'].includes(name);
+    const [lo, hi] = outer ? [68, 76] : [70, 78];
+    const reasons = [];
+    if (Math.abs(sugGC - 52) < Math.abs(ogGC - 52)) reasons.push(`GC ${ogGC}%→${sugGC}%`);
+    if ((sugTm >= lo && sugTm <= hi) && !(ogTm >= lo && ogTm <= hi)) reasons.push(`Tm ${ogTm}°C→${sugTm}°C (in range)`);
+    if (bestSeq.length !== n) reasons.push(`Length ${n}→${bestSeq.length} bp`);
+    if (!reasons.length) reasons.push('Overall quality improved');
+    return { seq: bestSeq, scoreBefore: cur, scoreAfter: best, improvement: best - cur, reasons };
+}
+
+// ── Base colour for nucleotide grid ───────────────────────────────
+const BASE_COLORS = { A: '#ef4444', T: '#3b82f6', G: '#f59e0b', C: '#22c55e' };
+const PRIMER_LABEL_COLORS = { FIP: '#2563eb', BIP: '#dc2626', F3: '#16a34a', B3: '#ea580c', F2: '#2563eb', F1c: '#2563eb', B2: '#dc2626', B1c: '#dc2626' };
+
+// ── Main component ─────────────────────────────────────────────────
+function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerName }) {
+    const [seq,              setSeq]              = useState(inputtedSequence || '');
+    const [tab,              setTab]              = useState('edit');
+    const [selectedIdx,      setSelectedIdx]      = useState(null);
+    const [expandedInsights, setExpandedInsights] = useState(new Set());
+    const [structure,        setStructure]        = useState('');
+    const [structureLoading, setStructureLoading] = useState(false);
     const fornaRef = useRef(null);
-    const [fornaContainer, setFornaContainer] = useState(null);
-    const [structure, setStructure] = useState('');
 
-    useEffect(() => {
-    if (fornaRef.current) {
-        const fc = new FornaContainer(fornaRef.current, {
-        allowPanningAndZooming: true,
-        zoomOnScroll: true,
-        });
-        setFornaContainer(fc);
-    }
-    }, []);
-    useEffect(() => {
-        const cachedInput = localStorage.getItem('primerInput');
-        if (cachedInput) {
-            setInput(cachedInput);  
-        }
-    }, []); 
-    useEffect(() => {
-        if (inputtedSequence) {
-            setInput(inputtedSequence);
-        }
-    }, [inputtedSequence]);
-    
-    useEffect(() => {
-        if (!input || !sequence) return;
-      
-        const len = input.length;
-        const threshold = 0.5; 
-      
-        let matchIndex = -1;
-        let bestScore = 0;
-      
-        for (let i = 0; i <= sequence.length - len; i++) {
-          const window = sequence.slice(i, i + len);
-      
-          let matches = 0;
-          for (let j = 0; j < len; j++) {
-            if (window[j] === input[j]) matches++;
-          }
-      
-          const score = matches / len;
-          if (score >= threshold && score > bestScore) {
-            bestScore = score;
-            matchIndex = i;
-          }
-        }
-      
-        console.log(`Best fuzzy score: ${bestScore} at index ${matchIndex}`);
-        if (matchIndex === -1) return;
-      
-        const before = sequence.slice(
-          Math.max(0, matchIndex - 3),
-          matchIndex
-        );
-        const after = sequence.slice(
-          matchIndex + len,
-          matchIndex + len + 3
-        );
-      
-        setCharacters([before, after]);
-      }, [input, sequence]);
-      
-    
-      
-    const handleMapLoad = (() =>{
-        const iframe = document.getElementById("imgMap");
-        const loadingMessage = document.getElementById("loadingMessage");
-    })
-    
-    useEffect(() => {
-        handleMapLoad();
-      }, []);
-   
+    useEffect(() => { if (inputtedSequence) setSeq(inputtedSequence); }, [inputtedSequence]);
 
-    const fetchSequenceStructure = useCallback(async () => {
-        if (!input) {
-            return;
+    // FIP/BIP are chimeric (F1c+F2 or B1c+B2) — split for mapping
+    const isComposite = primerName === 'FIP' || primerName === 'BIP';
+    const componentLabels = primerName === 'FIP' ? ['F1c', 'F2'] : ['B1c', 'B2'];
+    const mid = Math.floor(seq.length / 2);
+
+    // Live derived values
+    const gc       = calcGC(seq);
+    const tm       = calcTmNN(seq);
+    const score    = useMemo(() => scorePrimer(seq, primerName), [seq, primerName]);
+    const mappings = useMemo(() => {
+        if (!sequence || !seq) return [];
+        if (isComposite) {
+            const firstHalf  = seq.slice(0, mid);
+            const secondHalf = seq.slice(mid);
+            const [labelA, labelB] = componentLabels;
+            return [
+                ...findAllMappings(sequence, firstHalf).map(m => ({ ...m, component: labelA, componentSeq: firstHalf })),
+                ...findAllMappings(sequence, secondHalf).map(m => ({ ...m, component: labelB, componentSeq: secondHalf })),
+            ];
         }
-    
+        return findAllMappings(sequence, seq);
+    }, [sequence, seq, isComposite, mid, componentLabels]);
+    const insights = useMemo(() => computeInsights(seq, primerName), [seq, primerName]);
+    const suggestion = useMemo(() => {
+        if (isComposite) return null;
+        return findSuggestion(sequence, seq, mappings[0], primerName);
+    }, [sequence, seq, mappings, primerName, isComposite]);
+
+    const name     = primerName || 'Primer';
+    const color    = PRIMER_LABEL_COLORS[name] || '#64748b';
+
+    // ── Sequence editing ─────────────────────────────────────────
+    const cycleBase = (i) => {
+        const order = ['A', 'T', 'G', 'C'];
+        const cur   = seq[i].toUpperCase();
+        const next  = order[(order.indexOf(cur) + 1) % 4];
+        const updated = seq.slice(0, i) + next + seq.slice(i + 1);
+        setSeq(updated);
+        setSelectedIdx(i);
+    };
+
+    const setBase = (i, base) => {
+        const updated = seq.slice(0, i) + base + seq.slice(i + 1);
+        setSeq(updated); setSelectedIdx(i);
+    };
+
+    const deleteBase = (i) => {
+        const updated = seq.slice(0, i) + seq.slice(i + 1);
+        setSeq(updated); setSelectedIdx(Math.min(i, updated.length - 1));
+    };
+
+    const insertBefore = (i, base) => {
+        const updated = seq.slice(0, i) + base + seq.slice(i);
+        setSeq(updated); setSelectedIdx(i);
+    };
+
+    // ── RNA structure (forna) — auto-loads and reloads on seq change ─
+    const loadStructure = useCallback(async (s) => {
+        const target = s || seq;
+        if (!target) return;
+        setStructureLoading(true);
         try {
-            const response = await axios.post(`${BACKEND_URL}/update-sequence`, {
-                sequence: input
+            const res = await axios.post(`${BACKEND_URL}/update-sequence`, { sequence: target });
+            setStructure(res.data.structure);
+        } catch { setStructure(''); }
+        setStructureLoading(false);
+    }, [seq]);
+
+    // Load on mount
+    useEffect(() => { loadStructure(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Debounced reload when sequence changes
+    useEffect(() => {
+        const t = setTimeout(() => loadStructure(seq), 1200);
+        return () => clearTimeout(t);
+    }, [seq]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        if (!fornaRef.current || !seq || !structure || structure.length !== seq.length) return;
+        fornaRef.current.innerHTML = '';
+        try {
+            const fc = new FornaContainer(fornaRef.current, { allowPanningAndZooming: true, zoomOnScroll: true });
+            fc.addRNA(structure, {
+                sequence: seq,
+                name: 'primer',
+                charHeight: 13, charWidth: 9,
+                color: ({ base }) => BASE_COLORS[base] || '#94a3b8',
             });
-            const { structure, sequence } = response.data;
-            console.log('Received structure:', structure);
-            setStructure(structure);    
-        } catch (error) {
-            console.error('Error fetching sequence structure:', error);
-            setError('Failed to fetch RNA structure.');
-        }
-    }, [input]);
-    
+        } catch (e) { console.error('Forna error:', e); }
+    }, [seq, structure]);
 
-    useEffect(() => {
-        if (!fornaRef.current || !input || !structure) return;
-      
-        const trimmed = structure.trim();
-        if (trimmed.length !== input.length) {
-          console.error(
-            `Length mismatch: input=${input.length}, structure=${trimmed.length}`
-          );
-          setError(
-            `Sequence/structure length mismatch: ${input.length} vs ${trimmed.length}`
-          );
-          return;
-        }
-      
-        fornaRef.current.innerHTML = "";
-      
-        const fc = new FornaContainer(fornaRef.current, {
-          allowPanningAndZooming: true,
-          zoomOnScroll: true,
-        });
-      
-        try {
-          console.log(
-            'Drawing with:',
-            'input length =', input.length, input,
-            'structure length =', trimmed.length, JSON.stringify(trimmed)
-          );
-          fc.addRNA(trimmed, {
-            sequence: input,
-            name: 'primer-structure',
-            charHeight: 12,
-            charWidth: 8,
-            color: ({ base }) =>
-              ({ A: '#c00', C: '#0a0', G: '#00c', T: '#aa0' }[base] || '#888'),
-          });
+    const save = () => { localStorage.setItem('primerInput', seq); onPrimerChange(seq); };
 
-          setFornaContainer(fc); 
-        } catch (err) {
-          console.log('forna container:', fornaContainer);
-          console.error("Forna render error:", err);
-          setError("Failed to render structure: " + err.message);
-        }
-      }, [input, structure]);
-      
+    // ── Score colour ─────────────────────────────────────────────
+    const scoreColor = score >= 80 ? '#16a34a' : score >= 60 ? '#d97706' : '#dc2626';
+    const scoreBg    = score >= 80 ? '#f0fdf4' : score >= 60 ? '#fffbeb' : '#fef2f2';
+    const scoreBorder = score >= 80 ? '#bbf7d0' : score >= 60 ? '#fde68a' : '#fecaca';
 
-    useEffect(() => {
-        setRecommendation(recommendations(input)); 
-        fetchSequenceStructure();
-    }, [ input]);
-    useEffect(() => {
-        if (input) {
-            fetchSequenceStructure();
-        }
-    }, [input, fetchSequenceStructure]);
-    
-    
-    function recommendations(primer) {
-        const gc_content = calculateGCContent(primer);
-        const temperature = calculateMeltingTemperature(primer);
-        const recs = [];
-
-        if (gc_content < 0.3) {
-            const to_add_gc = Math.ceil((0.3 - gc_content) * primer.length);
-            recs.push(`GC content is below the optimal range: Add ${to_add_gc} GC bases.`);
-        } else if (gc_content > 0.7) {
-            const to_remove_gc = Math.ceil((gc_content - 0.7) * primer.length);
-            recs.push(`GC content is above the optimal range: Remove ${to_remove_gc} GC bases.`);
-        }
-
-        if (temperature < 50) {
-            const to_increase_temp = Math.ceil((50 - temperature) / 2);
-            recs.push(`Temperature is below the optimal range: Increase the temperature by ${to_increase_temp} degrees.`);
-        } else if (temperature > 64) {
-            const to_decrease_temp = Math.ceil((temperature - 64) / 2);
-            recs.push(`Temperature is above the optimal range: Decrease the temperature by ${to_decrease_temp} degrees.`);
-        }
-        if (recs.length === 0){
-            recs.push('No recommendations at this moment. ')
-        }
-        recs.push("Refer to the map on the right for information about potential loops forming in the sequence. ")
-        return recs;
-    }
-
-    function calculateGCContent(primer) {
-        const gc_count = Array.from(primer).filter(base => base === 'G' || base === 'C').length;
-        return gc_count / primer.length;
-    }
-
-    function calculateMeltingTemperature(primer) {
-        const a_count = (primer.match(/A/g) || []).length;
-        const t_count = (primer.match(/T/g) || []).length;
-        const c_count = (primer.match(/C/g) || []).length;
-        const g_count = (primer.match(/G/g) || []).length;
-        return 4 * (g_count + c_count) + 2 * (a_count + t_count);
-    }
-
-    function getColor(character) {
-        return {
-            'A': 'red', 'a': 'red',
-            'C': 'green', 'c': 'green',
-            'G': 'yellow', 'g': 'yellow',
-            'T': 'blue', 't': 'blue'
-        }[character] || 'grey';
-    }
-
-    function handleCharacterChange(index) {
-        const newChar = prompt(`Enter new character for position ${index + 1}`, input[index]);
-        if (newChar && newChar.length === 1) {
-            const updatedInput = input.substring(0, index) + newChar + input.substring(index + 1);
-            setInput(updatedInput);
-            localStorage.setItem('primerInput', updatedInput);  
-        }
-    }
-
-    function handleCharacterDelete() {
-        const index = parseInt(deletePosition);
-        if (!isNaN(index) && index >= 0 && index < input.length) {
-            const updatedInput = input.substring(0, index) + input.substring(index + 1);
-            setInput(updatedInput);
-            localStorage.setItem('primerInput', updatedInput);  
-        }
-    }
-
-    
-    function handleAddCharacter() {
-        const position = parseInt(addPosition);
-        if (addCharacter && !isNaN(position) && position >= 0 && position <= input.length) {
-            const updatedInput = input.substring(0, position) + addCharacter + input.substring(position);
-            setInput(updatedInput);
-            localStorage.setItem('primerInput', updatedInput); 
-        }
-    }
-    
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '8px 0' }}>
+        <div className="pe-wrap">
+            {/* Header */}
+            <div className="pe-header">
+                <span className="pe-name-badge" style={{ background: color }}>{name}</span>
+                <div className="pe-stats">
+                    <span>{seq.length} bp</span>
+                    <span>GC {gc}%</span>
+                    <span>Tm {tm}°C</span>
+                    <span style={{ color: scoreColor, fontWeight: 700 }}>Score {score}/100</span>
+                </div>
+                <button className="pe-save-btn" onClick={save}>Save Changes</button>
+            </div>
 
-            {/* Top row: nucleotide grid + structure map */}
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+            {/* Tab bar */}
+            <div className="pe-tabs">
+                {['edit', 'insights'].map(t => (
+                    <button key={t} className={`pe-tab ${tab === t ? 'pe-tab-active' : ''}`}
+                        onClick={() => setTab(t)}>
+                        {t === 'edit'
+                            ? `Edit Sequence`
+                            : `Insights (${insights.filter(i => i.level === 'warning').length} warnings)`}
+                    </button>
+                ))}
+            </div>
 
-                {/* Left: nucleotide buttons + edit controls */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
-                        Primer Sequence — click any base to change it
+            {/* ── Edit tab (two-column) ─────────────────────────── */}
+            {tab === 'edit' && (
+                <div className="pe-edit-layout">
+
+                    {/* Left column: sequence editor */}
+                    <div className="pe-edit-left">
+                        <div className="pe-section-label">Click any base to select, double-click to cycle A→T→G→C</div>
+
+                        <div className="pe-nuc-grid">
+                            {seq.split('').map((base, i) => (
+                                <button key={i}
+                                    className={`pe-nuc ${selectedIdx === i ? 'pe-nuc-selected' : ''}`}
+                                    style={{ '--base-color': BASE_COLORS[base.toUpperCase()] || '#94a3b8' }}
+                                    onClick={() => { if (selectedIdx === i) cycleBase(i); else setSelectedIdx(i); }}
+                                    title={`Position ${i + 1}: ${base}`}
+                                    onDoubleClick={() => cycleBase(i)}>
+                                    <span className="pe-nuc-base">{base}</span>
+                                    <span className="pe-nuc-idx">{i + 1}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {selectedIdx !== null && selectedIdx < seq.length && (
+                            <div className="pe-base-controls">
+                                <span className="pe-base-controls-label">
+                                    Position {selectedIdx + 1} · <strong>{seq[selectedIdx]}</strong>
+                                </span>
+                                <div className="pe-base-btns">
+                                    <span className="pe-ctrl-hint">Change to:</span>
+                                    {['A', 'T', 'G', 'C'].map(b => (
+                                        <button key={b} className="pe-base-btn"
+                                            style={{ background: BASE_COLORS[b], opacity: seq[selectedIdx].toUpperCase() === b ? 0.4 : 1 }}
+                                            disabled={seq[selectedIdx].toUpperCase() === b}
+                                            onClick={() => setBase(selectedIdx, b)}>{b}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="pe-base-btns" style={{ marginTop: 6 }}>
+                                    <span className="pe-ctrl-hint">Insert before:</span>
+                                    {['A', 'T', 'G', 'C'].map(b => (
+                                        <button key={b} className="pe-base-btn pe-insert-btn"
+                                            style={{ borderColor: BASE_COLORS[b], color: BASE_COLORS[b] }}
+                                            onClick={() => insertBefore(selectedIdx, b)}>+{b}
+                                        </button>
+                                    ))}
+                                    <button className="pe-delete-btn" onClick={() => deleteBase(selectedIdx)}>Delete</button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="pe-section-label" style={{ marginTop: 14 }}>Or edit directly:</div>
+                        <textarea className="pe-textarea" value={seq} spellCheck={false}
+                            onChange={e => { setSeq(e.target.value.toUpperCase().replace(/[^ATGC]/g, '')); setSelectedIdx(null); }}
+                            rows={3} placeholder="Enter primer sequence (A/T/G/C only)" />
+
+                        {mappings[0] && (
+                            <div className="pe-flanking">
+                                <span className="pe-section-label">Flanking context</span>
+                                <code className="pe-flank-seq">
+                                    <span className="flank-side">{sequence.slice(Math.max(0, mappings[0].start - 5), mappings[0].start)}</span>
+                                    <span className="flank-primer" style={{ background: color + '33', outline: `2px solid ${color}`, borderRadius: 3 }}>
+                                        {sequence.slice(mappings[0].start, mappings[0].end)}
+                                    </span>
+                                    <span className="flank-side">{sequence.slice(mappings[0].end, mappings[0].end + 5)}</span>
+                                </code>
+                            </div>
+                        )}
                     </div>
-                    <div style={{
-                        overflowY: 'auto',
-                        maxHeight: '200px',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        padding: '10px',
-                        background: '#f8fafc',
-                        marginBottom: '16px'
-                    }}>
-                        {input.split('').map((item, index) => (
-                            <button key={index} onClick={() => handleCharacterChange(index)} title={`Position ${index + 1}: ${item}`} style={{
-                                width: '36px', height: '36px',
-                                backgroundColor: getColor(item),
-                                margin: '2px',
-                                display: 'flex', justifyContent: 'center', alignItems: 'center',
-                                color: 'black', fontWeight: '700',
-                                fontSize: '0.85rem',
-                                border: '1px solid rgba(0,0,0,0.1)',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                            }}>
-                                {item}
+
+                    {/* Right column: binding sites + structure */}
+                    <div className="pe-edit-right">
+                        <div className="pe-section-label">Binding sites on target (fuzzy ≥65%)</div>
+
+                        {mappings.length === 0 ? (
+                            <div className="pe-no-mappings">
+                                {isComposite
+                                    ? 'No binding sites found for either component (≥65% match).'
+                                    : 'No binding sites found with ≥65% match.'}
+                            </div>
+                        ) : mappings.map((m, i) => {
+                            const isPrimary = i === 0;
+                            const leftPct  = (m.start / sequence.length) * 100;
+                            const widthPct = Math.max(1, ((m.end - m.start) / sequence.length) * 100);
+                            // For composite primers each mapping has its own componentSeq
+                            const primerSlice = m.componentSeq ? m.componentSeq.toUpperCase() : seq.toUpperCase();
+                            const query  = m.strand === '-' ? revComp(primerSlice) : primerSlice;
+                            const target = m.slice;
+                            // For composite primers, map selectedIdx into the component's local index
+                            const localSelected = isComposite
+                                ? (m.component === componentLabels[0]
+                                    ? selectedIdx                // first half
+                                    : selectedIdx != null ? selectedIdx - mid : null)  // second half
+                                : selectedIdx;
+                            return (
+                                <div key={i} className={`pe-mapping-card ${isPrimary ? 'pe-mapping-primary' : ''}`}>
+                                    <div className="pe-mapping-header">
+                                        {isPrimary && <span className="pe-mapping-primary-badge">{m.component || 'Primary'}</span>}
+                                        {m.component && !isPrimary && <span className="pe-mapping-component-badge">{m.component}</span>}
+                                        <span className="pe-mapping-pos">pos {m.start}–{m.end}</span>
+                                        <span className="pe-mapping-strand">{m.strand === '+' ? '5′→3′' : '3′←5′'}</span>
+                                        <span className="pe-mapping-score-badge" style={{ background: m.score >= 0.9 ? '#f0fdf4' : m.score >= 0.75 ? '#fffbeb' : '#fff7ed', color: m.score >= 0.9 ? '#16a34a' : m.score >= 0.75 ? '#d97706' : '#ea580c', border: `1px solid ${m.score >= 0.9 ? '#bbf7d0' : m.score >= 0.75 ? '#fde68a' : '#fed7aa'}` }}>
+                                            {Math.round(m.score * 100)}%
+                                        </span>
+                                    </div>
+                                    <div className="pe-mini-map">
+                                        <div className="pe-mini-track">
+                                            <div className="pe-mini-segment" style={{ left: `${leftPct}%`, width: `${widthPct}%`, background: color }} />
+                                        </div>
+                                        <div className="pe-mini-scale"><span>1</span><span>{sequence.length}</span></div>
+                                    </div>
+                                    <div className="pe-alignment">
+                                        <div className="pe-align-row">
+                                            <span className="pe-align-label">Target</span>
+                                            <code className="pe-align-seq">
+                                                {target.split('').map((b, j) => (
+                                                    <span key={j} className={b === query[j] ? 'align-match' : 'align-mismatch'}>{b}</span>
+                                                ))}
+                                            </code>
+                                        </div>
+                                        <div className="pe-align-row">
+                                            <span className="pe-align-label">Primer</span>
+                                            <code className="pe-align-seq">
+                                                {query.split('').map((b, j) => (
+                                                    <span key={j} className={`${b === target[j] ? 'align-match' : 'align-mismatch'}${j === localSelected ? ' align-active' : ''}`}>{b}</span>
+                                                ))}
+                                            </code>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        <div className="pe-section-label" style={{ marginTop: 18 }}>RNA Secondary Structure</div>
+                        <div className="pe-structure-card">
+                            {!structure && !structureLoading && (
+                                <button className="pe-structure-btn" onClick={loadStructure}>Load Structure Prediction</button>
+                            )}
+                            {structureLoading && <div className="pe-structure-loading"><div className="pe-spinner" />Predicting…</div>}
+                            {structure && !structureLoading && <div ref={fornaRef} className="pe-forna" />}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Insights tab ─────────────────────────────────── */}
+            {tab === 'insights' && (
+                <div className="pe-insights">
+                    {/* Score meter */}
+                    <div className="pe-score-card" style={{ background: scoreBg, border: `1.5px solid ${scoreBorder}` }}>
+                        <div className="pe-score-header">
+                            <span className="pe-score-label">Overall Quality Score</span>
+                            <span className="pe-score-value" style={{ color: scoreColor }}>{score}/100</span>
+                        </div>
+                        <div className="pe-score-bar-bg">
+                            <div className="pe-score-bar-fill" style={{ width: `${score}%`, background: scoreColor }} />
+                        </div>
+                        <div className="pe-score-caption" style={{ color: scoreColor }}>
+                            {score >= 80 ? 'Excellent — primer meets all quality criteria'
+                             : score >= 60 ? 'Good — minor improvements possible'
+                             : score >= 40 ? 'Fair — several criteria need attention'
+                             : 'Poor — significant quality issues detected'}
+                        </div>
+                    </div>
+
+                    {/* Suggested primer */}
+                    {suggestion && (
+                        <div className="pe-suggestion-card">
+                            <div className="pe-suggestion-header">
+                                <span className="pe-suggestion-title">Suggested Alternative</span>
+                                <span className="pe-suggestion-delta">Score {suggestion.scoreBefore} → <strong>{suggestion.scoreAfter}</strong>
+                                    <span className="pe-suggestion-plus">+{suggestion.improvement}</span>
+                                </span>
+                            </div>
+                            <div className="pe-suggestion-reasons">
+                                {suggestion.reasons.map((r, i) => <span key={i} className="pe-suggestion-reason">{r}</span>)}
+                            </div>
+                            <div className="pe-suggestion-seqs">
+                                <div className="pe-suggestion-row">
+                                    <span className="pe-suggestion-label">Current</span>
+                                    <code className="pe-suggestion-seq pe-suggestion-old">{seq}</code>
+                                </div>
+                                <div className="pe-suggestion-row">
+                                    <span className="pe-suggestion-label">Suggested</span>
+                                    <code className="pe-suggestion-seq pe-suggestion-new">
+                                        {suggestion.seq.split('').map((ch, ci) => {
+                                            const changed = ci >= seq.length || ch !== seq[ci];
+                                            return <span key={ci} className={changed ? 'seq-diff' : ''}>{ch}</span>;
+                                        })}
+                                    </code>
+                                </div>
+                            </div>
+                            <button className="pe-apply-btn" onClick={() => { setSeq(suggestion.seq); setTab('edit'); }}>
+                                Apply Suggestion
                             </button>
+                        </div>
+                    )}
+
+                    {/* Insight cards */}
+                    <div className="pe-insight-list">
+                        {insights.map((ins, i) => (
+                            <div key={i}
+                                className={`pe-insight-card ${ins.level === 'warning' ? 'pe-insight-warn' : 'pe-insight-pass'}`}
+                                onClick={() => setExpandedInsights(prev => { const s = new Set(prev); s.has(i) ? s.delete(i) : s.add(i); return s; })}>
+                                <div className="pe-insight-row">
+                                    <span className="pe-insight-icon">{ins.level === 'pass' ? '✓' : '⚠'}</span>
+                                    <span className="pe-insight-cat">{ins.cat}</span>
+                                    <span className="pe-insight-toggle">{expandedInsights.has(i) ? '▲' : '▼'}</span>
+                                </div>
+                                {expandedInsights.has(i) && (
+                                    <div className="pe-insight-detail">{ins.msg}</div>
+                                )}
+                            </div>
                         ))}
                     </div>
-
-                    {/* Edit controls */}
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        {/* Add nucleotide */}
-                        <div style={{ flex: 1, minWidth: '200px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '14px' }}>
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
-                                ＋ Add Nucleotide
-                            </div>
-                            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ fontSize: '0.8rem', color: '#475569', display: 'block', marginBottom: '4px' }}>Base (A/T/G/C)</label>
-                                    <input
-                                        type="text" maxLength={1} value={addCharacter}
-                                        onChange={(e) => setAddCharacter(e.target.value.toUpperCase())}
-                                        placeholder="e.g. A"
-                                        style={{ width: '100%', padding: '8px 10px', border: '1px solid #d1fae5', borderRadius: '6px', fontSize: '1rem', fontFamily: 'monospace', boxSizing: 'border-box' }}
-                                    />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <label style={{ fontSize: '0.8rem', color: '#475569', display: 'block', marginBottom: '4px' }}>Insert at position</label>
-                                    <input
-                                        type="number" min={0} max={input.length} value={addPosition}
-                                        onChange={(e) => setAddPosition(e.target.value)}
-                                        placeholder={`0–${input.length}`}
-                                        style={{ width: '100%', padding: '8px 10px', border: '1px solid #d1fae5', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
-                                    />
-                                </div>
-                            </div>
-                            <button onClick={handleAddCharacter}
-                                style={{ width: '100%', padding: '9px', background: '#16a34a', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>
-                                Add Base
-                            </button>
-                        </div>
-
-                        {/* Delete nucleotide */}
-                        <div style={{ flex: 1, minWidth: '180px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '14px' }}>
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
-                                － Delete Nucleotide
-                            </div>
-                            <label style={{ fontSize: '0.8rem', color: '#475569', display: 'block', marginBottom: '4px' }}>Position to delete</label>
-                            <input
-                                type="number" min={0} max={input.length - 1} value={deletePosition}
-                                onChange={(e) => setDeletePosition(e.target.value)}
-                                placeholder={`0–${input.length - 1}`}
-                                style={{ width: '100%', padding: '8px 10px', border: '1px solid #fecaca', borderRadius: '6px', fontSize: '1rem', marginBottom: '8px', boxSizing: 'border-box' }}
-                            />
-                            <button onClick={handleCharacterDelete}
-                                style={{ width: '100%', padding: '9px', background: '#dc2626', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>
-                                Delete Base
-                            </button>
-                        </div>
-                    </div>
                 </div>
-
-                {/* Right: RNA structure map */}
-                <div style={{ flexShrink: 0 }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
-                        Structure Map
-                    </div>
-                    <div ref={fornaRef} style={{
-                        width: '42vw', height: '55vh',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        background: '#f8fafc',
-                    }} />
-                </div>
-            </div>
-
-            {/* Recommendations + context */}
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: '260px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f3663', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
-                        Recommendations
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-line' }}>{recommendation}</div>
-                </div>
-                <div style={{ flex: 1, minWidth: '200px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f3663', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '10px' }}>
-                        Flanking Context
-                    </div>
-                    <div style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: '#475569' }}>
-                        <span style={{ color: '#94a3b8' }}>Before: </span>
-                        <span style={{ background: '#e0f2fe', padding: '1px 4px', borderRadius: '3px' }}>{characters[0] || '—'}</span>
-                    </div>
-                    <div style={{ fontFamily: 'monospace', fontSize: '0.95rem', color: '#475569', marginTop: '6px' }}>
-                        <span style={{ color: '#94a3b8' }}>After: </span>
-                        <span style={{ background: '#e0f2fe', padding: '1px 4px', borderRadius: '3px' }}>{characters[1] || '—'}</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Save button */}
-            <div>
-                <button
-                    style={{ background: '#0f3663', color: 'white', border: 'none', borderRadius: '8px', padding: '11px 28px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer' }}
-                    onClick={(e) => { e.preventDefault(); localStorage.setItem('primerInput', input); onPrimerChange(input); }}
-                >
-                    Save Changes
-                </button>
-            </div>
+            )}
         </div>
     );
 }
 
-export default PrimerShowPage;
+export default PrimerEditorForm;

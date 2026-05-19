@@ -356,6 +356,7 @@ function PrimerEditPage() {
                     <PrimerChosenForm
                         sequence={inputtedSequence.fullSequence}
                         inputtedSequence={editingPrimer.sequence}
+                        primerName={editingPrimer.name}
                         onPrimerChange={(newSeq) => handlePrimerChange(editingPrimer.name, newSeq)}
                     />
                     <button className="action-btn secondary" style={{ marginTop: '16px' }}
