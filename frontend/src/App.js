@@ -10,41 +10,40 @@ import React from 'react';
 
 const NavBar = () => {
     const linkStyle = {
-        padding: '20px', 
-        fontSize: '20px',
-        transition: 'box-shadow 0.3s ease', 
+        padding: '0 20px',
+        fontSize: '16px',
+        transition: 'box-shadow 0.3s ease',
+        display: 'flex',
+        alignItems: 'center',
     };
     return (
-      <nav style={{ 
-        backgroundColor: '#0f3663', 
+      <nav style={{
+        backgroundColor: '#0f3663',
         display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0px 5px 5px 5px', 
-        boxShadow: '0 6px 2px -2px rgba(0,0,0,.2)',
+        padding: '0 16px',
+        height: '52px',
+        boxShadow: '0 2px 8px rgba(0,0,0,.3)',
         position: 'sticky',
         top: 0,
-        zIndex: 1000, 
+        zIndex: 1000,
       }}>
-        <img src={logo} alt="GenoGraphix Logo" style={{ position: 'absolute', height: '4vh', top: '1vh', marginLeft: '0vw' }} />
-        <h1 style={{ 
-            fontSize: '1.2rem', 
-            color: '#ffffff', 
-            marginBottom: '0', 
-            flexShrink: 0, 
-            top: '0vh',
-            marginLeft: '4vw'
-        }}>
-          GenoGraphix
-        </h1>
-        <div style={{
-            display: 'flex', 
-            justifyContent: 'flex-end', 
-        }}>
-          
-            <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Home</Link>
-            <Link to="/about-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">About GenoGraphix </Link>
-            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link" onclick="changeTabColor(event)">Primer Editor</Link>
-
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src={logo} alt="GenoGraphix Logo" style={{ height: '32px' }} />
+          <h1 style={{
+              fontSize: '1.1rem',
+              color: '#ffffff',
+              margin: '0',
+              fontWeight: '600',
+          }}>
+            GenoGraphix
+          </h1>
+        </div>
+        <div style={{ display: 'flex', height: '100%' }}>
+            <Link to="/home" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link">Home</Link>
+            <Link to="/about-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link">About GenoGraphix</Link>
+            <Link to="/primer-edit-page" style={{ color: 'white', textDecoration: 'none', ...linkStyle }} className="nav-link">Primer Editor</Link>
         </div>
       </nav>
     );

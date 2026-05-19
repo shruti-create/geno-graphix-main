@@ -31,39 +31,37 @@
 .advantages-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-    padding: 2rem 2;
-    margin: 5vh 10vw; /* Optional: center the container */
+    gap: 2rem;
+    padding: 0 2rem;
+    margin: 4vh 8vw;
 }
 
 .advantage {
-    align-items: center;
     background: #f9f9f9;
-    width: 33vw; 
-    padding: 2.5rem;
+    padding: 2rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-align: left; 
-    padding-bottom: 2rem;
-    /* position: relative; */
+    border-radius: 8px;
+    text-align: left;
 }
+
 .advantage-inside {
     display: flex;
+    align-items: center;
     gap: 1.5rem;
 }
 
 .advantage h3 {
     margin-top: 0;
-    margin-bottom: 5px;
-    width: 38vw;
+    margin-bottom: 8px;
     color: #0f3663;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
 }
 
 .advantage p {
     color: #333;
-    font-size: 1.1rem;
-    line-height: 1.5;
-    width: 38vw;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
 }
 
 .background-container {
@@ -143,15 +141,18 @@
 }
 
 .button {
-    font-size: 3rem;
+    font-size: 2rem;
     width: 38vw;
-    height: 40vh;
-    font-weight: bolder;
+    height: 35vh;
+    font-weight: bold;
     background-size: cover;
     background-position: center;
     filter: brightness(70%);
-    padding-bottom: 2vh;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
     position: relative;
+    transition: filter 0.2s ease, transform 0.2s ease;
 }
 
 .visual-button {
@@ -161,16 +162,16 @@
 }
 
 .visual-button:hover {
-    scale: 102%;
+    filter: brightness(85%);
+    transform: scale(1.02);
 }
 
 .primer-button {
     color: white;
     right: 4vw;
-    cursor: pointer;
-
 }
 
 .primer-button:hover {
-    scale: 102%;
+    filter: brightness(85%);
+    transform: scale(1.02);
 }

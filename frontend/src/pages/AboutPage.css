@@ -32,10 +32,10 @@
 }
 
 .about-section h3 {
-    font-size: 1.75rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    color: #df0404;
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #0f3663;
 }
 
 .about-section h4 {
@@ -83,36 +83,21 @@
     background-color: #09274d;
 }
 
-.image-container {
-    margin-top: 3rem;
-    margin-bottom: 3rem;
-    width: 1300px; /* Set your desired width */
-    height: 600px; /* Set your desired height */
-    overflow: hidden; /* Hide any overflow */
-    position: relative; /* Establish a positioning context */
-}
-
-.image-container img {
-    border: 3px solid #b3aeae;
-    width: 100%; /* Adjust width to fit the container */
-    height: 100%; /* Adjust height to fit the container */
-    border-radius: 10px; /* Adjust the value for more or less rounding */
-    box-sizing: border-box; /* Include border in the element's total width and height */
-}
-
+.image-container,
 .image-container2 {
-    margin-top: 3rem;
-    margin-bottom: 3rem;
-    width: 1300px; /* Set your desired width */
-    height: 700px; /* Set your desired height */
-    overflow: hidden; /* Hide any overflow */
-    position: relative; /* Establish a positioning context */
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
+.image-container img,
 .image-container2 img {
-    border: 3px solid #b3aeae;
-    width: 100%; /* Adjust width to fit the container */
-    height: 100%; /* Adjust height to fit the container */
-    border-radius: 10px; /* Adjust the value for more or less rounding */
-    box-sizing: border-box; /* Include border in the element's total width and height */
+    border: 2px solid #d0d0d0;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-sizing: border-box;
+    display: block;
 }

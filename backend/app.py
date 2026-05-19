@@ -95,20 +95,16 @@ def get_primer_map():
         download_name="primer_map.png"
     )
 
-@app.route('/run-simulation', methods=['POST']) 
+@app.route('/run-simulation', methods=['POST'])
 def run_simulation():
     data = request.get_json()
-    logging.debug(f"Received data: {data}")
-
     sequence = data.get('sequence', '').strip()
-    F2 = data.get('F2', '').strip()
+    F2  = data.get('F2',  '').strip()
     F1c = data.get('F1c', '').strip()
-    B2 = data.get('B2', '').strip()
+    B2  = data.get('B2',  '').strip()
     B1c = data.get('B1c', '').strip()
-    
-    logging.debug(f"going in function")
     result = create_lamp_dumbell(sequence, F2, F1c, B2, B1c)
-    return jsonify({'output': result})
+    return jsonify(result)
    
 
 if __name__ == '__main__':

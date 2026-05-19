@@ -4,28 +4,18 @@ import './PrimerSequenceInputForm.css';
 const PrimerInputForm = ({ onValueChange, handleSequence }) => {
   const [fullSequence, setFullSequence] = useState('');
   const [primers, setPrimers] = useState([
-    { name: 'F1c', sequence: '' },
-    { name: 'F2', sequence: '' },
-    { name: 'F3', sequence: '' },
-    { name: 'B1c', sequence: '' },
-    { name: 'B2', sequence: '' },
-    { name: 'B3', sequence: '' },
+    { name: 'FIP', sequence: '' },
+    { name: 'BIP', sequence: '' },
+    { name: 'F3',  sequence: '' },
+    { name: 'B3',  sequence: '' },
   ]);
   const [isValid, setValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleFullSequenceChange = (e) => {
-    setFullSequence(e.target.value);
-  };
+  const handleFullSequenceChange = (e) => setFullSequence(e.target.value);
 
   const handlePrimerChange = (index, sequence) => {
-    const updatedPrimers = primers.map((primer, idx) => {
-      if (idx === index) {
-        return { ...primer, sequence };
-      }
-      return primer;
-    });
-    setPrimers(updatedPrimers);
+    setPrimers(primers.map((p, i) => i === index ? { ...p, sequence } : p));
   };
 
   const validateInput = () => {
@@ -35,20 +25,20 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
     }
 
     const validChar = /^[aAcCgGtTuU]+$/;
-    const cleanedFullSequence = fullSequence.replace(/\s/g, '');
-    if (fullSequence && !validChar.test(cleanedFullSequence)) {
+    const cleanedFull = fullSequence.replace(/\s/g, '');
+    if (fullSequence && !validChar.test(cleanedFull)) {
       setErrorMessage('Invalid characters in the full sequence.');
       return false;
     }
 
     for (let primer of primers) {
-      const cleanedInput = primer.sequence.replace(/\s/g, '');
-      if (!validChar.test(cleanedInput)) {
+      const cleaned = primer.sequence.replace(/\s/g, '');
+      if (!validChar.test(cleaned)) {
         setErrorMessage(`Invalid characters in ${primer.name} sequence.`);
         return false;
       }
-      if (cleanedInput.length < 5) {
-        setErrorMessage(`${primer.name} sequence length must be at least 5.`);
+      if (cleaned.length < 5) {
+        setErrorMessage(`${primer.name} sequence must be at least 5 characters.`);
         return false;
       }
     }
@@ -59,10 +49,7 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isValidInput = validateInput();
-    if (isValidInput) {
-      console.log('Submitted full sequence:', fullSequence);
-      console.log('Submitted primers:', primers);
+    if (validateInput()) {
       setValid(true);
       onValueChange(true);
       handleSequence(fullSequence, primers);
@@ -70,25 +57,40 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
       setValid(false);
     }
   };
-  const handleSamplePrimers = () =>{
+
+  const handleSamplePrimers = () => {
     setFullSequence("CATACAATGTAACACAAGCTTTCGGCAGACGTGGTCCAGAACAAACCCAAGGAAATTTTGGGGACCAGGAACTAATCAGACAAGGAACTGATTACAAACATTGGCCGCAAATTGCACAATTTGCCCCCAGCGCTTCAGCGTTCTTCGGAATGTCGCGCATTGGCATGGAAGTCACACCTTCGGGAACGTGGTTGACCTACACAGGTGCCATCAAATTGGATGACAAAGATCCAAATTTCAAAGATCAAGTCATTTTGCTGAATAAGCATATTGACGCATACAAAACATTCCCACCAACAGA");
-      setPrimers([
-        { name: 'F1c', sequence: 'ATTGTGCAATTTGCGGCCAA' },
-        { name: 'F2', sequence: 'GGGACCAGGAACTAATCAGA' },
-        { name: 'F3', sequence: 'CAGAACAAACCCAAGGAAAT' },
-        { name: 'B1c', sequence: 'CGCTTCAGCGTTCTTCGGAA' },
-        { name: 'B2', sequence: 'CCTGTGTAGGTCAACCAC' },
-        { name: 'B3', sequence: 'TCTTTGTCATCCAATTTGATGG' },
+    setPrimers([
+      { name: 'FIP', sequence: 'ATTGTGCAATTTGCGGCCAAGGGACCAGGAACTAATCAGA' },
+      { name: 'BIP', sequence: 'CGCTTCAGCGTTCTTCGGAACCTGTGTAGGTCAACCAC' },
+      { name: 'F3',  sequence: 'CAGAACAAACCCAAGGAAAT' },
+      { name: 'B3',  sequence: 'TCTTTGTCATCCAATTTGATGG' },
     ]);
-  }
+  };
+
+  const subtitles = {
+    FIP: 'F1c + F2 — Forward Inner Primer',
+    BIP: 'B1c + B2 — Backward Inner Primer',
+    F3:  'Forward Outer Primer',
+    B3:  'Backward Outer Primer',
+  };
 
   return (
     <div className="form-container">
-      <h2>Primer Edit/Debug Tool</h2>
-      <p className="form-description">Input your full sequence and sequences for each LAMP primer  OR  try  </p>
-      <button style = {{paddingTop: '0.5vh', paddingBottom: '0.5vh', position: 'absolute', top: '21.5vh', left: '40vw'}} onClick={handleSamplePrimers}> 
-        Sample Primers! 
-      </button>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
+        <h2 style={{ margin: 0 }}>Primer Edit/Debug Tool</h2>
+        <button
+          type="button"
+          className="generate-button"
+          style={{ fontSize: '0.85rem', padding: '5px 12px' }}
+          onClick={handleSamplePrimers}
+        >
+          Try Sample Primers
+        </button>
+      </div>
+      <p className="form-description">
+        Enter the full DNA sequence and your four LAMP primer sequences below.
+      </p>
 
       <form onSubmit={handleSubmit} className="primer-form">
         <div className="input-group">
@@ -101,10 +103,16 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
             className="textarea-input"
           />
         </div>
+
         <div className="primers-container">
           {primers.map((primer, index) => (
             <div key={primer.name} className="input-group primer-column">
-              <label htmlFor={`primer-${primer.name}`}>{primer.name}</label>
+              <label htmlFor={`primer-${primer.name}`}>
+                <span style={{ fontWeight: 600 }}>{primer.name}</span>
+                <span style={{ fontWeight: 400, fontSize: '0.8rem', color: '#94a3b8', marginLeft: '8px' }}>
+                  {subtitles[primer.name]}
+                </span>
+              </label>
               <input
                 id={`primer-${primer.name}`}
                 type="text"
@@ -112,17 +120,17 @@ const PrimerInputForm = ({ onValueChange, handleSequence }) => {
                 onChange={(e) => handlePrimerChange(index, e.target.value)}
                 placeholder={`Enter ${primer.name} sequence`}
                 className="text-input"
+                style={{ fontFamily: 'monospace' }}
               />
             </div>
           ))}
         </div>
+
         <div className="button-container">
-          <button type="submit" className="generate-button">Debug Primer</button>
+          <button type="submit" className="generate-button">Debug Primers</button>
         </div>
 
-        {!isValid && (
-          <div className="error-message">{errorMessage}</div>
-        )}
+        {!isValid && <div className="error-message">{errorMessage}</div>}
       </form>
     </div>
   );
