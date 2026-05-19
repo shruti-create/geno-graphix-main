@@ -43,7 +43,7 @@ function calcTm(seq) {
 const PRIMER_COLORS = { FIP: '#2563eb', BIP: '#dc2626', F3: '#16a34a', B3: '#ea580c' };
 
 // ── Inline Primer Map with drag ────────────────────────────────────
-function InlinePrimerMap({ fullSequence, primers, onPrimerUpdate }) {
+function InlinePrimerMap({ fullSequence, primers, onPrimerUpdate, onShowDetailedMap }) {
     const seqLen   = fullSequence.length;
     const trackRef = useRef(null);
     const [dragging,    setDragging]    = useState(null);
@@ -133,6 +133,11 @@ function InlinePrimerMap({ fullSequence, primers, onPrimerUpdate }) {
             <div className="inline-map-header">
                 Primer Map — {seqLen} bp
                 <span className="drag-hint">Drag any segment to reposition it along the sequence</span>
+                {onShowDetailedMap && (
+                    <button className="action-btn small" style={{ marginLeft: 'auto' }} onClick={onShowDetailedMap}>
+                        Detailed Map
+                    </button>
+                )}
             </div>
 
             <div className="map-track-wrap" ref={trackRef} style={{ cursor: dragging ? 'grabbing' : 'default' }}>
@@ -219,6 +224,7 @@ function PrimerEditPage() {
     const [simTab,           setSimTab]           = useState('steps');
     const [expandedSteps,    setExpandedSteps]    = useState(new Set());
     const [warnOnly,         setWarnOnly]         = useState(true);
+    const [mapModal,         setMapModal]         = useState(null); // null | 'loading' | blob-url
 
     const handleInputtedSequence = (fullSequence, primers) => setInputtedSequence({ fullSequence, primers });
 
@@ -301,6 +307,39 @@ function PrimerEditPage() {
         setSimulationOutput(null);
     }, [simulationOutput, applyOneSuggestion]);
 
+    const showDetailedMap = useCallback(async () => {
+        setMapModal('loading');
+        // Expand FIP/BIP into components so map.py can locate each on the sequence
+        const primerList = [];
+        inputtedSequence.primers.forEach(p => {
+            if (p.name === 'FIP' || p.name === 'BIP') {
+                const mid    = Math.floor(p.sequence.length / 2);
+                const labels = p.name === 'FIP' ? ['F1c', 'F2'] : ['B1c', 'B2'];
+                primerList.push({ name: labels[0], sequence: p.sequence.slice(0, mid) });
+                primerList.push({ name: labels[1], sequence: p.sequence.slice(mid) });
+            } else {
+                primerList.push({ name: p.name, sequence: p.sequence });
+            }
+        });
+        try {
+            const response = await axios.post(
+                `${BACKEND_URL}/primer-map`,
+                { sequence: inputtedSequence.fullSequence, primers: primerList },
+                { responseType: 'blob' }
+            );
+            const url = URL.createObjectURL(response.data);
+            setMapModal(url);
+        } catch {
+            setMapModal(null);
+            setError('Could not generate detailed map.');
+        }
+    }, [inputtedSequence]);
+
+    const closeMapModal = useCallback(() => {
+        if (mapModal && mapModal !== 'loading') URL.revokeObjectURL(mapModal);
+        setMapModal(null);
+    }, [mapModal]);
+
     const saveToFile = () => {
         let text = `Full Sequence:\n${inputtedSequence.fullSequence}\n\nPrimers:\n`;
         inputtedSequence.primers.forEach(p => { text += `${p.name}: ${p.sequence}\n`; });
@@ -334,11 +373,20 @@ function PrimerEditPage() {
         if (submitted === 2) {
             return (
                 <div>
+                    {/* Detailed map modal */}
+                    {mapModal && (
+                        <DetailedMapModal
+                            mapImage={mapModal === 'loading' ? null : mapModal}
+                            onClose={closeMapModal}
+                        />
+                    )}
+
                     {/* Primer position map */}
                     <InlinePrimerMap
                         fullSequence={inputtedSequence.fullSequence}
                         primers={inputtedSequence.primers}
                         onPrimerUpdate={handlePrimerDragUpdate}
+                        onShowDetailedMap={showDetailedMap}
                     />
 
                     {/* Two-column layout */}
