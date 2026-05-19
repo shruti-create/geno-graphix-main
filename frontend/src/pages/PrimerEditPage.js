@@ -44,16 +44,15 @@ const PRIMER_COLORS = { FIP: '#2563eb', BIP: '#dc2626', F3: '#16a34a', B3: '#ea5
 
 // ── Inline Primer Map with drag ────────────────────────────────────
 function InlinePrimerMap({ fullSequence, primers, onPrimerUpdate }) {
-    const seqLen = fullSequence.length;
+    const seqLen   = fullSequence.length;
     const trackRef = useRef(null);
-    const [dragging, setDragging] = useState(null);
+    const [dragging,    setDragging]    = useState(null);
     const [dragPreview, setDragPreview] = useState(null);
 
     const onMouseMove = useCallback((e) => {
         if (!dragging) return;
-        const dx = e.clientX - dragging.startX;
-        const bpPerPx = seqLen / dragging.trackWidth;
-        const bpShift = Math.round(dx * bpPerPx);
+        const dx      = e.clientX - dragging.startX;
+        const bpShift = Math.round(dx * seqLen / dragging.trackWidth);
         const newStart = Math.max(0, Math.min(seqLen - dragging.halfLen, dragging.initialStart + bpShift));
         setDragPreview({ label: dragging.label, start: newStart });
     }, [dragging, seqLen]);
@@ -62,17 +61,12 @@ function InlinePrimerMap({ fullSequence, primers, onPrimerUpdate }) {
         if (dragging && dragPreview && onPrimerUpdate) {
             const currentPrimer = primers.find(p => p.name === dragging.name);
             if (currentPrimer) {
-                const rawSlice = fullSequence.slice(dragPreview.start, dragPreview.start + dragging.halfLen);
-                // Segments found via RC match must be stored as RC(slice), not the slice directly
+                const rawSlice   = fullSequence.slice(dragPreview.start, dragPreview.start + dragging.halfLen);
                 const newHalfSeq = dragging.strand === '-' ? revComp(rawSlice) : rawSlice;
                 let newFullSeq;
-                if (dragging.halfIndex === -1) {
-                    newFullSeq = newHalfSeq;
-                } else if (dragging.halfIndex === 0) {
-                    newFullSeq = newHalfSeq + currentPrimer.sequence.slice(dragging.firstHalfLen);
-                } else {
-                    newFullSeq = currentPrimer.sequence.slice(0, dragging.firstHalfLen) + newHalfSeq;
-                }
+                if      (dragging.halfIndex === -1) newFullSeq = newHalfSeq;
+                else if (dragging.halfIndex === 0)  newFullSeq = newHalfSeq + currentPrimer.sequence.slice(dragging.firstHalfLen);
+                else                                newFullSeq = currentPrimer.sequence.slice(0, dragging.firstHalfLen) + newHalfSeq;
                 onPrimerUpdate(dragging.name, newFullSeq);
             }
         }
@@ -83,87 +77,97 @@ function InlinePrimerMap({ fullSequence, primers, onPrimerUpdate }) {
     useEffect(() => {
         if (dragging) {
             window.addEventListener('mousemove', onMouseMove);
-            window.addEventListener('mouseup', onMouseUp);
-            return () => { window.removeEventListener('mousemove', onMouseMove); window.removeEventListener('mouseup', onMouseUp); };
+            window.addEventListener('mouseup',   onMouseUp);
+            return () => {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup',   onMouseUp);
+            };
         }
     }, [dragging, onMouseMove, onMouseUp]);
 
     if (!seqLen) return null;
 
-    const getSegments = (labelOverrides = {}) => {
+    const buildSegments = (labelOverrides = {}) => {
         const segs = [];
         primers.forEach(primer => {
-            const seq = primer.sequence.toUpperCase();
+            const seq   = primer.sequence.toUpperCase();
             const color = PRIMER_COLORS[primer.name] || '#64748b';
             if (primer.name === 'FIP' || primer.name === 'BIP') {
-                const mid = Math.floor(seq.length / 2);
+                const mid    = Math.floor(seq.length / 2);
                 const labels = primer.name === 'FIP' ? ['F1c', 'F2'] : ['B1c', 'B2'];
                 [seq.slice(0, mid), seq.slice(mid)].forEach((half, i) => {
-                    const label = labels[i];
-                    const override = labelOverrides[label];
+                    const label   = labels[i];
                     const halfLen = half.length;
-                    if (override) {
-                        segs.push({ label, fullName: primer.name, pos: { start: override.start, end: override.start + halfLen, strand: '+' }, color, opacity: i === 0 ? 0.5 : 1.0, halfLen, halfIndex: i, firstHalfLen: mid });
+                    const ov      = labelOverrides[label];
+                    if (ov) {
+                        segs.push({ label, fullName: primer.name, pos: { start: ov.start, end: ov.start + halfLen, strand: '+' }, color, halfLen, halfIndex: i, firstHalfLen: mid });
                     } else {
                         const pos = findPos(fullSequence, half);
-                        if (pos) segs.push({ label, fullName: primer.name, pos, color, opacity: i === 0 ? 0.5 : 1.0, halfLen, halfIndex: i, firstHalfLen: mid });
+                        if (pos) segs.push({ label, fullName: primer.name, pos, color, halfLen, halfIndex: i, firstHalfLen: mid });
                     }
                 });
             } else {
-                const override = labelOverrides[primer.name];
-                if (override) {
-                    segs.push({ label: primer.name, fullName: primer.name, pos: { start: override.start, end: override.start + seq.length, strand: '+' }, color, opacity: 1.0, halfLen: seq.length, halfIndex: -1, firstHalfLen: 0 });
+                const ov = labelOverrides[primer.name];
+                if (ov) {
+                    segs.push({ label: primer.name, fullName: primer.name, pos: { start: ov.start, end: ov.start + seq.length, strand: '+' }, color, halfLen: seq.length, halfIndex: -1, firstHalfLen: 0 });
                 } else {
                     const pos = findPos(fullSequence, seq);
-                    if (pos) segs.push({ label: primer.name, fullName: primer.name, pos, color, opacity: 1.0, halfLen: seq.length, halfIndex: -1, firstHalfLen: 0 });
+                    if (pos) segs.push({ label: primer.name, fullName: primer.name, pos, color, halfLen: seq.length, halfIndex: -1, firstHalfLen: 0 });
                 }
             }
         });
         return segs;
     };
 
-    const segments = getSegments(dragPreview ? { [dragPreview.label]: dragPreview } : {});
+    const segments = buildSegments(dragPreview ? { [dragPreview.label]: dragPreview } : {});
 
     const onMouseDown = (e, seg) => {
         e.preventDefault();
         if (!trackRef.current) return;
-        const trackRect = trackRef.current.getBoundingClientRect();
-        setDragging({ name: seg.fullName, label: seg.label, halfIndex: seg.halfIndex, halfLen: seg.halfLen, firstHalfLen: seg.firstHalfLen, strand: seg.pos.strand, startX: e.clientX, initialStart: seg.pos.start, trackWidth: trackRect.width });
+        const rect = trackRef.current.getBoundingClientRect();
+        setDragging({ name: seg.fullName, label: seg.label, halfIndex: seg.halfIndex, halfLen: seg.halfLen, firstHalfLen: seg.firstHalfLen, strand: seg.pos.strand, startX: e.clientX, initialStart: seg.pos.start, trackWidth: rect.width });
     };
 
     return (
         <div className="inline-map">
             <div className="inline-map-header">
-                Primer Positions — {seqLen} bp
-                <span className="drag-hint">Drag any segment to reposition it independently along the sequence</span>
+                Primer Map — {seqLen} bp
+                <span className="drag-hint">Drag any segment to reposition it along the sequence</span>
             </div>
-            <div className="inline-map-track" ref={trackRef} style={{ cursor: dragging ? 'grabbing' : 'default' }}>
+
+            <div className="map-track-wrap" ref={trackRef} style={{ cursor: dragging ? 'grabbing' : 'default' }}>
                 {[0.25, 0.5, 0.75].map(f => (
                     <div key={f} className="map-tick" style={{ left: `${f * 100}%` }} />
                 ))}
                 {segments.map((seg, i) => {
-                    const left  = (seg.pos.start / seqLen) * 100;
-                    const width = Math.max(1, ((seg.pos.end - seg.pos.start) / seqLen) * 100);
-                    const dir = seg.pos.strand === '+' ? '→' : seg.pos.strand === '-' ? '←' : '≈';
+                    const left     = (seg.pos.start / seqLen) * 100;
+                    const widthPct = Math.max(0.5, ((seg.pos.end - seg.pos.start) / seqLen) * 100);
+                    const active   = dragging?.label === seg.label;
                     return (
-                        <div key={i} className="map-segment"
-                            title={`${seg.label}: pos ${seg.pos.start}–${seg.pos.end} ${dir} — drag to reposition`}
+                        <div key={i}
+                            className="map-segment-labeled"
+                            title={`${seg.label} pos ${seg.pos.start}–${seg.pos.end} — drag to reposition`}
                             onMouseDown={(e) => onMouseDown(e, seg)}
-                            style={{ left: `${left}%`, width: `${width}%`, background: seg.color, opacity: seg.opacity, cursor: 'grab' }}
-                        />
+                            style={{ left: `${left}%`, width: `${widthPct}%`, background: seg.color, boxShadow: active ? '0 0 0 2px white, 0 0 0 3px ' + seg.color : 'none' }}>
+                            <span className="seg-label">{seg.label}</span>
+                        </div>
                     );
                 })}
                 {dragPreview && (
                     <div className="drag-preview-label" style={{ left: `${(dragPreview.start / seqLen) * 100}%` }}>
-                        {dragPreview.label} pos {dragPreview.start}
+                        {dragPreview.label} · {dragPreview.start}
                     </div>
                 )}
             </div>
+
             <div className="inline-map-scale">
-                <span>0</span><span>{Math.round(seqLen * 0.25)}</span>
-                <span>{Math.round(seqLen * 0.5)}</span><span>{Math.round(seqLen * 0.75)}</span>
+                <span>1</span>
+                <span>{Math.round(seqLen * 0.25)}</span>
+                <span>{Math.round(seqLen * 0.5)}</span>
+                <span>{Math.round(seqLen * 0.75)}</span>
                 <span>{seqLen}</span>
             </div>
+
             <div className="inline-map-legend">
                 {primers.map(p => (
                     <div key={p.name} className="legend-item">
@@ -265,21 +269,37 @@ function PrimerEditPage() {
     }, []);
 
     // Apply a suggested component (F2/F1c/B2/B1c) back into FIP or BIP
+    const applyOneSuggestion = useCallback((primers, componentName, componentOf, suggestedSeq) => {
+        return primers.map(p => {
+            if (p.name !== componentOf) return p;
+            const mid    = Math.floor(p.sequence.length / 2);
+            const first  = p.sequence.slice(0, mid);
+            const second = p.sequence.slice(mid);
+            const isFirst = (componentOf === 'FIP' && componentName === 'F1c') ||
+                            (componentOf === 'BIP' && componentName === 'B1c');
+            return { ...p, sequence: isFirst ? suggestedSeq + second : first + suggestedSeq };
+        });
+    }, []);
+
     const handleApplySuggestion = useCallback((componentName, componentOf, suggestedSeq) => {
         setInputtedSequence(prev => ({
             ...prev,
-            primers: prev.primers.map(p => {
-                if (p.name !== componentOf) return p;
-                const mid = Math.floor(p.sequence.length / 2);
-                const first = p.sequence.slice(0, mid);
-                const second = p.sequence.slice(mid);
-                const isFirst = (componentOf === 'FIP' && componentName === 'F1c') ||
-                                (componentOf === 'BIP' && componentName === 'B1c');
-                return { ...p, sequence: isFirst ? suggestedSeq + second : first + suggestedSeq };
-            }),
+            primers: applyOneSuggestion(prev.primers, componentName, componentOf, suggestedSeq),
         }));
-        setSimulationOutput(null); // prompt user to re-run
-    }, []);
+        setSimulationOutput(null);
+    }, [applyOneSuggestion]);
+
+    const handleApplyAllSuggestions = useCallback(() => {
+        if (!simulationOutput?.suggestions) return;
+        setInputtedSequence(prev => {
+            let primers = prev.primers;
+            simulationOutput.suggestions
+                .filter(s => !s.optimal)
+                .forEach(s => { primers = applyOneSuggestion(primers, s.primer, s.componentOf, s.suggested); });
+            return { ...prev, primers };
+        });
+        setSimulationOutput(null);
+    }, [simulationOutput, applyOneSuggestion]);
 
     const saveToFile = () => {
         let text = `Full Sequence:\n${inputtedSequence.fullSequence}\n\nPrimers:\n`;
@@ -445,49 +465,69 @@ function PrimerEditPage() {
 
                                         {simTab === 'suggestions' && (
                                             <div className="sim-suggestions">
-                                                {(simulationOutput.suggestions || []).length === 0 ? (
-                                                    <div className="suggestion-none">
-                                                        All primers already score at or near optimum — no improvements found nearby.
+                                                {/* Apply All row */}
+                                                {(simulationOutput.suggestions || []).some(s => !s.optimal) && (
+                                                    <div className="suggestion-apply-all-row">
+                                                        <span className="suggestion-apply-all-label">
+                                                            {(simulationOutput.suggestions || []).filter(s => !s.optimal).length} improved primer(s) available
+                                                        </span>
+                                                        <button className="action-btn small suggestion-apply-all"
+                                                            onClick={handleApplyAllSuggestions}>
+                                                            Apply All Suggestions
+                                                        </button>
                                                     </div>
-                                                ) : (simulationOutput.suggestions || []).map((s, i) => (
-                                                    <div key={i} className="suggestion-card">
+                                                )}
+
+                                                {/* One card per primer — always shown */}
+                                                {(simulationOutput.suggestions || []).map((s, i) => (
+                                                    <div key={i} className={`suggestion-card ${s.optimal ? 'suggestion-card-optimal' : ''}`}>
                                                         <div className="suggestion-header">
                                                             <span className="suggestion-badge" style={{ background: PRIMER_COLORS[s.componentOf] || '#64748b' }}>
                                                                 {s.primer}
                                                             </span>
-                                                            <span className="suggestion-score">
-                                                                Score {s.scoreBefore} → <strong>{s.scoreAfter}</strong>
-                                                                <span className="suggestion-delta">+{s.improvement}</span>
-                                                            </span>
+                                                            {s.optimal ? (
+                                                                <span className="suggestion-optimal-label">Already near optimal</span>
+                                                            ) : (
+                                                                <span className="suggestion-score">
+                                                                    Score {s.scoreBefore} → <strong>{s.scoreAfter}</strong>
+                                                                    <span className="suggestion-delta">+{s.improvement}</span>
+                                                                </span>
+                                                            )}
                                                         </div>
                                                         <div className="suggestion-reasons">
-                                                            {s.reasons.map((r, j) => <span key={j} className="suggestion-reason">{r}</span>)}
+                                                            {s.reasons.map((r, j) => (
+                                                                <span key={j} className={`suggestion-reason ${s.optimal ? 'suggestion-reason-ok' : ''}`}>{r}</span>
+                                                            ))}
                                                         </div>
                                                         <div className="suggestion-seqs">
                                                             <div className="suggestion-seq-row">
                                                                 <span className="suggestion-seq-label">Current</span>
                                                                 <code className="suggestion-seq suggestion-seq-old">{s.original}</code>
                                                             </div>
-                                                            <div className="suggestion-seq-row">
-                                                                <span className="suggestion-seq-label">Suggested</span>
-                                                                <code className="suggestion-seq suggestion-seq-new">
-                                                                    {s.suggested.split('').map((ch, ci) => {
-                                                                        const changed = ci >= s.original.length || ch !== s.original[ci];
-                                                                        return <span key={ci} className={changed ? 'seq-diff' : ''}>{ch}</span>;
-                                                                    })}
-                                                                </code>
-                                                            </div>
+                                                            {!s.optimal && (
+                                                                <div className="suggestion-seq-row">
+                                                                    <span className="suggestion-seq-label">Suggested</span>
+                                                                    <code className="suggestion-seq suggestion-seq-new">
+                                                                        {s.suggested.split('').map((ch, ci) => {
+                                                                            const changed = ci >= s.original.length || ch !== s.original[ci];
+                                                                            return <span key={ci} className={changed ? 'seq-diff' : ''}>{ch}</span>;
+                                                                        })}
+                                                                    </code>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        <button className="action-btn small suggestion-apply"
-                                                            onClick={() => handleApplySuggestion(s.primer, s.componentOf, s.suggested)}>
-                                                            Apply — update {s.componentOf}
-                                                        </button>
+                                                        {!s.optimal && (
+                                                            <button className="action-btn small suggestion-apply"
+                                                                onClick={() => handleApplySuggestion(s.primer, s.componentOf, s.suggested)}>
+                                                                Apply — update {s.componentOf}
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 ))}
+
                                                 <p className="suggestion-note">
-                                                    Suggestions are generated by scanning ±6 bp around each primer's current binding site
-                                                    and optimising for GC content, nearest-neighbour Tm, 3' clamp, and structural complexity.
-                                                    Re-run the simulation after applying.
+                                                    Scanning ±6 bp / ±3 length around each binding site. Scores by GC%, NN Tm, 3′ GC clamp, hairpin, and run complexity.
+                                                    Re-run simulation after applying.
                                                 </p>
                                             </div>
                                         )}

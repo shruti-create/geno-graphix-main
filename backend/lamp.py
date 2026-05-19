@@ -376,19 +376,24 @@ def _why_better(orig, cand, name):
 
 
 def suggest_improvements(full_seq, primer_positions):
-    """Generate improved primer alternatives near each binding site.
+    """Generate primer alternatives near each binding site for ALL primers.
 
     primer_positions: dict  name → (abs_start, abs_end, strand, cur_seq)
       strand '+' → primer seq == sense slice
       strand '-' → primer seq == RC(sense slice)  (e.g. F1c, B2)
+    Always returns one entry per primer, even if already optimal.
     """
-    suggestions = []
     DELTA_POS = 6   # shift window ±6 bp
     DELTA_LEN = 3   # length ±3 bp
+    ORDER = ['F2', 'F1c', 'B1c', 'B2']   # display order
+    suggestions = []
 
-    for name, (start, end, strand, cur_seq) in primer_positions.items():
-        cur_len   = len(cur_seq)
-        cur_score = score_primer(cur_seq, name)
+    for name in ORDER:
+        if name not in primer_positions:
+            continue
+        start, end, strand, cur_seq = primer_positions[name]
+        cur_len    = len(cur_seq)
+        cur_score  = score_primer(cur_seq, name)
         best_score = cur_score
         best_seq   = None
 
@@ -407,20 +412,33 @@ def suggest_improvements(full_seq, primer_positions):
                     best_score = sc
                     best_seq   = candidate
 
+        component_of = 'FIP' if name in ('F1c', 'F2') else 'BIP'
         if best_seq:
-            component_of = 'FIP' if name in ('F1c', 'F2') else 'BIP'
             suggestions.append({
-                'primer':       name,
-                'componentOf':  component_of,
-                'original':     cur_seq,
-                'suggested':    best_seq,
-                'scoreBefore':  cur_score,
-                'scoreAfter':   best_score,
-                'improvement':  best_score - cur_score,
-                'reasons':      _why_better(cur_seq, best_seq, name),
+                'primer':      name,
+                'componentOf': component_of,
+                'original':    cur_seq,
+                'suggested':   best_seq,
+                'scoreBefore': cur_score,
+                'scoreAfter':  best_score,
+                'improvement': best_score - cur_score,
+                'reasons':     _why_better(cur_seq, best_seq, name),
+                'optimal':     False,
+            })
+        else:
+            suggestions.append({
+                'primer':      name,
+                'componentOf': component_of,
+                'original':    cur_seq,
+                'suggested':   cur_seq,
+                'scoreBefore': cur_score,
+                'scoreAfter':  cur_score,
+                'improvement': 0,
+                'reasons':     ['Already near optimal in this region'],
+                'optimal':     True,
             })
 
-    return sorted(suggestions, key=lambda x: -x['improvement'])
+    return suggestions
 
 
 # ── Main simulation ─────────────────────────────────────────────────
