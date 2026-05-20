@@ -159,7 +159,8 @@ function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerNa
     const [expandedInsights, setExpandedInsights] = useState(new Set());
     const [structure,        setStructure]        = useState('');
     const [structureLoading, setStructureLoading] = useState(false);
-    const fornaRef = useRef(null);
+    const fornaRef    = useRef(null);
+    const didMountRef = useRef(false);
 
     useEffect(() => { if (inputtedSequence) setSeq(inputtedSequence); }, [inputtedSequence]);
 
@@ -234,17 +235,21 @@ function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerNa
     // Load on mount
     useEffect(() => { loadStructure(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Debounced reload when sequence changes
+    // Debounced reload when sequence changes — skip the initial mount run
+    // didMountRef starts false; the first time this effect fires (mount) we mark it and skip;
+    // every subsequent run (actual seq change) schedules the debounce.
     useEffect(() => {
+        if (!didMountRef.current) { didMountRef.current = true; return; }
         const t = setTimeout(() => loadStructure(seq), 1200);
         return () => clearTimeout(t);
     }, [seq]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
+        if (tab !== 'edit') return;
         if (!fornaRef.current || !seq || !structure || structure.length !== seq.length) return;
         fornaRef.current.innerHTML = '';
         try {
-            const fc = new FornaContainer(fornaRef.current, { allowPanningAndZooming: true, zoomOnScroll: true });
+            const fc = new FornaContainer(fornaRef.current, { allowPanningAndZooming: true, zoomOnScroll: false });
             fc.addRNA(structure, {
                 sequence: seq,
                 name: 'primer',
@@ -252,7 +257,7 @@ function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerNa
                 color: ({ base }) => BASE_COLORS[base] || '#94a3b8',
             });
         } catch (e) { console.error('Forna error:', e); }
-    }, [seq, structure]);
+    }, [seq, structure, tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const save = () => { localStorage.setItem('primerInput', seq); onPrimerChange(seq); };
 
@@ -277,14 +282,15 @@ function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerNa
 
             {/* Tab bar */}
             <div className="pe-tabs">
-                {['edit', 'insights'].map(t => (
-                    <button key={t} className={`pe-tab ${tab === t ? 'pe-tab-active' : ''}`}
-                        onClick={() => setTab(t)}>
-                        {t === 'edit'
-                            ? `Edit Sequence`
-                            : `Insights (${insights.filter(i => i.level === 'warning').length} warnings)`}
-                    </button>
-                ))}
+                <button className={`pe-tab ${tab === 'edit' ? 'pe-tab-active' : ''}`} onClick={() => setTab('edit')}>
+                    Edit Sequence
+                </button>
+                <button className={`pe-tab ${tab === 'mappings' ? 'pe-tab-active' : ''}`} onClick={() => setTab('mappings')}>
+                    Binding Sites ({mappings.length})
+                </button>
+                <button className={`pe-tab ${tab === 'insights' ? 'pe-tab-active' : ''}`} onClick={() => setTab('insights')}>
+                    Insights ({insights.filter(i => i.level === 'warning').length} warnings)
+                </button>
             </div>
 
             {/* ── Edit tab (two-column) ─────────────────────────── */}
@@ -342,84 +348,43 @@ function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerNa
                             onChange={e => { setSeq(e.target.value.toUpperCase().replace(/[^ATGC]/g, '')); setSelectedIdx(null); }}
                             rows={3} placeholder="Enter primer sequence (A/T/G/C only)" />
 
-                        {mappings[0] && (
+                        {mappings.length > 0 && (
                             <div className="pe-flanking">
                                 <span className="pe-section-label">Flanking context</span>
-                                <code className="pe-flank-seq">
-                                    <span className="flank-side">{sequence.slice(Math.max(0, mappings[0].start - 5), mappings[0].start)}</span>
-                                    <span className="flank-primer" style={{ background: color + '33', outline: `2px solid ${color}`, borderRadius: 3 }}>
-                                        {sequence.slice(mappings[0].start, mappings[0].end)}
-                                    </span>
-                                    <span className="flank-side">{sequence.slice(mappings[0].end, mappings[0].end + 5)}</span>
-                                </code>
+                                {isComposite
+                                    ? componentLabels.map(label => {
+                                        const m = mappings.find(x => x.component === label);
+                                        if (!m) return null;
+                                        return (
+                                            <div key={label} className="pe-flank-row">
+                                                <span className="pe-flank-comp-label">{label}</span>
+                                                <code className="pe-flank-seq">
+                                                    <span className="flank-side">{sequence.slice(Math.max(0, m.start - 5), m.start)}</span>
+                                                    <span className="flank-primer" style={{ background: color + '33', outline: `2px solid ${color}`, borderRadius: 3 }}>
+                                                        {sequence.slice(m.start, m.end)}
+                                                    </span>
+                                                    <span className="flank-side">{sequence.slice(m.end, m.end + 5)}</span>
+                                                </code>
+                                            </div>
+                                        );
+                                    })
+                                    : (
+                                        <code className="pe-flank-seq">
+                                            <span className="flank-side">{sequence.slice(Math.max(0, mappings[0].start - 5), mappings[0].start)}</span>
+                                            <span className="flank-primer" style={{ background: color + '33', outline: `2px solid ${color}`, borderRadius: 3 }}>
+                                                {sequence.slice(mappings[0].start, mappings[0].end)}
+                                            </span>
+                                            <span className="flank-side">{sequence.slice(mappings[0].end, mappings[0].end + 5)}</span>
+                                        </code>
+                                    )
+                                }
                             </div>
                         )}
                     </div>
 
-                    {/* Right column: binding sites + structure */}
+                    {/* Right column: RNA structure */}
                     <div className="pe-edit-right">
-                        <div className="pe-section-label">Binding sites on target (fuzzy ≥65%)</div>
-
-                        {mappings.length === 0 ? (
-                            <div className="pe-no-mappings">
-                                {isComposite
-                                    ? 'No binding sites found for either component (≥65% match).'
-                                    : 'No binding sites found with ≥65% match.'}
-                            </div>
-                        ) : mappings.map((m, i) => {
-                            const isPrimary = i === 0;
-                            const leftPct  = (m.start / sequence.length) * 100;
-                            const widthPct = Math.max(1, ((m.end - m.start) / sequence.length) * 100);
-                            // For composite primers each mapping has its own componentSeq
-                            const primerSlice = m.componentSeq ? m.componentSeq.toUpperCase() : seq.toUpperCase();
-                            const query  = m.strand === '-' ? revComp(primerSlice) : primerSlice;
-                            const target = m.slice;
-                            // For composite primers, map selectedIdx into the component's local index
-                            const localSelected = isComposite
-                                ? (m.component === componentLabels[0]
-                                    ? selectedIdx                // first half
-                                    : selectedIdx != null ? selectedIdx - mid : null)  // second half
-                                : selectedIdx;
-                            return (
-                                <div key={i} className={`pe-mapping-card ${isPrimary ? 'pe-mapping-primary' : ''}`}>
-                                    <div className="pe-mapping-header">
-                                        {isPrimary && <span className="pe-mapping-primary-badge">{m.component || 'Primary'}</span>}
-                                        {m.component && !isPrimary && <span className="pe-mapping-component-badge">{m.component}</span>}
-                                        <span className="pe-mapping-pos">pos {m.start}–{m.end}</span>
-                                        <span className="pe-mapping-strand">{m.strand === '+' ? '5′→3′' : '3′←5′'}</span>
-                                        <span className="pe-mapping-score-badge" style={{ background: m.score >= 0.9 ? '#f0fdf4' : m.score >= 0.75 ? '#fffbeb' : '#fff7ed', color: m.score >= 0.9 ? '#16a34a' : m.score >= 0.75 ? '#d97706' : '#ea580c', border: `1px solid ${m.score >= 0.9 ? '#bbf7d0' : m.score >= 0.75 ? '#fde68a' : '#fed7aa'}` }}>
-                                            {Math.round(m.score * 100)}%
-                                        </span>
-                                    </div>
-                                    <div className="pe-mini-map">
-                                        <div className="pe-mini-track">
-                                            <div className="pe-mini-segment" style={{ left: `${leftPct}%`, width: `${widthPct}%`, background: color }} />
-                                        </div>
-                                        <div className="pe-mini-scale"><span>1</span><span>{sequence.length}</span></div>
-                                    </div>
-                                    <div className="pe-alignment">
-                                        <div className="pe-align-row">
-                                            <span className="pe-align-label">Target</span>
-                                            <code className="pe-align-seq">
-                                                {target.split('').map((b, j) => (
-                                                    <span key={j} className={b === query[j] ? 'align-match' : 'align-mismatch'}>{b}</span>
-                                                ))}
-                                            </code>
-                                        </div>
-                                        <div className="pe-align-row">
-                                            <span className="pe-align-label">Primer</span>
-                                            <code className="pe-align-seq">
-                                                {query.split('').map((b, j) => (
-                                                    <span key={j} className={`${b === target[j] ? 'align-match' : 'align-mismatch'}${j === localSelected ? ' align-active' : ''}`}>{b}</span>
-                                                ))}
-                                            </code>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-
-                        <div className="pe-section-label" style={{ marginTop: 18 }}>RNA Secondary Structure</div>
+                        <div className="pe-section-label">RNA Secondary Structure</div>
                         <div className="pe-structure-card">
                             {!structure && !structureLoading && (
                                 <button className="pe-structure-btn" onClick={loadStructure}>Load Structure Prediction</button>
@@ -428,6 +393,72 @@ function PrimerEditorForm({ sequence, inputtedSequence, onPrimerChange, primerNa
                             {structure && !structureLoading && <div ref={fornaRef} className="pe-forna" />}
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* ── Mappings tab ─────────────────────────────────── */}
+            {tab === 'mappings' && (
+                <div className="pe-mappings">
+                    <div className="pe-section-label" style={{ marginBottom: 10 }}>
+                        Binding sites on target (fuzzy ≥65%){isComposite && ' — split by component'}
+                    </div>
+                    {mappings.length === 0 ? (
+                        <div className="pe-no-mappings">
+                            {isComposite
+                                ? 'No binding sites found for either component (≥65% match).'
+                                : 'No binding sites found with ≥65% match.'}
+                        </div>
+                    ) : mappings.map((m, i) => {
+                        const isPrimary = i === 0;
+                        const leftPct  = (m.start / sequence.length) * 100;
+                        const widthPct = Math.max(1, ((m.end - m.start) / sequence.length) * 100);
+                        const primerSlice = m.componentSeq ? m.componentSeq.toUpperCase() : seq.toUpperCase();
+                        const query  = m.strand === '-' ? revComp(primerSlice) : primerSlice;
+                        const target = m.slice;
+                        const localSelected = isComposite
+                            ? (m.component === componentLabels[0]
+                                ? selectedIdx
+                                : selectedIdx != null ? selectedIdx - mid : null)
+                            : selectedIdx;
+                        return (
+                            <div key={i} className={`pe-mapping-card ${isPrimary ? 'pe-mapping-primary' : ''}`}>
+                                <div className="pe-mapping-header">
+                                    {m.component
+                                        ? <span className={isPrimary ? 'pe-mapping-primary-badge' : 'pe-mapping-component-badge'}>{m.component}</span>
+                                        : isPrimary && <span className="pe-mapping-primary-badge">Primary</span>}
+                                    <span className="pe-mapping-pos">pos {m.start}–{m.end}</span>
+                                    <span className="pe-mapping-strand">{m.strand === '+' ? '5′→3′' : '3′←5′'}</span>
+                                    <span className="pe-mapping-score-badge" style={{ background: m.score >= 0.9 ? '#f0fdf4' : m.score >= 0.75 ? '#fffbeb' : '#fff7ed', color: m.score >= 0.9 ? '#16a34a' : m.score >= 0.75 ? '#d97706' : '#ea580c', border: `1px solid ${m.score >= 0.9 ? '#bbf7d0' : m.score >= 0.75 ? '#fde68a' : '#fed7aa'}` }}>
+                                        {Math.round(m.score * 100)}%
+                                    </span>
+                                </div>
+                                <div className="pe-mini-map">
+                                    <div className="pe-mini-track">
+                                        <div className="pe-mini-segment" style={{ left: `${leftPct}%`, width: `${widthPct}%`, background: color }} />
+                                    </div>
+                                    <div className="pe-mini-scale"><span>1</span><span>{sequence.length}</span></div>
+                                </div>
+                                <div className="pe-alignment">
+                                    <div className="pe-align-row">
+                                        <span className="pe-align-label">Target</span>
+                                        <code className="pe-align-seq">
+                                            {target.split('').map((b, j) => (
+                                                <span key={j} className={b === query[j] ? 'align-match' : 'align-mismatch'}>{b}</span>
+                                            ))}
+                                        </code>
+                                    </div>
+                                    <div className="pe-align-row">
+                                        <span className="pe-align-label">Primer</span>
+                                        <code className="pe-align-seq">
+                                            {query.split('').map((b, j) => (
+                                                <span key={j} className={`${b === target[j] ? 'align-match' : 'align-mismatch'}${j === localSelected ? ' align-active' : ''}`}>{b}</span>
+                                            ))}
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 
