@@ -1,20 +1,15 @@
 {
   "files": {
-    "main.css": "/geno-graphix-main/static/css/main.abbbdb49.css",
-    "main.js": "/geno-graphix-main/static/js/main.755fbc68.js",
-    "static/media/edit.png": "/geno-graphix-main/static/media/edit.df2b08542b825f659a36.png",
-    "static/media/primer_map.png": "/geno-graphix-main/static/media/primer_map.817882ff6d13330c082a.png",
-    "static/media/about.png": "/geno-graphix-main/static/media/about.28bf506a4039f04c187b.png",
+    "main.css": "/geno-graphix-main/static/css/main.75c8b8f1.css",
+    "main.js": "/geno-graphix-main/static/js/main.f1d06679.js",
     "static/media/genographix-back.png": "/geno-graphix-main/static/media/genographix-back.0eca642c50c94dce4d06.png",
     "static/media/circle_dna_strands_transparent.png": "/geno-graphix-main/static/media/circle_dna_strands_transparent.52b310fec73dc6f91b9a.png",
-    "static/media/primer_input.png": "/geno-graphix-main/static/media/primer_input.0d51dc2e34602cacd064.png",
-    "static/media/primer_edit.png": "/geno-graphix-main/static/media/primer_edit.fa2aaeea33b15a6512d2.png",
     "index.html": "/geno-graphix-main/index.html",
-    "main.abbbdb49.css.map": "/geno-graphix-main/static/css/main.abbbdb49.css.map",
-    "main.755fbc68.js.map": "/geno-graphix-main/static/js/main.755fbc68.js.map"
+    "main.75c8b8f1.css.map": "/geno-graphix-main/static/css/main.75c8b8f1.css.map",
+    "main.f1d06679.js.map": "/geno-graphix-main/static/js/main.f1d06679.js.map"
   },
   "entrypoints": [
-    "static/css/main.abbbdb49.css",
-    "static/js/main.755fbc68.js"
+    "static/css/main.75c8b8f1.css",
+    "static/js/main.f1d06679.js"
   ]
 }
