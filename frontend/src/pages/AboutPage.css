@@ -9,7 +9,7 @@
 .ab-hero {
     background: linear-gradient(135deg, #0f3663 0%, #1e5fa8 60%, #2d7dd2 100%);
     color: white;
-    padding: 90px 10vw 80px;
+    padding: 120px 10vw 110px;
     text-align: center;
 }
 .ab-hero-inner { max-width: 720px; margin: 0 auto; }
