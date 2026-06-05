@@ -218,7 +218,6 @@ function PrimerEditPage() {
     const [back,             setBack]             = useState(false);
     const [inputtedSequence, setInputtedSequence] = useState({ fullSequence: '', primers: [] });
     const [editingPrimer,    setEditingPrimer]    = useState(null);
-    const [editedPrimer,     setEditedPrimer]     = useState({ name: '', sequence: '' });
     const [simulationOutput, setSimulationOutput] = useState(null);
     const [error,            setError]            = useState('');
     const [simTab,           setSimTab]           = useState('steps');
@@ -259,13 +258,15 @@ function PrimerEditPage() {
     const handleButtonClick  = () => { setBack(!back); setSubmitted(0); };
     const handleBackFromEdit = () => { setEditingPrimer(null); updateEditedPrimer(); };
     const handleValueChange  = (val) => setSubmitted(val ? 2 : 0);
-    const handleEditPrimer   = (primer) => { setEditingPrimer(primer); setEditedPrimer({ name: '', sequence: '' }); };
-    const handlePrimerChange = (name, seq) => setEditedPrimer({ name, sequence: seq });
+    const handleEditPrimer   = (primer) => { setEditingPrimer(primer); };
+    const handlePrimerChange = (name, seq) => {
+        setInputtedSequence(prev => ({
+            ...prev,
+            primers: prev.primers.map(p => p.name === name ? { ...p, sequence: seq } : p),
+        }));
+    };
 
-    const updateEditedPrimer = () => setInputtedSequence(prev => ({
-        ...prev,
-        primers: prev.primers.map(p => p.name === editedPrimer.name ? { ...p, sequence: editedPrimer.sequence } : p),
-    }));
+    const updateEditedPrimer = () => {};
 
     const handlePrimerDragUpdate = useCallback((name, newSeq) => {
         setInputtedSequence(prev => ({
@@ -605,7 +606,7 @@ function PrimerEditPage() {
     return (
         <div className="page-wrapper">
             <div className="page-card">
-                <ChooseForm />
+                {ChooseForm()}
             </div>
         </div>
     );

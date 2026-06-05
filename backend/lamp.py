@@ -116,7 +116,7 @@ def no_template_risk(f2, f1c, b2, b1c, threshold=0.70):
         (f1c, b1c, 'F1c and B1c',
          'Both form the inner loop — high similarity means templates can form without target'),
         (f2, b2, 'F2 and B2',
-         'Outer primer complementarity can drive non-specific extension without target'),
+         'FIP/BIP 3′ binding ends are complementary — can drive non-specific extension without target'),
         (f2, b1c, 'F2 and B1c',
          'Cross-primer complementarity can produce background dumbbell structures'),
     ]
@@ -567,7 +567,7 @@ def create_lamp_dumbell(sequence, F2, F1c, B2, B1c):
     # ── Step 9: Target secondary structure ──────────────────────────
     struct_results = {}
     for name, start, end in [('F2',f2_idx,f2_idx+len(f2)),
-                              ('F1',f1_abs,f1_end),
+                              ('F1c',f1_abs,f1_end),
                               ('B1c',b1c_abs,b1c_end),
                               ('B2',b2rc_abs,b2rc_end)]:
         access, site_struct = site_accessibility(seq, start, end)
